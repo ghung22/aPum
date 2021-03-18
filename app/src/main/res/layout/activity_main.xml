@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginVertical="100dp" android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="64sp" android:textAlignment="center" android:textColor="?android:textColor"
+            android:text="@string/app_name"/>
+        <LinearLayout
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal" android:gravity="center">
+            <Button android:id="@+id/btnFavorite"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp" android:width="120dp"
+                android:text="@string/action_favorite"/>
+            <Button android:id="@+id/btnVault"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp" android:width="120dp"
+                android:text="@string/action_vault"/>
+        </LinearLayout>
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ahihi" android:textSize="64dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Toolbar android:id="@+id/menu_main_top"
+        android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:popupTheme="?popupTheme"/>
+    <GridView android:id="@+id/grid"
+        android:paddingHorizontal="3dp"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:layout_margin="1dp" android:numColumns="auto_fit"
+        android:columnWidth="100dp"
+        android:horizontalSpacing="5dp" android:verticalSpacing="10dp"
+        android:gravity="center" android:stretchMode="columnWidth"/>
+    <Toolbar android:id="@+id/menu_main_bottom"
+        android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:popupTheme="?popupTheme"/>
+</LinearLayout>

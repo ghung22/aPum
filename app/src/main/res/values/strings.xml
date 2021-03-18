@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">aPum</string>
+
+    <!--  Main top bar  -->
+    <string name="action_add">Add</string>
+    <string name="action_search">Search</string>
+
+    <!--  Main bottom bar  -->
+    <string name="action_overview">Overview</string>
+    <string name="action_album">Albums</string>
+    <string name="action_faces">Faces</string>
+    <string name="action_favorite">Favorite</string>
+
+    <!--  Main options  -->
+    <string name="action_select">Select items</string>
+    <string name="action_zoom">Zoom</string>
+    <string name="action_reload">Reload</string>
+    <string name="action_trash">Trash</string>
+    <string name="action_vault">Vault</string>
+    <string name="action_settings">Settings</string>
 </resources>

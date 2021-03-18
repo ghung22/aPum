@@ -6,7 +6,7 @@
     <ImageView android:id="@+id/splashscreen"
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:background="@drawable/ic_launcher_background"
-        android:src="@drawable/apum_outline"
+        android:src="@drawable/ic_launcher_foreground"
         android:layout_gravity="center"/>
 
 </LinearLayout>
