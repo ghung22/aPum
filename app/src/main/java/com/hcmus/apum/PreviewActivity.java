@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
-public class Preview extends AppCompatActivity {
+public class PreviewActivity extends AppCompatActivity {
 
     // GUI controls
     Toolbar toolbar;
@@ -35,7 +35,7 @@ public class Preview extends AppCompatActivity {
         imgPreview.setImageResource(thumbnails[pos]);
 
         // Init actionbar buttons
-        toolbar = (Toolbar) findViewById(R.id.toolbar_preview);
+        toolbar = (Toolbar) findViewById(R.id.menu_preview);
         toolbar.inflateMenu(R.menu.menu_preview);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

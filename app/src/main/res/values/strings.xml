@@ -7,7 +7,7 @@
 
     <!--  Main bottom bar  -->
     <string name="action_overview">Overview</string>
-    <string name="action_album">Albums</string>
+    <string name="action_albums">Albums</string>
     <string name="action_faces">Faces</string>
     <string name="action_favorite">Favorite</string>
 

@@ -1,19 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
         android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_fav_black_48dp"
+        android:icon="@drawable/ic_fav_black_outline"
         android:title="@string/action_favorite"
-        app:showAsAction="ifRoom"/>
+        android:showAsAction="always"
+        tools:ignore="AppCompatResource"/>
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_info"
         android:title="Information"
-        app:showAsAction="never"/>
+        android:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
     <item android:id="@+id/action_wallpaper"
         android:title="Set as wallpaper"
-        app:showAsAction="never"/>
+        android:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
 
 </menu>

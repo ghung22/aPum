@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:padding="3dp"
     android:background="@color/black">
-    <androidx.appcompat.widget.Toolbar android:id="@+id/toolbar_preview"
+    <androidx.appcompat.widget.Toolbar android:id="@+id/menu_preview"
         android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
         android:elevation="4dp"
