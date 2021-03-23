@@ -44,15 +44,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                String temp = (String) item.getTitle();
-                if (temp == getString(R.string.action_overview)) {
-                    ft.replace(R.id.frame, overview);
-                } else if (temp == getString(R.string.action_albums)) {
-                    ft.replace(R.id.frame, albums);
-                } else if (temp == getString(R.string.action_faces)) {
-                    ft.replace(R.id.frame, faces);
-                } else if (temp == getString(R.string.action_favorite)) {
-                    ft.replace(R.id.frame, favorite);
+                switch (item.getItemId()) {
+                    case R.id.action_overview:
+                        ft.replace(R.id.frame, overview);
+                        break;
+                    case R.id.action_albums:
+                        ft.replace(R.id.frame, albums);
+                        break;
+                    case R.id.action_faces:
+                        ft.replace(R.id.frame, faces);
+                        break;
+                    case R.id.action_favorite:
+                        ft.replace(R.id.frame, favorite);
+                        break;
                 }
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.addToBackStack(null);

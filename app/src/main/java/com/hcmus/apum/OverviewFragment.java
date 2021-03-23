@@ -1,5 +1,6 @@
 package com.hcmus.apum;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -7,11 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 /**
@@ -63,7 +67,38 @@ public class OverviewFragment extends Fragment {
         // Init actionbar buttons
         toolbar = (Toolbar) getView().findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
-
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_add:
+                        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        try {
+                            startActivityForResult(takePicIntent, 71);
+                        } catch (ActivityNotFoundException e ) {
+                            Toast.makeText(OverviewFragment.super.getContext(), "(!) Problem opening the camera", 5000).show();
+                        }
+                        break;
+                    case R.id.action_search:
+                        break;
+                    case R.id.action_select:
+                        break;
+                    case R.id.action_zoom:
+                        break;
+                    case R.id.action_reload:
+                        break;
+                    case R.id.action_trash:
+                        break;
+                    case R.id.action_vault:
+                        break;
+                    case R.id.action_settings:
+                        break;
+                    case R.id.action_about:
+                        break;
+                    }
+                return true;
+            }
+        });
     }
 
     @Override
