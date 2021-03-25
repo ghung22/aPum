@@ -40,29 +40,26 @@ public class MainActivity extends AppCompatActivity {
 
         // Init controls
         navBar = (BottomNavigationView) findViewById(R.id.navBar);
-        navBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                switch (item.getItemId()) {
-                    case R.id.action_overview:
-                        ft.replace(R.id.frame, overview);
-                        break;
-                    case R.id.action_albums:
-                        ft.replace(R.id.frame, albums);
-                        break;
-                    case R.id.action_faces:
-                        ft.replace(R.id.frame, faces);
-                        break;
-                    case R.id.action_favorite:
-                        ft.replace(R.id.frame, favorite);
-                        break;
-                }
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
-                return true;
+        navBar.setOnNavigationItemSelectedListener(item -> {
+            FragmentTransaction ft1 = getSupportFragmentManager().beginTransaction();
+            switch (item.getItemId()) {
+                case R.id.action_overview:
+                    ft1.replace(R.id.frame, overview);
+                    break;
+                case R.id.action_albums:
+                    ft1.replace(R.id.frame, albums);
+                    break;
+                case R.id.action_faces:
+                    ft1.replace(R.id.frame, faces);
+                    break;
+                case R.id.action_favorite:
+                    ft1.replace(R.id.frame, favorite);
+                    break;
             }
+            ft1.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft1.addToBackStack(null);
+            ft1.commit();
+            return true;
         });
     }
 }

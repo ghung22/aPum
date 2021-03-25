@@ -4,11 +4,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,10 +22,12 @@ import java.util.ArrayList;
 public class ThumbnailAdapter extends BaseAdapter {
     private Context context;
     int[] thumbnails;
+    LayoutInflater inflater;
 
     public ThumbnailAdapter(Context context, int[] images) {
         this.context = context;
         this.thumbnails = images;
+        inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     // Number of entries in dataSet

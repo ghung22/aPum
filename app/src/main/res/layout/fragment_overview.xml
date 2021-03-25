@@ -1,36 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".OverviewFragment">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    tools:context=".OverviewFragment" android:fitsSystemWindows="true">
 
-    <LinearLayout
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginVertical="50dp" android:orientation="vertical">
-            <TextView
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="64sp" android:textAlignment="center" android:textColor="?android:textColor"
-                android:text="@string/app_name"/>
-        </LinearLayout>
-
-        <Toolbar android:id="@+id/menu_main"
-            android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            android:popupTheme="?popupTheme"/>
-
-        <GridView android:id="@+id/grid"
-            android:paddingHorizontal="3dp"
+    <com.google.android.material.appbar.AppBarLayout android:id="@+id/appbar"
+        android:layout_width="match_parent" android:layout_height="@dimen/heading_size"
+        android:minHeight="?attr/actionBarSize" android:background="@android:color/transparent"
+        android:fitsSystemWindows="true" app:popupTheme="?popupTheme">
+        <com.google.android.material.appbar.CollapsingToolbarLayout android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent" android:layout_height="match_parent"
-            android:layout_margin="1dp" android:numColumns="auto_fit"
-            android:columnWidth="100dp"
-            android:horizontalSpacing="5dp" android:verticalSpacing="10dp"
-            android:gravity="center" android:stretchMode="columnWidth"/>
-    </LinearLayout>
+            android:fitsSystemWindows="true" app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleGravity="center" app:collapsedTitleGravity="left"
+            app:expandedTitleTextAppearance="@style/ExpandedAppBar"
+            app:collapsedTitleTextAppearance="@style/CollapsedAppBar"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:title="@string/app_name" android:textAlignment="center">
+            <androidx.appcompat.widget.Toolbar android:id="@+id/menu_main"
+                android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:layout_collapseMode="pin"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar" android:popupTheme="?popupTheme"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"/>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-</FrameLayout>
+    <androidx.core.widget.NestedScrollView android:id="@+id/scroll"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical" android:paddingTop="8dp">
+                <GridView android:id="@+id/grid"
+                    android:paddingHorizontal="3dp"
+                    android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:layout_margin="1dp" android:numColumns="auto_fit"
+                    android:columnWidth="100dp"
+                    android:horizontalSpacing="5dp" android:verticalSpacing="10dp"
+                    android:gravity="center" android:stretchMode="columnWidth"/>
+                <TextView android:id="@+id/empty" android:visibility="gone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="@string/info_no_media" android:textAlignment="center" android:textSize="24pt"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
