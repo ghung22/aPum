@@ -1,47 +1,51 @@
 package com.hcmus.apum;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AlbumsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+
 public class AlbumsFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    // GUI controls
+    AppBarLayout appbar;
+    CollapsingToolbarLayout collapsingToolbar;
+    Toolbar toolbar;
+    NestedScrollView scroll;
+    ListView list;
+    ThumbnailAdapter adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // Test values
+    final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
+            "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
+    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
+            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
+            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
+            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
 
     public AlbumsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AlbumsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static AlbumsFragment newInstance(String param1, String param2) {
         AlbumsFragment fragment = new AlbumsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,16 +53,69 @@ public class AlbumsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_albums, container, false);
+        View view =  inflater.inflate(R.layout.fragment_albums, container, false);
+
+        // Init controls
+        appbar = (AppBarLayout) view.findViewById(R.id.appbar);
+        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                // Change icon to black/white depending on scroll state
+                if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
+                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.MULTIPLY);
+                } else {
+                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+                }
+            }
+        });
+        collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
+        scroll = (NestedScrollView) view.findViewById(R.id.scroll);
+        adapter = new ThumbnailAdapter(getActivity(), images);
+        list = (ListView) view.findViewById(R.id.list);
+        list.setEmptyView(view.findViewById(R.id.empty));
+        list.setAdapter(adapter);
+
+        // Init actionbar buttons
+        toolbar = (Toolbar) view.findViewById(R.id.menu_main);
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setOnMenuItemClickListener(this::menuAction);
+
+        return view;
+    }
+
+    private boolean menuAction(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.action_add:
+                Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                    startActivityForResult(takePicIntent, 71);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(AlbumsFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.action_search:
+                break;
+            case R.id.action_select:
+                break;
+            case R.id.action_zoom:
+                break;
+            case R.id.action_reload:
+                break;
+            case R.id.action_trash:
+                break;
+            case R.id.action_vault:
+                break;
+            case R.id.action_settings:
+                break;
+            case R.id.action_about:
+                break;
+        }
+        return true;
     }
 }
