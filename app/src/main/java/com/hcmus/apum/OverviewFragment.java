@@ -5,17 +5,16 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ScrollView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
@@ -61,6 +60,7 @@ public class OverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_overview, container,false);
+        ViewCompat.requestApplyInsets(view);
 
         // Init controls
         appbar = (AppBarLayout) view.findViewById(R.id.appbar);
@@ -77,10 +77,6 @@ public class OverviewFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        try {
-            int scrollState = savedInstanceState.getInt("scrollState");
-            scroll.setScrollY(scrollState);
-        } catch (Exception e) {}
         adapter = new ThumbnailAdapter(getActivity(), images);
         grid = (GridView) view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
@@ -90,44 +86,9 @@ public class OverviewFragment extends Fragment {
         // Init actionbar buttons
         toolbar = (Toolbar) view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
-        toolbar.setOnMenuItemClickListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.action_add:
-                    Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    try {
-                        startActivityForResult(takePicIntent, 71);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
-                    }
-                    break;
-                case R.id.action_search:
-                    break;
-                case R.id.action_select:
-                    break;
-                case R.id.action_zoom:
-                    break;
-                case R.id.action_reload:
-                    break;
-                case R.id.action_trash:
-                    break;
-                case R.id.action_vault:
-                    break;
-                case R.id.action_settings:
-                    break;
-                case R.id.action_about:
-                    break;
-            }
-            return true;
-        });
+        toolbar.setOnMenuItemClickListener(this::menuAction);
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        int scrollState = scroll.getScrollY();
-        outState.putInt("scrollState", scrollState);
     }
 
     private void showPreview(int pos) {
@@ -139,5 +100,35 @@ public class OverviewFragment extends Fragment {
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);
 //        finish();
+    }
+
+    private boolean menuAction(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.action_add:
+                Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                    startActivityForResult(takePicIntent, 71);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.action_search:
+                break;
+            case R.id.action_select:
+                break;
+            case R.id.action_zoom:
+                break;
+            case R.id.action_reload:
+                break;
+            case R.id.action_trash:
+                break;
+            case R.id.action_vault:
+                break;
+            case R.id.action_settings:
+                break;
+            case R.id.action_about:
+                break;
+        }
+        return true;
     }
 }
