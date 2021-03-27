@@ -20,6 +20,10 @@
     <string name="action_settings">Settings</string>
     <string name="action_about">About aPum</string>
 
+    <!--  Preview options  -->
+    <string name="action_wallpaper">Set as wallpaper</string>
+    <string name="action_info">Information</string>
+
     <!--  Info text  -->
     <string name="info_no_media">No media</string>
 

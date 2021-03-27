@@ -60,6 +60,7 @@ public class OverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_overview, container,false);
+        // TODO: restore scroll state
         ViewCompat.requestApplyInsets(view);
 
         // Init controls
