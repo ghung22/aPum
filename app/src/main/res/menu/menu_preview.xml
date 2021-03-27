@@ -5,7 +5,7 @@
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
         android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_fav_black_outline"
+        android:icon="@drawable/ic_fav_outline"
         android:title="@string/fragment_favorite"
         app:showAsAction="ifRoom"
         tools:ignore="AppCompatResource"/>
