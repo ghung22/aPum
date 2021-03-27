@@ -6,10 +6,10 @@
     <string name="action_search">Search</string>
 
     <!--  Main bottom bar  -->
-    <string name="action_overview">Overview</string>
-    <string name="action_albums">Albums</string>
-    <string name="action_faces">Faces</string>
-    <string name="action_favorite">Favorite</string>
+    <string name="fragment_overview">Overview</string>
+    <string name="fragment_albums">Albums</string>
+    <string name="fragment_faces">Faces</string>
+    <string name="fragment_favorite">Favorite</string>
 
     <!--  Main options  -->
     <string name="action_select">Select items</string>

@@ -6,7 +6,7 @@
     <item
         android:id="@+id/action_favorite"
         android:icon="@drawable/ic_fav_black_outline"
-        android:title="@string/action_favorite"
+        android:title="@string/fragment_favorite"
         android:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
