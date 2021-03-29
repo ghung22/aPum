@@ -40,6 +40,10 @@
         android:title="@string/action_settings"
         android:showAsAction="never"
         tools:ignore="AppCompatResource"/>
+    <item android:id="@+id/test"
+        android:title="@string/test"
+        android:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
     <item android:id="@+id/action_about"
         android:title="@string/action_about"
         android:showAsAction="never"

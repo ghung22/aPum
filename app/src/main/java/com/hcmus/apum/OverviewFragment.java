@@ -2,7 +2,10 @@ package com.hcmus.apum;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -113,6 +116,11 @@ public class OverviewFragment extends Fragment {
                 case R.id.action_vault:
                     break;
                 case R.id.action_settings:
+                    break;
+                case R.id.test:
+                    final int THUMBSIZE = 64;
+                    //Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(imageUri.getPath()),THUMBSIZE, THUMBSIZE);
+
                     break;
                 case R.id.action_about:
                     break;
