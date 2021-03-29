@@ -6,24 +6,30 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.media.ThumbnailUtils;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ScrollView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+
+import java.util.ArrayList;
 
 public class OverviewFragment extends Fragment {
 
@@ -64,6 +70,8 @@ public class OverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_overview, container,false);
+        // TODO: restore scroll state
+        ViewCompat.requestApplyInsets(view);
 
         // Init controls
         appbar = (AppBarLayout) view.findViewById(R.id.appbar);
@@ -71,19 +79,21 @@ public class OverviewFragment extends Fragment {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 // Change icon to black/white depending on scroll state
+                Menu menu = toolbar.getMenu();
+                MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
                 if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.MULTIPLY);
+                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                    add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                    search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
                 } else {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+                    add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+                    search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
                 }
             }
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        try {
-            int scrollState = savedInstanceState.getInt("scrollState");
-            scroll.setScrollY(scrollState);
-        } catch (Exception e) {}
         adapter = new ThumbnailAdapter(getActivity(), images);
         grid = (GridView) view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
@@ -127,15 +137,9 @@ public class OverviewFragment extends Fragment {
             }
             return true;
         });
+        toolbar.setOnMenuItemClickListener(this::menuAction);
 
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        int scrollState = scroll.getScrollY();
-        outState.putInt("scrollState", scrollState);
     }
 
     private void showPreview(int pos) {
@@ -147,5 +151,35 @@ public class OverviewFragment extends Fragment {
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);
 //        finish();
+    }
+
+    private boolean menuAction(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.action_add:
+                Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                try {
+                    startActivityForResult(takePicIntent, 71);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.action_search:
+                break;
+            case R.id.action_select:
+                break;
+            case R.id.action_zoom:
+                break;
+            case R.id.action_reload:
+                break;
+            case R.id.action_trash:
+                break;
+            case R.id.action_vault:
+                break;
+            case R.id.action_settings:
+                break;
+            case R.id.action_about:
+                break;
+        }
+        return true;
     }
 }
