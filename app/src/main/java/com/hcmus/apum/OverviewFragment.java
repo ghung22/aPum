@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.media.ThumbnailUtils;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class OverviewFragment extends Fragment {
@@ -152,7 +156,9 @@ public class OverviewFragment extends Fragment {
         startActivityForResult(mainPreview, 97);
 //        finish();
     }
-
+    private static String getGalleryPath() {
+        return Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
+    }
     private boolean menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_add:
@@ -176,6 +182,13 @@ public class OverviewFragment extends Fragment {
             case R.id.action_vault:
                 break;
             case R.id.action_settings:
+                break;
+            case R.id.test:
+
+                File img = new File(Uri.parse("android.resource://" + R.class.getPackage().getName() + "/res/drawable/" + "ant.jpg").toString());
+                Toast.makeText(getContext(),getGalleryPath(),Toast.LENGTH_LONG).show();
+                //Toast.makeText(getContext(),img.toString(), Toast.LENGTH_LONG).show();
+                Log.d("Test",img.getPath());
                 break;
             case R.id.action_about:
                 break;
