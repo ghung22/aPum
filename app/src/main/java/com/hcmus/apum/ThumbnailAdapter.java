@@ -1,11 +1,13 @@
 package com.hcmus.apum;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,20 +23,20 @@ import java.util.ArrayList;
 
 public class ThumbnailAdapter extends BaseAdapter {
     private Context context;
-    int[] thumbnails;
+    ArrayList<String> thumbnails;
     LayoutInflater inflater;
 
-    public ThumbnailAdapter(Context context, int[] images) {
+    public ThumbnailAdapter(Context context, ArrayList<String> images) {
         this.context = context;
         this.thumbnails = images;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     // Number of entries in dataSet
-    public int getCount() { return thumbnails.length; }
+    public int getCount() { return thumbnails.size(); }
 
     // Get current item, its id
-    public Object getItem(int pos) { return thumbnails[pos]; }
+    public Object getItem(int pos) { return thumbnails.get(pos); }
     public long getItemId(int pos) { return pos; }
 
     // Create a view for each thumbnail
@@ -51,7 +53,17 @@ public class ThumbnailAdapter extends BaseAdapter {
             img = (ImageView) convertView;
 
             // Generate thumbnails
-            img.setImageResource(thumbnails[pos]);
+            File imgFile = new File(thumbnails.get(pos));
+            if(imgFile.exists()){
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                img.setImageBitmap(myBitmap);
+
+            }
+            else{
+                Toast.makeText(context,"TEST",Toast.LENGTH_LONG).show();
+            }
+
+//            img.setImageResource(Integer.parseInt(thumbnails.get(pos)));
 //            img.setImageBitmap(getThumbnail(pos));
             img.setId(pos);
         }
@@ -93,4 +105,5 @@ public class ThumbnailAdapter extends BaseAdapter {
         // Use the thumbnail on an ImageView or recycle it!
         return thumbnail;
     }
+
 }

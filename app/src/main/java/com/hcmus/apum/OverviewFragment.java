@@ -1,7 +1,9 @@
 package com.hcmus.apum;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -46,12 +48,13 @@ public class OverviewFragment extends Fragment {
     ThumbnailAdapter adapter;
 
     // Test values
+    private ArrayList<String> images;
     final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
             "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
-    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
-            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
-            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
-            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
+//    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
+//            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
+//            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
+//            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
 
     public OverviewFragment() {
         // Required empty public constructor
@@ -68,7 +71,30 @@ public class OverviewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+    private ArrayList<String> getImages(Context context) {
+        Uri uri;
+        Cursor cursor;
+        int column_index_data, column_index_folder_name;
+        ArrayList<String> listOfAllImages = new ArrayList<String>();
+        String absolutePathOfImage = null;
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
+        String[] projection = { MediaStore.MediaColumns.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+
+        cursor = context.getContentResolver().query(uri, projection, null,
+                null, null);
+
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+        while (cursor.moveToNext()) {
+            absolutePathOfImage = cursor.getString(column_index_data);
+
+            listOfAllImages.add(absolutePathOfImage);
+        }
+        return listOfAllImages;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -76,7 +102,7 @@ public class OverviewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_overview, container,false);
         // TODO: restore scroll state
         ViewCompat.requestApplyInsets(view);
-
+        images = getImages(getContext());
         // Init controls
         appbar = (AppBarLayout) view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -98,10 +124,10 @@ public class OverviewFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new ThumbnailAdapter(getActivity(), images);
+//        adapter = new ThumbnailAdapter(getActivity(), images);
         grid = (GridView) view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
-        grid.setAdapter(adapter);
+        grid.setAdapter(new ThumbnailAdapter(getActivity(),images));
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
 
         // Init actionbar buttons
@@ -150,7 +176,7 @@ public class OverviewFragment extends Fragment {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putStringArray("items", items);
-        bundle.putIntArray("thumbnails", images);
+        bundle.putStringArrayList("thumbnails", images);
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);

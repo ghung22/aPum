@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
+import java.util.ArrayList;
+
 public class AlbumsFragment extends Fragment {
 
     // GUI controls
@@ -32,13 +34,14 @@ public class AlbumsFragment extends Fragment {
     ThumbnailAdapter adapter;
 
     // Test values
+
     final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
             "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
-    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
-            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
-            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
-            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
-
+//    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
+//            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
+//            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
+//            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
+    private ArrayList<String> images;
     public AlbumsFragment() {
         // Required empty public constructor
     }
