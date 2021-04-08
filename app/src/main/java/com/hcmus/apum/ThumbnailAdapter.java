@@ -42,11 +42,11 @@ public class ThumbnailAdapter extends BaseAdapter {
             img.setPadding(5, 5, 5, 5);
         } else {
             img = (ImageView) convertView;
-
-            // Generate thumbnails
-            img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
-            img.setId(position);
         }
+
+        // Generate thumbnails
+        img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
+        img.setId(position);
         return img;
     }
 

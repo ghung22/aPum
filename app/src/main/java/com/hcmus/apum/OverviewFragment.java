@@ -105,7 +105,7 @@ public class OverviewFragment extends Fragment {
         adapter = new ThumbnailAdapter(getActivity());
         grid = (GridView) view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
-        grid.setAdapter(new ThumbnailAdapter(getActivity()));
+        grid.setAdapter(adapter);
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
 
         // Init actionbar buttons
