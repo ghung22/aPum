@@ -1,40 +1,41 @@
 package com.hcmus.apum;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
+    // Static objects
+    public static MediaManager mediaManager = new MediaManager();
+    public static ArrayList<String> mediaPathList;
+
     // GUI controls
-    BottomNavigationView navBar;
+    private BottomNavigationView navBar;
 
     // Fragments
-    Fragment overview = new OverviewFragment(),
-            albums = new AlbumsFragment(),
-            faces = new FacesFragment(),
-            favorite = new FavoriteFragment();
+    private final Fragment overview = new OverviewFragment();
+    private final Fragment albums = new AlbumsFragment();
+    private final Fragment faces = new FacesFragment();
+    private final Fragment favorite = new FavoriteFragment();
 
     // For use/save state values
-    Bundle savedInstanceState;
+    private Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.savedInstanceState = savedInstanceState;
+
+        // Init data
+        mediaPathList = mediaManager.getImages(this);
 
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
@@ -68,4 +69,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

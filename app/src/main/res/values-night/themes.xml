@@ -36,12 +36,4 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="OverflowActionBar" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="android:tint">@color/white</item>
-    </style>
-
-    <style name="OverflowDarkActionBar" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="android:tint">@color/black</item>
-    </style>
-
 </resources>

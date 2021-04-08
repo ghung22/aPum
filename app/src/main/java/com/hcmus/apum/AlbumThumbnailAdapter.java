@@ -1,23 +1,24 @@
 package com.hcmus.apum;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 import static com.hcmus.apum.MainActivity.mediaPathList;
 
-public class ThumbnailAdapter extends BaseAdapter {
+public class AlbumThumbnailAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
 
-    public ThumbnailAdapter(Context context) {
+    public AlbumThumbnailAdapter(Context context) {
         this.context = context;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -29,24 +30,17 @@ public class ThumbnailAdapter extends BaseAdapter {
     public Object getItem(int pos) { return mediaPathList.get(pos); }
     public long getItemId(int pos) { return pos; }
 
-    // Create a view for each thumbnail
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView img = null;
-        // Use existing convertView in cache (if possible)
-        if (convertView == null) {
-            img = new ImageView(context);
-            int gridSize = context.getResources().getDimensionPixelOffset(R.dimen.gridview_size);
-            img.setLayoutParams(new GridView.LayoutParams(gridSize, gridSize));
-            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            img.setPadding(5, 5, 5, 5);
-        } else {
-            img = (ImageView) convertView;
+        // Get elements
+        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+        View row = inflater.inflate(R.layout.layout_albums_listview, null);  // Preview popup
+        TextView name = (TextView) row.findViewById(R.id.name);
+        ImageView img = (ImageView) row.findViewById(R.id.icon);
 
-            // Generate thumbnails
-            img.setImageBitmap(mediaManager.createThumbnail(mediaPathList.get(position)));
-            img.setId(position);
-        }
-        return img;
+        // Set properties of elements
+        img.setImageBitmap(mediaManager.createThumbnail(mediaPathList.get(position)));
+        row.setId(position);
+        return(row);
     }
-
 }

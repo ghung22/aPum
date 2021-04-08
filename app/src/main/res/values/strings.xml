@@ -25,6 +25,13 @@
     <string name="action_wallpaper">Set as wallpaper</string>
     <string name="action_info">Information</string>
 
+    <!--  Description text  -->
+    <string name="des_album_img_btn">Select album</string>
+
+    <!--  Default text  -->
+    <string name="default_album_name">Null album</string>
+    <string name="default_album_count">13</string>
+
     <!--  Info text  -->
     <string name="info_no_media">No media</string>
 

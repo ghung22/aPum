@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -37,19 +38,21 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.mediaManager;
+import static com.hcmus.apum.MainActivity.mediaPathList;
+
 public class OverviewFragment extends Fragment {
 
     // GUI controls
-    AppBarLayout appbar;
-    CollapsingToolbarLayout collapsingToolbar;
-    Toolbar toolbar;
-    NestedScrollView scroll;
-    GridView grid;
-    ThumbnailAdapter adapter;
+    private AppBarLayout appbar;
+    private CollapsingToolbarLayout collapsingToolbar;
+    private Toolbar toolbar;
+    private NestedScrollView scroll;
+    private GridView grid;
+    private ThumbnailAdapter adapter;
 
     // Test values
-    private ArrayList<String> images;
-    final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
+    final String[] items = {"Ant", "Baby", "Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
             "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
 //    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
 //            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
@@ -71,38 +74,14 @@ public class OverviewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-    private ArrayList<String> getImages(Context context) {
-        Uri uri;
-        Cursor cursor;
-        int column_index_data, column_index_folder_name;
-        ArrayList<String> listOfAllImages = new ArrayList<String>();
-        String absolutePathOfImage = null;
-        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-        String[] projection = { MediaStore.MediaColumns.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
-
-        cursor = context.getContentResolver().query(uri, projection, null,
-                null, null);
-
-        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-        while (cursor.moveToNext()) {
-            absolutePathOfImage = cursor.getString(column_index_data);
-
-            listOfAllImages.add(absolutePathOfImage);
-        }
-        return listOfAllImages;
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_overview, container,false);
-        // TODO: restore scroll state
-        ViewCompat.requestApplyInsets(view);
-        images = getImages(getContext());
+        View view = inflater.inflate(R.layout.fragment_overview, container, false);
+        ViewCompat.requestApplyInsets(view); // TODO: restore scroll state
+
         // Init controls
         appbar = (AppBarLayout) view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -124,49 +103,15 @@ public class OverviewFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-//        adapter = new ThumbnailAdapter(getActivity(), images);
+        adapter = new ThumbnailAdapter(getActivity());
         grid = (GridView) view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
-        grid.setAdapter(new ThumbnailAdapter(getActivity(),images));
+        grid.setAdapter(new ThumbnailAdapter(getActivity()));
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
 
         // Init actionbar buttons
         toolbar = (Toolbar) view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
-        toolbar.setOnMenuItemClickListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.action_add:
-                    Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    try {
-                        startActivityForResult(takePicIntent, 71);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
-                    }
-                    break;
-                case R.id.action_search:
-                    break;
-                case R.id.action_select:
-                    break;
-                case R.id.action_zoom:
-                    break;
-                case R.id.action_reload:
-                    break;
-                case R.id.action_trash:
-                    break;
-                case R.id.action_vault:
-                    break;
-                case R.id.action_settings:
-                    break;
-                case R.id.test:
-                    final int THUMBSIZE = 64;
-                    //Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(imageUri.getPath()),THUMBSIZE, THUMBSIZE);
-
-                    break;
-                case R.id.action_about:
-                    break;
-            }
-            return true;
-        });
         toolbar.setOnMenuItemClickListener(this::menuAction);
 
         return view;
@@ -176,15 +121,17 @@ public class OverviewFragment extends Fragment {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putStringArray("items", items);
-        bundle.putStringArrayList("thumbnails", images);
+        bundle.putStringArrayList("thumbnails", mediaPathList);
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);
 //        finish();
     }
+
     private static String getGalleryPath() {
         return Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
     }
+
     private boolean menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_add:
@@ -210,11 +157,10 @@ public class OverviewFragment extends Fragment {
             case R.id.action_settings:
                 break;
             case R.id.test:
-
                 File img = new File(Uri.parse("android.resource://" + R.class.getPackage().getName() + "/res/drawable/" + "ant.jpg").toString());
-                Toast.makeText(getContext(),getGalleryPath(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getGalleryPath(), Toast.LENGTH_LONG).show();
                 //Toast.makeText(getContext(),img.toString(), Toast.LENGTH_LONG).show();
-                Log.d("Test",img.getPath());
+                Log.d("Test", img.getPath());
                 break;
             case R.id.action_about:
                 break;

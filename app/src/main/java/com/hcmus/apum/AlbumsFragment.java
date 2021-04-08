@@ -26,22 +26,14 @@ import java.util.ArrayList;
 public class AlbumsFragment extends Fragment {
 
     // GUI controls
-    AppBarLayout appbar;
-    CollapsingToolbarLayout collapsingToolbar;
-    Toolbar toolbar;
-    NestedScrollView scroll;
-    ListView list;
-    ThumbnailAdapter adapter;
-
-    // Test values
-
-    final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
-            "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
-//    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
-//            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
-//            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
-//            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
+    private AppBarLayout appbar;
+    private CollapsingToolbarLayout collapsingToolbar;
+    private Toolbar toolbar;
+    private NestedScrollView scroll;
+    private ListView list;
+    private AlbumThumbnailAdapter adapter;
     private ArrayList<String> images;
+
     public AlbumsFragment() {
         // Required empty public constructor
     }
@@ -79,7 +71,7 @@ public class AlbumsFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new ThumbnailAdapter(getActivity(), images);
+        adapter = new AlbumThumbnailAdapter(getActivity());
         list = (ListView) view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);

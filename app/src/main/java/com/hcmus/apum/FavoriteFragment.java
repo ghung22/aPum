@@ -78,7 +78,7 @@ public class FavoriteFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new ThumbnailAdapter(getActivity(), images);
+        adapter = new ThumbnailAdapter(getActivity());
         list = (ListView) view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);
