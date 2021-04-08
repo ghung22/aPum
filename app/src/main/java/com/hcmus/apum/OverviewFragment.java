@@ -39,7 +39,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
-import static com.hcmus.apum.MainActivity.mediaPathList;
 
 public class OverviewFragment extends Fragment {
 
@@ -121,7 +120,7 @@ public class OverviewFragment extends Fragment {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putStringArray("items", items);
-        bundle.putStringArrayList("thumbnails", mediaPathList);
+        bundle.putStringArrayList("thumbnails", mediaManager.getLocations());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);

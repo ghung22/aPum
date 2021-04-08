@@ -12,22 +12,23 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
-import static com.hcmus.apum.MainActivity.mediaPathList;
 
 public class AlbumThumbnailAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
+    private final ArrayList<String> mediaList;
 
     public AlbumThumbnailAdapter(Context context) {
         this.context = context;
+        this.mediaList = mediaManager.getLocations();
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     // Number of entries in dataSet
-    public int getCount() { return mediaPathList.size(); }
+    public int getCount() { return mediaList.size(); }
 
     // Get current item, its id
-    public Object getItem(int pos) { return mediaPathList.get(pos); }
+    public Object getItem(int pos) { return mediaList.get(pos); }
     public long getItemId(int pos) { return pos; }
 
     @Override
@@ -39,7 +40,7 @@ public class AlbumThumbnailAdapter extends BaseAdapter {
         ImageView img = (ImageView) row.findViewById(R.id.icon);
 
         // Set properties of elements
-        img.setImageBitmap(mediaManager.createThumbnail(mediaPathList.get(position)));
+        img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
         row.setId(position);
         return(row);
     }

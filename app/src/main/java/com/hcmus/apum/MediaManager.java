@@ -11,8 +11,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class MediaManager {
+    private ArrayList<String> locations;
 
-    public ArrayList<String> getImages(Context context) {
+    public void updateLocations(Context context) {
         int column_index_data, column_index_folder_name;
         ArrayList<String> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage = null;
@@ -28,7 +29,11 @@ public class MediaManager {
             absolutePathOfImage = cursor.getString(column_index_data);
             listOfAllImages.add(absolutePathOfImage);
         }
-        return listOfAllImages;
+        locations = listOfAllImages;
+    }
+
+    public ArrayList<String> getLocations() {
+        return locations;
     }
 
     public Bitmap createThumbnail(String path) {

@@ -44,7 +44,7 @@ public class PreviewActivity extends AppCompatActivity {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imgPreview.setImageBitmap(myBitmap);
 
-        }else{
+        } else {
 
         }
 //        imgPreview.setImageResource(thumbnails.get(pos));

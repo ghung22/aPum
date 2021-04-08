@@ -11,22 +11,23 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
-import static com.hcmus.apum.MainActivity.mediaPathList;
 
 public class ThumbnailAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
+    private final ArrayList<String> mediaList;
 
     public ThumbnailAdapter(Context context) {
         this.context = context;
+        this.mediaList = mediaManager.getLocations();
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     // Number of entries in dataSet
-    public int getCount() { return mediaPathList.size(); }
+    public int getCount() { return mediaList.size(); }
 
     // Get current item, its id
-    public Object getItem(int pos) { return mediaPathList.get(pos); }
+    public Object getItem(int pos) { return mediaList.get(pos); }
     public long getItemId(int pos) { return pos; }
 
     // Create a view for each thumbnail
@@ -43,7 +44,7 @@ public class ThumbnailAdapter extends BaseAdapter {
             img = (ImageView) convertView;
 
             // Generate thumbnails
-            img.setImageBitmap(mediaManager.createThumbnail(mediaPathList.get(position)));
+            img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
             img.setId(position);
         }
         return img;

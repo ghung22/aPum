@@ -8,13 +8,10 @@ import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity {
 
     // Static objects
     public static MediaManager mediaManager = new MediaManager();
-    public static ArrayList<String> mediaPathList;
 
     // GUI controls
     private BottomNavigationView navBar;
@@ -35,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         this.savedInstanceState = savedInstanceState;
 
         // Init data
-        mediaPathList = mediaManager.getImages(this);
+        mediaManager.updateLocations(this);
 
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
