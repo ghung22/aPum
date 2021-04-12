@@ -7,7 +7,7 @@
         android:id="@+id/action_favorite"
         android:icon="@drawable/ic_fav_outline"
         android:title="@string/fragment_favorite"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
     <!-- Settings, should always be in the overflow -->

@@ -13,4 +13,5 @@
     <ImageView android:id="@+id/imgPreview"
         android:layout_width="match_parent" android:layout_height="0dip"
         android:layout_gravity="center|fill" android:layout_weight="2"/>
+
 </LinearLayout>
