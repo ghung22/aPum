@@ -24,6 +24,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class PreviewActivity extends AppCompatActivity {
 
@@ -32,9 +33,6 @@ public class PreviewActivity extends AppCompatActivity {
     AppBarLayout appbar;
     // Elements
     ImageView imgPreview;
-    public ArrayList<String> images_fav;
-    ArrayList<String> thumbnails;
-    int pos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +46,8 @@ public class PreviewActivity extends AppCompatActivity {
         Intent mainPreview = getIntent();
         Bundle bundle = mainPreview.getExtras();
         String[] items = bundle.getStringArray("items");
-        thumbnails = bundle.getStringArrayList("thumbnails");
-        pos = bundle.getInt("position");
+        ArrayList<String> thumbnails = bundle.getStringArrayList("thumbnails");
+        int pos = bundle.getInt("position");
         File imgFile = new File(thumbnails.get(pos));
         if(imgFile.exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
@@ -79,12 +77,26 @@ public class PreviewActivity extends AppCompatActivity {
         return true;
     }
     public boolean onOptionsItemSelected(MenuItem menuItem) {
+        Intent mainPreview = getIntent();
+        Bundle bundle = mainPreview.getExtras();
+        String[] items = bundle.getStringArray("items");
+        ArrayList<String> thumbnails = bundle.getStringArrayList("thumbnails");
+        int pos = bundle.getInt("position");
+        File imgFile = new File(thumbnails.get(pos));
+        if(imgFile.exists()){
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            imgPreview.setImageBitmap(myBitmap);
+
+        } else {
+
+        }
         switch (menuItem.getItemId()) {
             case R.id.action_favorite:
+                mediaManager.addFavorites(thumbnails, pos);
+                Toast.makeText(this, "oke", Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_info:
-                images_fav.add(thumbnails.get(pos));
-                Toast.makeText(this, "oke", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, pos, Toast.LENGTH_LONG).show();
                 //Toast.makeText(getContext(),img.toString(), Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_wallpaper:
