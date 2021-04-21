@@ -39,7 +39,7 @@ public class OverviewAdapter extends BaseAdapter {
     // Create a view for each thumbnail
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView img = null;
+        ImageView img;
         int gridSize = context.getResources().getDimensionPixelOffset(R.dimen.gridview_size);
         // Use existing convertView in cache (if possible)
         if (convertView == null) {
@@ -53,9 +53,9 @@ public class OverviewAdapter extends BaseAdapter {
 
         // Generate thumbnails
 //        img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
-        Picasso p = Picasso.get();
-        p.setLoggingEnabled(true);
-        p.load(new File(mediaList.get(position)))
+        Picasso picasso = Picasso.get();
+        picasso.setLoggingEnabled(true);
+        picasso.load(new File(mediaList.get(position)))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()
