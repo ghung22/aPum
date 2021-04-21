@@ -26,7 +26,8 @@
     <string name="action_info">Information</string>
 
     <!--  Description text  -->
-    <string name="des_album_img_btn">Select album</string>
+    <string name="des_album_img">Select album</string>
+    <string name="des_grid_img">Select media</string>
 
     <!--  Default text  -->
     <string name="default_album_name">Null album</string>

@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,7 +30,7 @@ public class AlbumsFragment extends Fragment {
     private Toolbar toolbar;
     private NestedScrollView scroll;
     private ListView list;
-    private AlbumThumbnailAdapter adapter;
+    private AlbumAdapter adapter;
     private ArrayList<String> images;
 
     public AlbumsFragment() {
@@ -57,27 +56,17 @@ public class AlbumsFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_albums, container, false);
 
         // Init controls
-        appbar = (AppBarLayout) view.findViewById(R.id.appbar);
-        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                // Change icon to black/white depending on scroll state
-                if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.MULTIPLY);
-                } else {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-                }
-            }
-        });
-        collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
-        scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new AlbumThumbnailAdapter(getActivity());
-        list = (ListView) view.findViewById(R.id.list);
+        appbar = view.findViewById(R.id.appbar);
+        appbar.addOnOffsetChangedListener(this::menuRecolor);
+        collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
+        scroll = view.findViewById(R.id.scroll);
+        adapter = new AlbumAdapter(getActivity());
+        list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);
 
         // Init actionbar buttons
-        toolbar = (Toolbar) view.findViewById(R.id.menu_main);
+        toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setOnMenuItemClickListener(this::menuAction);
 
@@ -112,5 +101,14 @@ public class AlbumsFragment extends Fragment {
                 break;
         }
         return true;
+    }
+
+    private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
+        // Change icon to black/white depending on scroll state
+        if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.MULTIPLY);
+        } else {
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        }
     }
 }
