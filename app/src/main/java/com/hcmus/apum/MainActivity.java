@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Init data
         mediaManager.updateLocations(this);
+        mediaManager.updateFavoriteLocations(this);
 
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();

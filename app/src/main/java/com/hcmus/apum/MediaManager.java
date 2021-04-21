@@ -42,12 +42,13 @@ public class MediaManager {
         this.images = images;
         this.albums = albums;
     }
+    public void updateFavoriteLocations(Context context) {
+        ArrayList<String> listFavorites = new ArrayList<>();
+        favorites = listFavorites;
+    }
 
     public void addFavorites(ArrayList<String> i, int pos){
-        ArrayList<String> listFavorites = new ArrayList<>();
-        //String absolutePathOfImage = null;
-        listFavorites.add(i.get(pos));
-        favorites = listFavorites;
+        favorites.add(i.get(pos));
     }
 
     public void removeFavorites(ArrayList<String> i, int pos){
