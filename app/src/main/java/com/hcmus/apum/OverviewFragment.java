@@ -69,34 +69,18 @@ public class OverviewFragment extends Fragment {
         ViewCompat.requestApplyInsets(view); // TODO: restore scroll state
 
         // Init controls
-        appbar = (AppBarLayout) view.findViewById(R.id.appbar);
-        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                // Change icon to black/white depending on scroll state
-                Menu menu = toolbar.getMenu();
-                MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
-                if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-                    add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-                    search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-                } else {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-                    add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-                    search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-                }
-            }
-        });
-        collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
-        scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new OverviewAdapter(getActivity());
-        grid = (GridView) view.findViewById(R.id.grid);
+        appbar = view.findViewById(R.id.appbar);
+        appbar.addOnOffsetChangedListener(this::menuRecolor);
+        collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
+        scroll = view.findViewById(R.id.scroll);
+        adapter = new OverviewAdapter(getActivity(), mediaManager.getImages());
+        grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
         grid.setAdapter(adapter);
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
 
         // Init actionbar buttons
-        toolbar = (Toolbar) view.findViewById(R.id.menu_main);
+        toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setOnMenuItemClickListener(this::menuAction);
 
@@ -152,5 +136,20 @@ public class OverviewFragment extends Fragment {
                 break;
         }
         return true;
+    }
+
+    private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
+        // Change icon to black/white depending on scroll state
+        Menu menu = toolbar.getMenu();
+        MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
+        if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        } else {
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+        }
     }
 }

@@ -22,6 +22,8 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.mediaManager;
+
 public class AlbumsFragment extends Fragment {
 
     // GUI controls
@@ -60,7 +62,7 @@ public class AlbumsFragment extends Fragment {
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new AlbumAdapter(getActivity());
+        adapter = new AlbumAdapter(getActivity(), mediaManager.getAlbums());
         list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);

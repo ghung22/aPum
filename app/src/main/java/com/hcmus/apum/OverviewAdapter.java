@@ -22,9 +22,9 @@ public class OverviewAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
 
-    public OverviewAdapter(Context context) {
+    public OverviewAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
-        this.mediaList = mediaManager.getImages();
+        this.mediaList = mediaList;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

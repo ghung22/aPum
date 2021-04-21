@@ -6,45 +6,60 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class MediaManager {
-    private ArrayList<String> images;
-    private ArrayList<String> favorites;
+    private ArrayList<String> images, albums, favorites;
+    private ArrayList<Integer> albumCounts;
 
     public void updateLocations(Context context) {
-        int column_index_data, column_index_folder_name;
-        ArrayList<String> listOfAllImages = new ArrayList<>();
-        String absolutePathOfImage;
+        ArrayList<String> images = new ArrayList<>(),
+                albums = new ArrayList<>();
         Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-
         String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
-        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
         while (cursor.moveToNext()) {
-            absolutePathOfImage = cursor.getString(column_index_data);
-            listOfAllImages.add(absolutePathOfImage);
+            String imagePath = cursor.getString(column_index_data),
+                    albumPath = "";
+            String[] folders = imagePath.split("/");
+            for (int i = 0; i < folders.length - 1; ++i) {
+                albumPath += folders[i];
+                if (i < folders.length - 2) {
+                    albumPath += "/";
+                }
+            }
+
+            images.add(imagePath);
+            if (!albums.contains(albumPath)) {
+                albums.add(albumPath);
+            }
         }
-        images = listOfAllImages;
+        this.images = images;
+        this.albums = albums;
     }
+
     public void addFavorites(ArrayList<String> i, int pos){
         ArrayList<String> listFavorites = new ArrayList<>();
         //String absolutePathOfImage = null;
         listFavorites.add(i.get(pos));
         favorites = listFavorites;
     }
+
     public void removeFavorites(ArrayList<String> i, int pos){
         favorites.remove(i.get(pos));
     }
-    public ArrayList<String> getImages() {
-        return images;
-    }
-    public ArrayList<String> getFavorites() {return favorites; }
+
+    public ArrayList<String> getImages() { return images; }
+    public ArrayList<String> getAlbums() { return  albums; }
+    public ArrayList<String> getFavorites() { return favorites; }
+
+    public ArrayList<Integer> getAlbumCounts() { return albumCounts; }
+
     public Bitmap createThumbnail(String path) {
         File img = new File(path);
         if (!img.exists()) {
