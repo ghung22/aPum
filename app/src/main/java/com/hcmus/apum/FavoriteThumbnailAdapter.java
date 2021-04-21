@@ -19,7 +19,7 @@ public class FavoriteThumbnailAdapter extends BaseAdapter {
 
     public FavoriteThumbnailAdapter(Context context) {
         this.context = context;
-        this.fav_images = mediaManager.getFavoriteLocations();
+        this.fav_images = mediaManager.getFavorites();
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

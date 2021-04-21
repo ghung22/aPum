@@ -11,13 +11,13 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class MediaManager {
-    private ArrayList<String> locations;
-    private ArrayList<String> fav_images;
+    private ArrayList<String> images;
+    private ArrayList<String> favorites;
 
     public void updateLocations(Context context) {
         int column_index_data, column_index_folder_name;
         ArrayList<String> listOfAllImages = new ArrayList<>();
-        String absolutePathOfImage = null;
+        String absolutePathOfImage;
         Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
@@ -30,21 +30,21 @@ public class MediaManager {
             absolutePathOfImage = cursor.getString(column_index_data);
             listOfAllImages.add(absolutePathOfImage);
         }
-        locations = listOfAllImages;
+        images = listOfAllImages;
     }
     public void addFavorites(ArrayList<String> i, int pos){
         ArrayList<String> listFavorites = new ArrayList<>();
         //String absolutePathOfImage = null;
         listFavorites.add(i.get(pos));
-        fav_images = listFavorites;
+        favorites = listFavorites;
     }
     public void removeFavorites(ArrayList<String> i, int pos){
-        fav_images.remove(i.get(pos));
+        favorites.remove(i.get(pos));
     }
-    public ArrayList<String> getLocations() {
-        return locations;
+    public ArrayList<String> getImages() {
+        return images;
     }
-    public ArrayList<String> getFavoriteLocations() {return fav_images; }
+    public ArrayList<String> getFavorites() {return favorites; }
     public Bitmap createThumbnail(String path) {
         File img = new File(path);
         if (!img.exists()) {

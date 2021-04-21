@@ -107,7 +107,7 @@ public class OverviewFragment extends Fragment {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
 //        bundle.putStringArray("items", items);
-        bundle.putStringArrayList("thumbnails", mediaManager.getLocations());
+        bundle.putStringArrayList("thumbnails", mediaManager.getImages());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);

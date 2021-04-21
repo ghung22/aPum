@@ -25,7 +25,7 @@ public class AlbumAdapter extends BaseAdapter {
 
     public AlbumAdapter(Context context) {
         this.context = context;
-        this.mediaList = mediaManager.getLocations();
+        this.mediaList = mediaManager.getImages();
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
