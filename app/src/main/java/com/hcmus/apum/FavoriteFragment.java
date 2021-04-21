@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,7 +31,7 @@ public class FavoriteFragment extends Fragment {
     Toolbar toolbar;
     NestedScrollView scroll;
     ListView list;
-    OverviewAdapter adapter;
+    FavoriteThumbnailAdapter adapter;
 
     // Test values
     final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
@@ -77,7 +78,7 @@ public class FavoriteFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new OverviewAdapter(getActivity());
+        adapter = new FavoriteThumbnailAdapter(getActivity());
         list = (ListView) view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);

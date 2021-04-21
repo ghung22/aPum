@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class MediaManager {
     private ArrayList<String> locations;
+    private ArrayList<String> fav_images;
 
     public void updateLocations(Context context) {
         int column_index_data, column_index_folder_name;
@@ -31,11 +32,19 @@ public class MediaManager {
         }
         locations = listOfAllImages;
     }
-
+    public void addFavorites(ArrayList<String> i, int pos){
+        ArrayList<String> listFavorites = new ArrayList<>();
+        //String absolutePathOfImage = null;
+        listFavorites.add(i.get(pos));
+        fav_images = listFavorites;
+    }
+    public void removeFavorites(ArrayList<String> i, int pos){
+        fav_images.remove(i.get(pos));
+    }
     public ArrayList<String> getLocations() {
         return locations;
     }
-
+    public ArrayList<String> getFavoriteLocations() {return fav_images; }
     public Bitmap createThumbnail(String path) {
         File img = new File(path);
         if (!img.exists()) {
