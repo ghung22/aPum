@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
 import android.graphics.Bitmap;
@@ -11,8 +12,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -122,11 +125,13 @@ public class PreviewActivity extends AppCompatActivity {
                 mediaManager.addFavorites(thumbnails, pos, db_fav);
                 if(mediaManager.checkFavorites(thumbnails,pos)) {
                     fav.getIcon().setColorFilter(this.getColor(R.color.red), PorterDuff.Mode.SRC_IN);
+                    Toast.makeText(this, "add", Toast.LENGTH_LONG).show();
                 }else {
                     fav.getIcon().setColorFilter(this.getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                    Toast.makeText(this, "remove", Toast.LENGTH_LONG).show();
                 }
 //                fav_ic.setTint(Color.parseColor("#FF0000"));
-                Toast.makeText(this, "oke", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "oke", Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_info:
                 Toast.makeText(this, pos, Toast.LENGTH_LONG).show();
@@ -134,8 +139,29 @@ public class PreviewActivity extends AppCompatActivity {
                 break;
             case R.id.action_wallpaper:
                 break;
+            case R.id.action_delete:
+                deleteImg(thumbnails.get(pos));
+                break;
         }
         return true;
     }
-
+    public void deleteImg(String path_img){
+        File f_del = new File(path_img);
+        if(f_del.exists()){
+            if(f_del.delete()){
+                Log.e("Delete", "file Deleted :" + path_img);
+                callBroadCast();
+            }else{
+                Log.e("Delete", "file not Deleted :" + path_img);
+            }
+        }
+    }
+    public void callBroadCast() {
+        MediaScannerConnection.scanFile(this, new String[]{Environment.getExternalStorageDirectory().toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+            public void onScanCompleted(String path, Uri uri) {
+                Log.e("ExternalStorage", "Scanned " + path + ":");
+                Log.e("ExternalStorage", "-> uri=" + uri);
+            }
+        });
+    }
 }

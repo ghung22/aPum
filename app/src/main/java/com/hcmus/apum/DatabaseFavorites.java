@@ -13,6 +13,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,6 +103,16 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         if (dbFavorite != null)
             dbFavorite.close();
         super.close();
+    }
+    public boolean checkDataExists(String item){
+        String sql_check = "Select * from " + TABLE_NAME + " where " + COL2 + "=" + item;
+        Cursor cursor = dbFavorite.rawQuery(sql_check, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
     public boolean addData (String item){
         SQLiteDatabase db = this.getWritableDatabase();

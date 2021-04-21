@@ -1,10 +1,14 @@
 package com.hcmus.apum;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
@@ -65,6 +69,7 @@ public class MediaManager {
         boolean check = thumbs.contains(thumbs.get(pos));
         return check;
     }
+
     public ArrayList<String> getImages() { return images; }
     public ArrayList<String> getAlbums() { return  albums; }
     public ArrayList<String> getFavorites() { return favorites; }
@@ -109,4 +114,5 @@ public class MediaManager {
         // Use the thumbnail on an ImageView or recycle it!
         return thumbnail;
     }
+
 }
