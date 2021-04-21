@@ -52,9 +52,8 @@ public class OverviewAdapter extends BaseAdapter {
         }
 
         // Generate thumbnails
-//        img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
         Picasso picasso = Picasso.get();
-        picasso.setLoggingEnabled(true);
+        // picasso.setLoggingEnabled(true);
         picasso.load(new File(mediaList.get(position)))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
