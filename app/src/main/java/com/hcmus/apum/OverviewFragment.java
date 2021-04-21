@@ -1,19 +1,11 @@
 package com.hcmus.apum;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.media.ThumbnailUtils;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
@@ -23,7 +15,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +22,12 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -48,15 +39,11 @@ public class OverviewFragment extends Fragment {
     private Toolbar toolbar;
     private NestedScrollView scroll;
     private GridView grid;
-    private ThumbnailAdapter adapter;
+    private RecyclerView recycler;
+    private OverviewAdapter adapter;
+//    private OverviewAdapter adapter;
 
     // Test values
-    final String[] items = {"Ant", "Baby", "Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
-            "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
-//    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
-//            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
-//            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
-//            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
 
     public OverviewFragment() {
         // Required empty public constructor
@@ -102,7 +89,7 @@ public class OverviewFragment extends Fragment {
         });
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new ThumbnailAdapter(getActivity());
+        adapter = new OverviewAdapter(getActivity());
         grid = (GridView) view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.empty));
         grid.setAdapter(adapter);
@@ -119,7 +106,7 @@ public class OverviewFragment extends Fragment {
     private void showPreview(int pos) {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putStringArray("items", items);
+//        bundle.putStringArray("items", items);
         bundle.putStringArrayList("thumbnails", mediaManager.getLocations());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);

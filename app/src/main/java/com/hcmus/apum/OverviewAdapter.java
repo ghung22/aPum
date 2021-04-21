@@ -1,23 +1,29 @@
 package com.hcmus.apum;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class ThumbnailAdapter extends BaseAdapter {
+public class OverviewAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
 
-    public ThumbnailAdapter(Context context) {
+    public OverviewAdapter(Context context) {
         this.context = context;
         this.mediaList = mediaManager.getLocations();
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -31,12 +37,13 @@ public class ThumbnailAdapter extends BaseAdapter {
     public long getItemId(int pos) { return pos; }
 
     // Create a view for each thumbnail
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView img = null;
+        int gridSize = context.getResources().getDimensionPixelOffset(R.dimen.gridview_size);
         // Use existing convertView in cache (if possible)
         if (convertView == null) {
             img = new ImageView(context);
-            int gridSize = context.getResources().getDimensionPixelOffset(R.dimen.gridview_size);
             img.setLayoutParams(new GridView.LayoutParams(gridSize, gridSize));
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             img.setPadding(5, 5, 5, 5);
@@ -45,7 +52,15 @@ public class ThumbnailAdapter extends BaseAdapter {
         }
 
         // Generate thumbnails
-        img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
+//        img.setImageBitmap(mediaManager.createThumbnail(mediaList.get(position)));
+        Picasso p = Picasso.get();
+        p.setLoggingEnabled(true);
+        p.load(new File(mediaList.get(position)))
+                .fit()
+                .config(Bitmap.Config.RGB_565)
+                .centerInside()
+                .placeholder(R.drawable.ic_image)
+                .into(img);
         img.setId(position);
         return img;
     }

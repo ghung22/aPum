@@ -59,6 +59,7 @@ public class MediaManager {
 
             // Load part of image to make thumbnail
             Bitmap thumbnail = BitmapFactory.decodeFile(img.getAbsolutePath(), bitmapOpt);
+//            thumbnail = ThumbnailUtils.extractThumbnail(thumbnail,100,100);
 
         // Save the thumbnail
 //        try {
