@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class MediaManager {
     private ArrayList<String> images, albums, favorites;
     private ArrayList<Integer> albumCounts;
-
+    DatabaseFavorites db;
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
                 albums = new ArrayList<>();
@@ -44,17 +45,26 @@ public class MediaManager {
     }
     public void updateFavoriteLocations(Context context) {
         ArrayList<String> listFavorites = new ArrayList<>();
+        //listFavorites = db.getAllFavorite();
         favorites = listFavorites;
     }
 
-    public void addFavorites(ArrayList<String> i, int pos){
-        favorites.add(i.get(pos));
+    public void addFavorites(ArrayList<String> thumbs, int pos, DatabaseFavorites db){
+        if(!favorites.contains(thumbs.get(pos))){
+            favorites.add(thumbs.get(pos));
+            db.addData(thumbs.get(pos));
+        }else{
+            favorites.remove(thumbs.get(pos));
+            db.removeData(thumbs.get(pos));
+        }
+        //System.out.println("TEST 123 " + db.addData(thumbs.get(pos)));
+        //db.addData(favorites.get(favorites.size()-1));
+        //db.addData(i.get(pos));
     }
-
-    public void removeFavorites(ArrayList<String> i, int pos){
-        favorites.remove(i.get(pos));
+    public boolean checkFavorites(ArrayList<String> thumbs, int pos){
+        boolean check = thumbs.contains(thumbs.get(pos));
+        return check;
     }
-
     public ArrayList<String> getImages() { return images; }
     public ArrayList<String> getAlbums() { return  albums; }
     public ArrayList<String> getFavorites() { return favorites; }

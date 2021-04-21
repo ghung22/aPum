@@ -4,9 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     // For use/save state values
     private Bundle savedInstanceState;
-
+    //Database
+    DatabaseFavorites db_fav;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +43,18 @@ public class MainActivity extends AppCompatActivity {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavoriteLocations(this);
-
+        //Database
+        db_fav = new DatabaseFavorites(this);
+        try {
+            db_fav.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+        try {
+            db_fav.openDataBase();
+        } catch (SQLException sqle) {
+            throw sqle;
+        }
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
         ft_main.replace(R.id.frame, overview);
@@ -67,7 +86,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
     }
-
+//    public void AddData(String newEntry){
+//        insertData = db_fav.addData(newEntry);
+//        if(insertData){
+//            debugMsg("added successfully data");
+//        }else{
+//            debugMsg("Add Data false");
+//        }
+//    }
+//    private void debugMsg(String msg){
+//        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+//    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
