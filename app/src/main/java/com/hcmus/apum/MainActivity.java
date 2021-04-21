@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Static objects
     public static MediaManager mediaManager = new MediaManager();
+    public static Boolean debugEnabled = true;
 
     // GUI controls
     private BottomNavigationView navBar;

@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class OverviewAdapter extends BaseAdapter {
@@ -53,7 +54,7 @@ public class OverviewAdapter extends BaseAdapter {
 
         // Generate thumbnails
         Picasso picasso = Picasso.get();
-        // picasso.setLoggingEnabled(true);
+        picasso.setLoggingEnabled(debugEnabled);
         picasso.load(new File(mediaList.get(position)))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
