@@ -57,7 +57,6 @@ public class MediaManager {
     public ArrayList<String> getImages() { return images; }
     public ArrayList<String> getAlbums() { return  albums; }
     public ArrayList<String> getFavorites() { return favorites; }
-
     public ArrayList<Integer> getAlbumCounts() { return albumCounts; }
 
     public Bitmap createThumbnail(String path) {
