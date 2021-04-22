@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class MediaManager {
-    private ArrayList<String> images, albums, favorites;
+    private ArrayList<String> images, albums, faces, favorites;
     private ArrayList<Integer> albumCounts;
     DatabaseFavorites db;
 
@@ -120,8 +120,29 @@ public class MediaManager {
     }
 
     public ArrayList<String> search(String query, String scope) {
-        // TODO: Search images, albums, favorites
-        ArrayList<String> results = new ArrayList<>();
+        ArrayList<String> results = new ArrayList<>(),
+            scopedList;
+        switch (scope) {
+            case "overview":
+                scopedList = images;
+                break;
+            case "albums":
+                scopedList = albums;
+                break;
+            case "faces":
+                scopedList = faces;
+                break;
+            case "favorite":
+                scopedList = favorites;
+                break;
+            default:
+                return results;
+        }
+        for (String i: scopedList) {
+            if (i.substring(i.lastIndexOf("/") + 1).contains(query)) {
+                results.add(i);
+            }
+        }
 
         return results;
     }

@@ -24,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import androidx.appcompat.widget.SearchView;
+
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -33,6 +35,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -101,12 +104,35 @@ public class OverviewFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_main, menu);
 
+        // Get controls
         searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) searchItem.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        // Search focused/unfocused events
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(final MenuItem item) {
+                return menuShow(menu, false);
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(final MenuItem item) {
+                return menuShow(menu, true);
+            }
+        });
+
+        // Search query events
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
+                ArrayList<String> results = mediaManager.search(query, "overview");
+                if (!results.isEmpty()) {
+                    showSearch(query, results);
+                } else {
+                    Toast.makeText(getContext(), getContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
 
@@ -115,6 +141,16 @@ public class OverviewFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        // Init icons
+        searchView.setSubmitButtonEnabled(true);
+        ImageView submitIcon = searchView.findViewById(androidx.appcompat.R.id.search_go_btn);
+        submitIcon.setImageResource(R.drawable.ic_search);
     }
 
     private void showPreview(int pos) {
@@ -126,6 +162,16 @@ public class OverviewFragment extends Fragment {
         startActivityForResult(mainPreview, 97);
     }
 
+    private void showSearch(String query, ArrayList<String> results) {
+        Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("query", query);
+        bundle.putStringArrayList("results", results);
+        bundle.putString("scope", "overview");
+        mainSearch.putExtras(bundle);
+        startActivityForResult(mainSearch, 97);
+    }
+
     private static String getGalleryPath() {
         return Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
     }
@@ -135,6 +181,7 @@ public class OverviewFragment extends Fragment {
             case R.id.action_add:
                 Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
+    // GUI controls
                     startActivityForResult(takePicIntent, 71);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
@@ -182,5 +229,14 @@ public class OverviewFragment extends Fragment {
             add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
+    }
+
+    private boolean menuShow(Menu menu, boolean show) {
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item != searchItem)
+                item.setVisible(show);
+        }
+        return true;
     }
 }

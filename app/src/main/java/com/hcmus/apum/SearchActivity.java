@@ -1,40 +1,49 @@
 package com.hcmus.apum;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 
-import static com.hcmus.apum.MainActivity.mediaManager;
-
 public class SearchActivity extends AppCompatActivity {
-    Context context;
+    private Context context;
 
     // GUI Controls
-    SearchAdapter adapter;
+    private Toolbar toolbar;
+    private ListView results;
+    private SearchAdapter adapter;
 
     // Content
-    ListView results;
-    ArrayList<String> resultList;
+    private String query, scope;
+    private ArrayList<String> resultList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // Get Intent (search query)
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY),
-            scope = intent.getStringExtra("SCOPE");
-            resultList = mediaManager.search(query, scope);
+        // Get values from bundle
+        Intent mainSearch = getIntent();
+        Bundle bundle = mainSearch.getExtras();
+        query = bundle.getString("query");
+        resultList = bundle.getStringArrayList("results");
+        scope = bundle.getString("scope");
+
+        // Update controls
+        toolbar = findViewById(R.id.menu_search);
+        toolbar.inflateMenu(R.menu.menu_preview);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setTitle(scope + ":" + query);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         // Update content

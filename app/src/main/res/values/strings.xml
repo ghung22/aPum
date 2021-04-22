@@ -51,4 +51,5 @@
 
     <!--  Error text  -->
     <string name="err_camera">(!) Problem opening the camera.</string>
+    <string name="err_search_not_found">(!) No item found.</string>
 </resources>
