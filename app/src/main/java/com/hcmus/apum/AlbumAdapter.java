@@ -52,7 +52,7 @@ public class AlbumAdapter extends BaseAdapter {
         // Set properties of elements
         String path = mediaList.get(position);
         name.setText(path.substring(path.lastIndexOf("/") + 1));
-        count.setText(mediaCount.get(position));
+        count.setText(String.format("%d", mediaCount.get(position)));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(new File(mediaList.get(position)))

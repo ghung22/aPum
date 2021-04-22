@@ -23,6 +23,7 @@ public class MediaManager {
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
                 albums = new ArrayList<>();
+        ArrayList<Integer> albumCounts = new ArrayList<>();
         Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
@@ -53,12 +54,14 @@ public class MediaManager {
                     count++;
                 }
             }
-
+            albumCounts.add(count);
         }
 
         this.images = images;
         this.albums = albums;
+        this.albumCounts = albumCounts;
     }
+
     public void updateFavoriteLocations(Context context) {
         ArrayList<String> listFavorites = new ArrayList<>();
         //listFavorites = db.getAllFavorite();
@@ -77,6 +80,7 @@ public class MediaManager {
         //db.addData(favorites.get(favorites.size()-1));
         //db.addData(i.get(pos));
     }
+
     public boolean checkFavorites(ArrayList<String> thumbs, int pos){
         boolean check = thumbs.contains(thumbs.get(pos));
         return check;
@@ -110,18 +114,6 @@ public class MediaManager {
 
             // Load part of image to make thumbnail
             Bitmap thumbnail = BitmapFactory.decodeFile(img.getAbsolutePath(), bitmapOpt);
-//            thumbnail = ThumbnailUtils.extractThumbnail(thumbnail,100,100);
-
-        // Save the thumbnail
-//        try {
-//            File thumbnailFile = null; // TODO: create file into thumbnail folder
-//            FileOutputStream fos = new FileOutputStream(thumbnailFile);
-//            thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, fos);
-//            fos.flush();
-//            fos.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         // Use the thumbnail on an ImageView or recycle it!
         return thumbnail;
