@@ -39,9 +39,7 @@ public class OverviewFragment extends Fragment {
     private Toolbar toolbar;
     private NestedScrollView scroll;
     private GridView grid;
-    private RecyclerView recycler;
     private OverviewAdapter adapter;
-//    private OverviewAdapter adapter;
 
     // Test values
 
@@ -118,7 +116,12 @@ public class OverviewFragment extends Fragment {
                 break;
             case R.id.action_zoom:
                 break;
+            case R.id.action_sort:
+                // TODO: Sort in Overview
+                break;
             case R.id.action_reload:
+                mediaManager.updateLocations(getContext());
+                Toast.makeText(getContext(), "Image list reloaded.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_trash:
                 break;
@@ -126,13 +129,9 @@ public class OverviewFragment extends Fragment {
                 break;
             case R.id.action_settings:
                 break;
-            case R.id.test:
-                File img = new File(Uri.parse("android.resource://" + R.class.getPackage().getName() + "/res/drawable/" + "ant.jpg").toString());
-                Toast.makeText(getContext(), getGalleryPath(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(getContext(),img.toString(), Toast.LENGTH_LONG).show();
-                Log.d("Test", img.getPath());
-                break;
             case R.id.action_about:
+                Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                startActivityForResult(mainAbout, 46);
                 break;
         }
         return true;

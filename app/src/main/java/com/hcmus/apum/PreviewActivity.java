@@ -30,9 +30,10 @@ public class PreviewActivity extends AppCompatActivity {
 
     // GUI controls
     Toolbar toolbar;
-    AppBarLayout appbar;
+
     // Elements
     ImageView imgPreview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +41,7 @@ public class PreviewActivity extends AppCompatActivity {
 
         // Init preview layout
         setContentView(R.layout.activity_preview);
-        imgPreview = (ImageView) findViewById(R.id.imgPreview);
+        imgPreview = findViewById(R.id.imgPreview);
 
         // Get values from bundle
         Intent mainPreview = getIntent();
@@ -58,7 +59,7 @@ public class PreviewActivity extends AppCompatActivity {
         }
 //        imgPreview.setImageResource(thumbnails.get(pos));
         // Init actionbar buttons
-        toolbar = (Toolbar) findViewById(R.id.menu_preview);
+        toolbar = findViewById(R.id.menu_preview);
         toolbar.inflateMenu(R.menu.menu_preview);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -66,7 +67,6 @@ public class PreviewActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(imgFile.getName());
             actionBar.setDisplayHomeAsUpEnabled(true);
-            Toast.makeText(this, "test", Toast.LENGTH_LONG).show();
         }
 
     }

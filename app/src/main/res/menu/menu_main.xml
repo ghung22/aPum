@@ -24,6 +24,10 @@
         android:title="@string/action_zoom"
         app:showAsAction="never"
         tools:ignore="AppCompatResource"/>
+    <item android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
     <item android:id="@+id/action_reload"
         android:title="@string/action_reload"
         app:showAsAction="never"

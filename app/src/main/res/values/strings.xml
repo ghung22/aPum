@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">aPum</string>
+    <string name="app_description">A gallery app for your phone.</string>
+    <string name="app_credits">
+        "Made by: \n
+        18127005 - Trần Thu Hiền \n
+        18127044 - Nguyễn Gia Hưng \n
+        18127073 - Phan Quang Đại"
+    </string>
 
     <!--  Main top bar  -->
     <string name="action_add">Add</string>
@@ -14,6 +21,7 @@
     <!--  Main options  -->
     <string name="action_select">Select items</string>
     <string name="action_zoom">Zoom</string>
+    <string name="action_sort">Sort</string>
     <string name="action_reload">Reload</string>
     <string name="action_trash">Trash</string>
     <string name="action_vault">Vault</string>
