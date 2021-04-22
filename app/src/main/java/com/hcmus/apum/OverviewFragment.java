@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 import androidx.core.view.ViewCompat;
@@ -37,6 +38,10 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class OverviewFragment extends Fragment {
@@ -92,11 +97,17 @@ public class OverviewFragment extends Fragment {
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
-        toolbar.setOnMenuItemClickListener(this::menuAction);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
 
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        menuAction(item);
+        return true;
     }
 
     @Override
@@ -159,7 +170,7 @@ public class OverviewFragment extends Fragment {
         bundle.putStringArrayList("thumbnails", mediaManager.getImages());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
-        startActivityForResult(mainPreview, 97);
+        startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);
     }
 
     private void showSearch(String query, ArrayList<String> results) {
@@ -169,7 +180,7 @@ public class OverviewFragment extends Fragment {
         bundle.putStringArrayList("results", results);
         bundle.putString("scope", "overview");
         mainSearch.putExtras(bundle);
-        startActivityForResult(mainSearch, 97);
+        startActivityForResult(mainSearch, SEARCH_REQUEST_CODE);
     }
 
     private static String getGalleryPath() {
@@ -181,7 +192,7 @@ public class OverviewFragment extends Fragment {
             case R.id.action_add:
                 Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
-                    startActivityForResult(takePicIntent, 71);
+                    startActivityForResult(takePicIntent, CAMERA_REQUEST_CODE);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
                 }
@@ -209,7 +220,7 @@ public class OverviewFragment extends Fragment {
                 break;
             case R.id.action_about:
                 Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
-                startActivityForResult(mainAbout, 46);
+                startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
         }
         return true;
@@ -237,5 +248,10 @@ public class OverviewFragment extends Fragment {
                 item.setVisible(show);
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
