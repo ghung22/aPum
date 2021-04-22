@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class AlbumsFragment extends Fragment {
@@ -80,7 +83,7 @@ public class AlbumsFragment extends Fragment {
             case R.id.action_add:
                 Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
-                    startActivityForResult(takePicIntent, 71);
+                    startActivityForResult(takePicIntent, CAMERA_REQUEST_CODE);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(AlbumsFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
                 }
@@ -100,6 +103,9 @@ public class AlbumsFragment extends Fragment {
             case R.id.action_settings:
                 break;
             case R.id.action_about:
+                Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                mainAbout.setFlags(0);
+                startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
         }
         return true;
@@ -107,10 +113,16 @@ public class AlbumsFragment extends Fragment {
 
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
         // Change icon to black/white depending on scroll state
+        Menu menu = toolbar.getMenu();
+        MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
         if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.MULTIPLY);
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
     }
 }

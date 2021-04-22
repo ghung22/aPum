@@ -25,6 +25,8 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
+
 public class FavoriteFragment extends Fragment {
 
     // GUI controls
@@ -97,7 +99,7 @@ public class FavoriteFragment extends Fragment {
             case R.id.action_add:
                 Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
-                    startActivityForResult(takePicIntent, 71);
+                    startActivityForResult(takePicIntent, CAMERA_REQUEST_CODE);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(FavoriteFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
                 }
