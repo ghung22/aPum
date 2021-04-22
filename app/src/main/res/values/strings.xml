@@ -28,6 +28,7 @@
     <string name="action_settings">Settings</string>
     <string name="test">Test</string>
     <string name="action_about">About aPum</string>
+    <string name="action_del">Delete this image</string>
 
     <!--  Preview options  -->
     <string name="action_wallpaper">Set as wallpaper</string>

@@ -19,5 +19,8 @@
         android:title="@string/action_wallpaper"
         app:showAsAction="never"
         tools:ignore="AppCompatResource"/>
-
+    <item android:id="@+id/action_delete"
+        android:title="@string/action_del"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
 </menu>

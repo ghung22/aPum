@@ -2,6 +2,7 @@ package com.hcmus.apum;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.database.SQLException;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FavoriteFragment extends Fragment {
@@ -32,7 +34,6 @@ public class FavoriteFragment extends Fragment {
     NestedScrollView scroll;
     ListView list;
     FavoriteThumbnailAdapter adapter;
-
     // Test values
     final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
             "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
@@ -62,7 +63,6 @@ public class FavoriteFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_favorite, container, false);
-
         // Init controls
         appbar = (AppBarLayout) view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -76,6 +76,7 @@ public class FavoriteFragment extends Fragment {
                 }
             }
         });
+
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
         adapter = new FavoriteThumbnailAdapter(getActivity());
