@@ -127,6 +127,9 @@ public class PreviewActivity extends AppCompatActivity {
 
         }
         switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
             case R.id.action_favorite:
                 mediaManager.addFavorites(thumbnails, pos, db_fav);
                 if(mediaManager.checkFavorites(thumbnails,pos)) {

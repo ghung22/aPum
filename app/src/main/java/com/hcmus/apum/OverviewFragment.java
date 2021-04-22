@@ -226,6 +226,11 @@ public class OverviewFragment extends Fragment {
         return true;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
         // Change icon to black/white depending on scroll state
         Menu menu = toolbar.getMenu();
@@ -248,10 +253,5 @@ public class OverviewFragment extends Fragment {
                 item.setVisible(show);
         }
         return true;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
