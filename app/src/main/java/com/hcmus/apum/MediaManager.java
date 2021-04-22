@@ -138,7 +138,9 @@ public class MediaManager {
             default:
                 return results;
         }
+        query = query.toLowerCase();
         for (String i: scopedList) {
+            i = i.substring(i.lastIndexOf("/") + 1).toLowerCase();
             if (i.substring(i.lastIndexOf("/") + 1).contains(query)) {
                 results.add(i);
             }

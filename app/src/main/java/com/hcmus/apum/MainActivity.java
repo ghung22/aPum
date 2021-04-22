@@ -32,8 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
     // For use/save state values
     private Bundle savedInstanceState;
+
     //Database
     DatabaseFavorites db_fav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 //    private void debugMsg(String msg){
 //        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
 //    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

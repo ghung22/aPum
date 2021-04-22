@@ -12,7 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
-    private Context context;
+    private Context context = SearchActivity.this;
 
     // GUI Controls
     private Toolbar toolbar;

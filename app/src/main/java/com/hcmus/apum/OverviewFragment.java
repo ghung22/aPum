@@ -181,7 +181,6 @@ public class OverviewFragment extends Fragment {
             case R.id.action_add:
                 Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
-    // GUI controls
                     startActivityForResult(takePicIntent, 71);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
