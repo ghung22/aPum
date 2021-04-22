@@ -33,15 +33,15 @@ public class AlbumAdapter extends BaseAdapter {
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    // Number of entries in dataSet
+    @Override
     public int getCount() { return mediaList.size(); }
-
-    // Get current item, its id
+    @Override
     public Object getItem(int pos) { return mediaList.get(pos); }
+    @Override
     public long getItemId(int pos) { return pos; }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int pos, View convertView, ViewGroup parent) {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(R.layout.layout_albums_listview, null);  // Preview popup
@@ -50,18 +50,18 @@ public class AlbumAdapter extends BaseAdapter {
         ImageView img = row.findViewById(R.id.icon);
 
         // Set properties of elements
-        String path = mediaList.get(position);
+        String path = mediaList.get(pos);
         name.setText(path.substring(path.lastIndexOf("/") + 1));
-        count.setText(String.format("%d", mediaCount.get(position)));
+        count.setText(String.format("%d", mediaCount.get(pos)));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(mediaList.get(position)))
+        picasso.load(new File(mediaList.get(pos)))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()
                 .placeholder(R.drawable.ic_image)
                 .into(img);
-        row.setId(position);
+        row.setId(pos);
         return(row);
     }
 }

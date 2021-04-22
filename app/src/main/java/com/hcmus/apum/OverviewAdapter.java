@@ -28,16 +28,16 @@ public class OverviewAdapter extends BaseAdapter {
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    // Number of entries in dataSet
+    @Override
     public int getCount() { return mediaList.size(); }
-
-    // Get current item, its id
+    @Override
     public Object getItem(int pos) { return mediaList.get(pos); }
+    @Override
     public long getItemId(int pos) { return pos; }
 
     // Create a view for each thumbnail
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int pos, View convertView, ViewGroup parent) {
         ImageView img;
         int gridSize = context.getResources().getDimensionPixelOffset(R.dimen.gridview_size);
         // Use existing convertView in cache (if possible)
@@ -53,13 +53,13 @@ public class OverviewAdapter extends BaseAdapter {
         // Generate thumbnails
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(mediaList.get(position)))
+        picasso.load(new File(mediaList.get(pos)))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()
                 .placeholder(R.drawable.ic_image)
                 .into(img);
-        img.setId(position);
+        img.setId(pos);
         return img;
     }
 

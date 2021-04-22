@@ -51,10 +51,7 @@ public class PreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_preview);
 
         // Init preview layout
-        setContentView(R.layout.activity_preview);
         imgPreview = findViewById(R.id.imgPreview);
-
-        imgPreview = (ImageView) findViewById(R.id.imgPreview);
 
         //Database
         db_fav = new DatabaseFavorites(this);
