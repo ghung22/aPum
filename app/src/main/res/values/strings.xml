@@ -37,13 +37,17 @@
     <!--  Description text  -->
     <string name="des_album_img">Select album</string>
     <string name="des_grid_img">Select media</string>
+    <string name="des_search_img">Select search result</string>
 
-    <!--  Default text  -->
-    <string name="default_album_name">Null album</string>
-    <string name="default_album_count">13</string>
+    <!--  Placeholder text  -->
+    <string name="placeholder_album_name">Null album</string>
+    <string name="placeholder_album_count">13</string>
+    <string name="placeholder_search_result">Null result</string>
+    <string name="placeholder_search_location">Null album</string>
 
     <!--  Info text  -->
     <string name="info_no_media">No media</string>
+    <string name="info_search_hint">Enter anything…</string>
 
     <!--  Error text  -->
     <string name="err_camera">(!) Problem opening the camera.</string>

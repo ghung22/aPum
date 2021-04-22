@@ -2,22 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="100dp"
     android:orientation="horizontal" android:paddingVertical="4dp">
-    <ImageButton android:id="@+id/icon"
+    <ImageView android:id="@+id/preview"
         android:layout_width="100dp" android:layout_height="100dp"
         android:background="@color/black"
         android:src="@drawable/ic_launcher_foreground"
         android:scaleType="centerCrop" android:adjustViewBounds="true"
-        android:contentDescription="@string/des_album_img" />
+        android:contentDescription="@string/des_search_img" />
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:gravity="center_vertical" android:orientation="vertical"
         android:paddingHorizontal="8dp">
-        <TextView android:id="@+id/name"
+        <TextView android:id="@+id/result"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textSize="20sp" android:text="@string/placeholder_album_name"/>
-        <TextView android:id="@+id/count"
+            android:textSize="20sp" android:text="@string/placeholder_search_result"/>
+        <TextView android:id="@+id/location"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textSize="16sp" android:text="@string/placeholder_album_count"
+            android:textSize="16sp" android:text="@string/placeholder_search_location"
             android:alpha="0.5"/>
     </LinearLayout>
 </LinearLayout>

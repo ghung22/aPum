@@ -6,6 +6,9 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
@@ -15,10 +18,12 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -40,6 +45,10 @@ public class OverviewFragment extends Fragment {
     private NestedScrollView scroll;
     private GridView grid;
     private OverviewAdapter adapter;
+
+    // Search
+    private MenuItem searchItem;
+    private SearchView searchView;
 
     // Test values
 
@@ -81,19 +90,40 @@ public class OverviewFragment extends Fragment {
         toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_main);
         toolbar.setOnMenuItemClickListener(this::menuAction);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+
+        searchItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 
     private void showPreview(int pos) {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
-//        bundle.putStringArray("items", items);
         bundle.putStringArrayList("thumbnails", mediaManager.getImages());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, 97);
-//        finish();
     }
 
     private static String getGalleryPath() {
@@ -111,6 +141,8 @@ public class OverviewFragment extends Fragment {
                 }
                 break;
             case R.id.action_search:
+                searchItem.expandActionView();
+                searchView.requestFocus();
                 break;
             case R.id.action_select:
                 break;

@@ -20,6 +20,7 @@ public class MediaManager {
     private ArrayList<String> images, albums, favorites;
     private ArrayList<Integer> albumCounts;
     DatabaseFavorites db;
+
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
                 albums = new ArrayList<>();
@@ -46,7 +47,6 @@ public class MediaManager {
             }
         }
 
-        // TODO: Count files in each album
         for (String a: albums) {
             Integer count = 0;
             for (String i: images) {
@@ -119,4 +119,10 @@ public class MediaManager {
         return thumbnail;
     }
 
+    public ArrayList<String> search(String query, String scope) {
+        // TODO: Search images, albums, favorites
+        ArrayList<String> results = new ArrayList<>();
+
+        return results;
+    }
 }
