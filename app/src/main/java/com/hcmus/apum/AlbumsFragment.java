@@ -62,7 +62,7 @@ public class AlbumsFragment extends Fragment {
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new AlbumAdapter(getActivity(), mediaManager.getAlbums());
+        adapter = new AlbumAdapter(getActivity(), mediaManager.getAlbums(), mediaManager.getAlbumCounts());
         list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);

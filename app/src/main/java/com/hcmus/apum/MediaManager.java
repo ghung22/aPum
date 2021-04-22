@@ -39,6 +39,18 @@ public class MediaManager {
                 albums.add(albumPath);
             }
         }
+
+        // TODO: Count files in each album
+        for (String a: albums) {
+            Integer count = 0;
+            for (String i: images) {
+                if (i.contains(a)) {
+                    count++;
+                }
+            }
+
+        }
+
         this.images = images;
         this.albums = albums;
     }
