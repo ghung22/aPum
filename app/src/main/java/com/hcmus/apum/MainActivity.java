@@ -21,6 +21,12 @@ public class MainActivity extends AppCompatActivity {
     public static MediaManager mediaManager = new MediaManager();
     public static Boolean debugEnabled = true;
 
+    // Request codes
+    public static int PREVIEW_REQUEST_CODE = 97;
+    public static int SEARCH_REQUEST_CODE = 5;
+    public static int CAMERA_REQUEST_CODE = 71;
+    public static int ABOUT_REQUEST_CODE = 46;
+
     // GUI controls
     private BottomNavigationView navBar;
 
