@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
@@ -12,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class AlbumsFragment extends Fragment {
@@ -36,7 +41,10 @@ public class AlbumsFragment extends Fragment {
     private NestedScrollView scroll;
     private ListView list;
     private AlbumAdapter adapter;
-    private ArrayList<String> images;
+
+    // Search
+    private MenuItem searchItem;
+    private SearchView searchView;
 
     public AlbumsFragment() {
         // Required empty public constructor
@@ -72,27 +80,84 @@ public class AlbumsFragment extends Fragment {
 
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
-        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.inflateMenu(R.menu.menu_albums);
         toolbar.setOnMenuItemClickListener(this::menuAction);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        setHasOptionsMenu(true);
 
         return view;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        menuAction(item);
+        return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_albums, menu);
+
+        // Get controls
+        searchItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        // Search focused/unfocused events
+        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(final MenuItem item) {
+                return menuShow(menu, false);
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(final MenuItem item) {
+                return menuShow(menu, true);
+            }
+        });
+
+        // Search query events
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                ArrayList<String> results = mediaManager.search(query, "albums");
+                if (!results.isEmpty()) {
+                    showSearch(query, results);
+                } else {
+                    Toast.makeText(getContext(), getContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void showSearch(String query, ArrayList<String> results) {
+        Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("query", query);
+        bundle.putStringArrayList("results", results);
+        bundle.putString("scope", "albums");
+        mainSearch.putExtras(bundle);
+        startActivityForResult(mainSearch, SEARCH_REQUEST_CODE);
+    }
+
     private boolean menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.action_add:
-                Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    startActivityForResult(takePicIntent, CAMERA_REQUEST_CODE);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(AlbumsFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
-                }
-                break;
             case R.id.action_search:
+                searchItem.expandActionView();
+                searchView.requestFocus();
                 break;
             case R.id.action_select:
                 break;
-            case R.id.action_zoom:
+            case R.id.action_sort:
                 break;
             case R.id.action_reload:
                 break;
@@ -117,12 +182,19 @@ public class AlbumsFragment extends Fragment {
         MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
         if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
+    }
+
+    private boolean menuShow(Menu menu, boolean show) {
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item != searchItem)
+                item.setVisible(show);
+        }
+        return true;
     }
 }

@@ -3,20 +3,17 @@ package com.hcmus.apum;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuItemCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,12 +27,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
@@ -57,8 +52,6 @@ public class OverviewFragment extends Fragment {
     // Search
     private MenuItem searchItem;
     private SearchView searchView;
-
-    // Test values
 
     public OverviewFragment() {
         // Required empty public constructor
@@ -96,7 +89,7 @@ public class OverviewFragment extends Fragment {
 
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
-        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.inflateMenu(R.menu.menu_overview);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
 
@@ -113,7 +106,7 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_overview, menu);
 
         // Get controls
         searchItem = menu.findItem(R.id.action_search);

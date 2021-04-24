@@ -2,7 +2,6 @@ package com.hcmus.apum;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.SQLException;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
@@ -15,14 +14,12 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
@@ -88,7 +85,7 @@ public class FavoriteFragment extends Fragment {
 
         // Init actionbar buttons
         toolbar = (Toolbar) view.findViewById(R.id.menu_main);
-        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.inflateMenu(R.menu.menu_overview);
         toolbar.setOnMenuItemClickListener(this::menuAction);
 
         return view;
