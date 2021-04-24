@@ -3,19 +3,16 @@ package com.hcmus.apum;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
@@ -45,10 +42,10 @@ public class AlbumAdapter extends BaseAdapter {
     public View getView(int pos, View convertView, ViewGroup parent) {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View row = inflater.inflate(R.layout.layout_albums_listview, null);  // Preview popup
-        TextView name = row.findViewById(R.id.name);
-        TextView count = row.findViewById(R.id.count);
-        ImageView img = row.findViewById(R.id.icon);
+        View row = inflater.inflate(R.layout.layout_visual_listview, null);  // Preview popup
+        ImageView img = row.findViewById(R.id.visual);
+        TextView name = row.findViewById(R.id.visualTitle);
+        TextView count = row.findViewById(R.id.visualSubtitle);
 
         // Get cover image (if no config file -> make new one with most recent file)
         String path = mediaList.get(pos);

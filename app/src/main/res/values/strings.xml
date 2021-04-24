@@ -34,11 +34,6 @@
     <string name="action_wallpaper">Set as wallpaper</string>
     <string name="action_info">Information</string>
 
-    <!--  Description text  -->
-    <string name="des_album_img">Select album</string>
-    <string name="des_grid_img">Select media</string>
-    <string name="des_search_img">Select search result</string>
-
     <!--  Placeholder text  -->
     <string name="placeholder_album_name">Null album</string>
     <string name="placeholder_album_count">13</string>

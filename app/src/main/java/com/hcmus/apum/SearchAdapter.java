@@ -3,11 +3,11 @@ package com.hcmus.apum;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,10 +43,10 @@ public class SearchAdapter extends BaseAdapter {
     public View getView(int pos, View view, ViewGroup viewGroup) {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View row = inflater.inflate(R.layout.layout_search_listview, null);  // Preview popup
-        TextView result = row.findViewById(R.id.result);
-        TextView location = row.findViewById(R.id.location);
-        ImageView preview = row.findViewById(R.id.preview);
+        View row = inflater.inflate(R.layout.layout_visual_listview, null);  // Preview popup
+        ImageView preview = row.findViewById(R.id.visual);
+        TextView result = row.findViewById(R.id.visualTitle);
+        TextView location = row.findViewById(R.id.visualSubtitle);
 
         // Get cover image depending on scope
         String path = mediaList.get(pos);
@@ -64,6 +64,7 @@ public class SearchAdapter extends BaseAdapter {
         result.setText(path.substring(path.lastIndexOf("/") + 1));
         String pathDir = path.substring(0, path.lastIndexOf("/"));
         location.setText(pathDir.substring(pathDir.lastIndexOf("/") + 1));
+        location.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(cover)
