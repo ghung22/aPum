@@ -48,9 +48,8 @@ public class SearchAdapter extends BaseAdapter {
         // Set properties of elements
         String path = mediaList.get(pos);
         result.setText(path.substring(path.lastIndexOf("/") + 1));
-//        path = result.getText().toString();
-//        location.setText(path.substring(path.lastIndexOf("/") + 1));
-        location.setText(path);
+        String pathDir = path.substring(0, path.lastIndexOf("/"));
+        location.setText(pathDir.substring(pathDir.lastIndexOf("/") + 1));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(new File(mediaList.get(pos)))
