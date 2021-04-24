@@ -1,6 +1,5 @@
 package com.hcmus.apum;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -12,13 +11,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,7 +27,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -77,6 +76,7 @@ public class AlbumsFragment extends Fragment {
         list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);
+        list.setOnItemClickListener(this::showContent);
 
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
@@ -137,6 +137,19 @@ public class AlbumsFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    private void showContent(AdapterView<?> parent, View view, int pos, long id) {
+        String albumPath = mediaManager.getAlbums().get(pos);
+        ArrayList<String> container = mediaManager.getAlbumContent(albumPath);
+        albumPath = albumPath.substring(albumPath.lastIndexOf("/") + 1);
+
+        Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("album", albumPath);
+        bundle.putStringArrayList("container", container);
+        mainContent.putExtras(bundle);
+        startActivityForResult(mainContent, CONTENT_REQUEST_CODE);
     }
 
     private void showSearch(String query, ArrayList<String> results) {

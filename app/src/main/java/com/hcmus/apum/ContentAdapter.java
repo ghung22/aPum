@@ -14,21 +14,27 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class SearchAdapter extends BaseAdapter {
+public class ContentAdapter extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
     ArrayList<String> mediaList;
-    String scope;
 
-    public SearchAdapter(Context context, ArrayList<String> mediaList, String scope) {
+    public ContentAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
         this.mediaList = mediaList;
-        this.scope = scope;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -48,26 +54,14 @@ public class SearchAdapter extends BaseAdapter {
         TextView visualTitle = row.findViewById(R.id.visualTitle);
         TextView visualSubtitle = row.findViewById(R.id.visualSubtitle);
 
-        // Get cover image depending on scope
-        String path = mediaList.get(pos);
-        File cover = null;
-        switch (scope) {
-            case "overview":
-                cover = new File(path);
-                break;
-            case "albums":
-                cover = mediaManager.getCover(path);
-                break;
-        }
-
         // Set properties of elements
+        String path = mediaList.get(pos);
         visualTitle.setText(path.substring(path.lastIndexOf("/") + 1));
-        String pathDir = path.substring(0, path.lastIndexOf("/"));
-        visualSubtitle.setText(pathDir.substring(pathDir.lastIndexOf("/") + 1));
+        visualSubtitle.setText(mediaManager.getModifiedTime(path));
         visualSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(cover)
+        picasso.load(new File(path))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()

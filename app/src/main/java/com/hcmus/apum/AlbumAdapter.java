@@ -43,17 +43,17 @@ public class AlbumAdapter extends BaseAdapter {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(R.layout.layout_visual_listview, null);  // Preview popup
-        ImageView img = row.findViewById(R.id.visual);
-        TextView name = row.findViewById(R.id.visualTitle);
-        TextView count = row.findViewById(R.id.visualSubtitle);
+        ImageView visual = row.findViewById(R.id.visual);
+        TextView visualTitle = row.findViewById(R.id.visualTitle);
+        TextView visualSubtitle = row.findViewById(R.id.visualSubtitle);
 
         // Get cover image (if no config file -> make new one with most recent file)
         String path = mediaList.get(pos);
         File cover = mediaManager.getCover(path);
 
         // Set properties of elements
-        name.setText(path.substring(path.lastIndexOf("/") + 1));
-        count.setText(String.format("%d", mediaCount.get(pos)));
+        visualTitle.setText(path.substring(path.lastIndexOf("/") + 1));
+        visualSubtitle.setText(String.format("%d", mediaCount.get(pos)));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(cover)
@@ -61,7 +61,7 @@ public class AlbumAdapter extends BaseAdapter {
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()
                 .placeholder(R.drawable.ic_image)
-                .into(img);
+                .into(visual);
         row.setId(pos);
         return(row);
     }

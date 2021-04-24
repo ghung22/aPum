@@ -37,7 +37,7 @@ public class SearchActivity extends AppCompatActivity {
 
         // Update controls
         toolbar = findViewById(R.id.menu_search);
-        toolbar.inflateMenu(R.menu.menu_preview);
+        toolbar.inflateMenu(R.menu.menu_overview);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
 

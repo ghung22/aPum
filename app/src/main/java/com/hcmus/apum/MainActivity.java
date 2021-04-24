@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Request codes
     public static int PREVIEW_REQUEST_CODE = 97;
+    public static int CONTENT_REQUEST_CODE = 27;
     public static int SEARCH_REQUEST_CODE = 5;
     public static int CAMERA_REQUEST_CODE = 71;
     public static int ABOUT_REQUEST_CODE = 46;

@@ -15,8 +15,15 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -154,12 +161,40 @@ public class MediaManager {
         return file;
     }
 
+    public String getModifiedTime(String path, String format) {
+        if (format.isEmpty()) {
+            format = "dd-MM-uuuu HH:mm";
+        }
+        FileTime modTime = null;
+        try {
+            modTime = Files.getLastModifiedTime(Paths.get(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return DateTimeFormatter.ofPattern(format, Locale.ENGLISH)
+                .withZone(ZoneId.systemDefault())
+                .format(modTime.toInstant());
+    }
+
+    public String getModifiedTime(String path) {
+        return getModifiedTime(path, "");
+    }
+
     public File getCover(String albumPath) {
         // TODO: Cover image config file
         File dir = new File(albumPath);
         return getLastModified(
                 dir.listFiles(getFileFilter("img"))
         );
+    }
+
+    public ArrayList<String> getAlbumContent(String albumPath) {
+        ArrayList<String> container = new ArrayList<>();
+        File dir = new File(albumPath);
+        for (File f : dir.listFiles(getFileFilter("img"))) {
+            container.add(f.getAbsolutePath());
+        }
+        return container;
     }
 
     public Bitmap createThumbnail(String path) {
