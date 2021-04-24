@@ -17,15 +17,18 @@ import java.io.File;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchAdapter extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
     ArrayList<String> mediaList;
+    String scope;
 
-    public SearchAdapter(Context context, ArrayList<String> mediaList) {
+    public SearchAdapter(Context context, ArrayList<String> mediaList, String scope) {
         this.context = context;
         this.mediaList = mediaList;
+        this.scope = scope;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -45,14 +48,25 @@ public class SearchAdapter extends BaseAdapter {
         TextView location = row.findViewById(R.id.location);
         ImageView preview = row.findViewById(R.id.preview);
 
-        // Set properties of elements
+        // Get cover image depending on scope
         String path = mediaList.get(pos);
+        File cover = null;
+        switch (scope) {
+            case "overview":
+                cover = new File(path);
+                break;
+            case "albums":
+                cover = mediaManager.getCover(path);
+                break;
+        }
+
+        // Set properties of elements
         result.setText(path.substring(path.lastIndexOf("/") + 1));
         String pathDir = path.substring(0, path.lastIndexOf("/"));
         location.setText(pathDir.substring(pathDir.lastIndexOf("/") + 1));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(mediaList.get(pos)))
+        picasso.load(cover)
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()

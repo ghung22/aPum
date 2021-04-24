@@ -51,14 +51,10 @@ public class AlbumAdapter extends BaseAdapter {
         ImageView img = row.findViewById(R.id.icon);
 
         // Get cover image (if no config file -> make new one with most recent file)
-        // TODO: Cover image config file
-        File dir = new File(mediaList.get(pos));
-        File cover = mediaManager.getLastModified(
-                dir.listFiles(mediaManager.getFileFilter("img"))
-        );
+        String path = mediaList.get(pos);
+        File cover = mediaManager.getCover(path);
 
         // Set properties of elements
-        String path = mediaList.get(pos);
         name.setText(path.substring(path.lastIndexOf("/") + 1));
         count.setText(String.format("%d", mediaCount.get(pos)));
         Picasso picasso = Picasso.get();

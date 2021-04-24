@@ -154,6 +154,14 @@ public class MediaManager {
         return file;
     }
 
+    public File getCover(String albumPath) {
+        // TODO: Cover image config file
+        File dir = new File(albumPath);
+        return getLastModified(
+                dir.listFiles(getFileFilter("img"))
+        );
+    }
+
     public Bitmap createThumbnail(String path) {
         File img = new File(path);
         if (!img.exists()) {
