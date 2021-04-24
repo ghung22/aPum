@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="100dp"
     android:orientation="horizontal" android:paddingVertical="4dp">
-    <ImageButton android:id="@+id/icon"
+    <ImageView android:id="@+id/icon"
         android:layout_width="100dp" android:layout_height="100dp"
         android:background="@color/black"
         android:src="@drawable/ic_launcher_foreground"
