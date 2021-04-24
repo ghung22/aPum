@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
@@ -49,13 +50,33 @@ public class AlbumAdapter extends BaseAdapter {
         TextView count = row.findViewById(R.id.count);
         ImageView img = row.findViewById(R.id.icon);
 
+        // Get cover image (if no config file -> make new one with most recent file)
+        final String[] ext = new String[]{"gif", "png", "bmp", "jpg", "jpeg", "webp", "webm"};
+        final FilenameFilter filter = (d, f) -> {
+            for (final String x : ext) {
+                if (f.endsWith("." + x)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        File dir = new File(mediaList.get(pos));
+        long modified = Long.MIN_VALUE;
+        File cover = null;
+        for (File f : dir.listFiles(filter)) {
+            if (f.lastModified() > modified) {
+                cover = f;
+                modified = f.lastModified();
+            }
+        }
+
         // Set properties of elements
         String path = mediaList.get(pos);
         name.setText(path.substring(path.lastIndexOf("/") + 1));
         count.setText(String.format("%d", mediaCount.get(pos)));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(mediaList.get(pos)))
+        picasso.load(cover)
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()
