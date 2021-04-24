@@ -14,11 +14,21 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class MediaManager {
     private ArrayList<String> images, albums, faces, favorites;
     private ArrayList<Integer> albumCounts;
+    private ArrayList<String>
+            extImg = new ArrayList<>(
+                    Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
+            ), extVid = new ArrayList<>(
+                    Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
+            );
     DatabaseFavorites db;
 
     public void updateLocations(Context context) {
@@ -90,6 +100,59 @@ public class MediaManager {
     public ArrayList<String> getAlbums() { return  albums; }
     public ArrayList<String> getFavorites() { return favorites; }
     public ArrayList<Integer> getAlbumCounts() { return albumCounts; }
+
+    public FilenameFilter getFileFilter(String type) {
+        FilenameFilter filter;
+        switch (type) {
+            case "img":
+                filter = (dir, file) -> {
+                    for (final String ext : extImg) {
+                        if (file.endsWith("." + ext)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+                break;
+            case "vid":
+                filter = (dir, file) -> {
+                    for (final String ext : extVid) {
+                        if (file.endsWith("." + ext)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+                break;
+            case "visual":
+                filter = (dir, file) -> {
+                    ArrayList<String> extVisual = extImg;
+                    extVisual.addAll(extVid);
+                    for (final String ext : extVisual) {
+                        if (file.endsWith("." + ext)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+            default:
+                filter = (dir, file) -> {return true;};
+                break;
+        }
+        return filter;
+    }
+
+    public File getLastModified(File[] list) {
+        long modified = Long.MIN_VALUE;
+        File file = null;
+        for (File f : list) {
+            if (f.lastModified() > modified) {
+                file = f;
+                modified = f.lastModified();
+            }
+        }
+        return file;
+    }
 
     public Bitmap createThumbnail(String path) {
         File img = new File(path);

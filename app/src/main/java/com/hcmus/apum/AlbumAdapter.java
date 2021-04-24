@@ -51,24 +51,11 @@ public class AlbumAdapter extends BaseAdapter {
         ImageView img = row.findViewById(R.id.icon);
 
         // Get cover image (if no config file -> make new one with most recent file)
-        final String[] ext = new String[]{"gif", "png", "bmp", "jpg", "jpeg", "webp", "webm"};
-        final FilenameFilter filter = (d, f) -> {
-            for (final String x : ext) {
-                if (f.endsWith("." + x)) {
-                    return true;
-                }
-            }
-            return false;
-        };
+        // TODO: Cover image config file
         File dir = new File(mediaList.get(pos));
-        long modified = Long.MIN_VALUE;
-        File cover = null;
-        for (File f : dir.listFiles(filter)) {
-            if (f.lastModified() > modified) {
-                cover = f;
-                modified = f.lastModified();
-            }
-        }
+        File cover = mediaManager.getLastModified(
+                dir.listFiles(mediaManager.getFileFilter("img"))
+        );
 
         // Set properties of elements
         String path = mediaList.get(pos);
