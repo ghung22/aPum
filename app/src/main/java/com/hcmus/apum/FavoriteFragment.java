@@ -68,21 +68,11 @@ public class FavoriteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_favorite, container, false);
+
         // Init controls
         appbar = view.findViewById(R.id.appbar);
-        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                // Change icon to black/white depending on scroll state
-                if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.MULTIPLY);
-                } else {
-                    toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-                }
-            }
-        });
+        appbar.addOnOffsetChangedListener(this::menuRecolor);
 
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
@@ -214,6 +204,21 @@ public class FavoriteFragment extends Fragment {
                 break;
         }
         return true;
+    }
+
+    private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
+        // Change icon to black/white depending on scroll state
+        Menu menu = toolbar.getMenu();
+        MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
+        if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        } else {
+            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+        }
     }
 
     private boolean menuShow(Menu menu, boolean show) {
