@@ -32,7 +32,7 @@ public class FavoriteFragment extends Fragment {
     Toolbar toolbar;
     NestedScrollView scroll;
     ListView list;
-    FavoriteThumbnailAdapter adapter;
+    FavoriteAdapter adapter;
     // Test values
     final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
             "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
@@ -78,7 +78,7 @@ public class FavoriteFragment extends Fragment {
 
         collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
-        adapter = new FavoriteThumbnailAdapter(getActivity());
+        adapter = new FavoriteAdapter(getActivity());
         list = (ListView) view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.empty));
         list.setAdapter(adapter);

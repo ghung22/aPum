@@ -20,10 +20,10 @@ import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchAdapter extends BaseAdapter {
-    Context context;
-    LayoutInflater inflater;
-    ArrayList<String> mediaList;
-    String scope;
+    private final Context context;
+    private final LayoutInflater inflater;
+    private final ArrayList<String> mediaList;
+    private final String scope;
 
     public SearchAdapter(Context context, ArrayList<String> mediaList, String scope) {
         this.context = context;

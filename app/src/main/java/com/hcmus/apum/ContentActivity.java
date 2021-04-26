@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class ContentActivity extends AppCompatActivity {
 
     // GUI Controls
     private Toolbar toolbar;
-    private ListView content;
+    private GridView content;
     private ContentAdapter adapter;
 
     // Content

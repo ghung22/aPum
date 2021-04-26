@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class FavoriteThumbnailAdapter extends BaseAdapter {
+public class FavoriteAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
     private final ArrayList<String> fav_images;
     DatabaseFavorites db_fav;
-    public FavoriteThumbnailAdapter(Context context) {
+    public FavoriteAdapter(Context context) {
         this.context = context;
         //this.fav_images = mediaManager.getFavorites();
         //Init Database

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,9 +29,9 @@ import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class ContentAdapter extends BaseAdapter {
-    Context context;
-    LayoutInflater inflater;
-    ArrayList<String> mediaList;
+    private final Context context;
+    private final LayoutInflater inflater;
+    private final ArrayList<String> mediaList;
 
     public ContentAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
@@ -46,28 +47,29 @@ public class ContentAdapter extends BaseAdapter {
     public long getItemId(int pos) { return pos; }
 
     @Override
-    public View getView(int pos, View view, ViewGroup viewGroup) {
-        // Get elements
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        View row = inflater.inflate(R.layout.layout_visual_listview, null);  // Preview popup
-        ImageView visual = row.findViewById(R.id.visual);
-        TextView visualTitle = row.findViewById(R.id.visualTitle);
-        TextView visualSubtitle = row.findViewById(R.id.visualSubtitle);
+    public View getView(int pos, View convertView, ViewGroup parent) {
+        ImageView img;
+        int gridSize = context.getResources().getDimensionPixelOffset(R.dimen.gridview_size);
+        // Use existing convertView in cache (if possible)
+        if (convertView == null) {
+            img = new ImageView(context);
+            img.setLayoutParams(new GridView.LayoutParams(gridSize, gridSize));
+            img.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            img.setPadding(5, 5, 5, 5);
+        } else {
+            img = (ImageView) convertView;
+        }
 
-        // Set properties of elements
-        String path = mediaList.get(pos);
-        visualTitle.setText(path.substring(path.lastIndexOf("/") + 1));
-        visualSubtitle.setText(mediaManager.getModifiedTime(path));
-        visualSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        // Generate thumbnails
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(path))
+        picasso.load(new File(mediaList.get(pos)))
                 .fit()
                 .config(Bitmap.Config.RGB_565)
                 .centerInside()
                 .placeholder(R.drawable.ic_image)
-                .into(visual);
-        row.setId(pos);
-        return(row);
+                .into(img);
+        img.setId(pos);
+        return img;
     }
 }

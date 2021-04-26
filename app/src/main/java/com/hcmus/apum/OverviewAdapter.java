@@ -35,7 +35,6 @@ public class OverviewAdapter extends BaseAdapter {
     @Override
     public long getItemId(int pos) { return pos; }
 
-    // Create a view for each thumbnail
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
         ImageView img;
