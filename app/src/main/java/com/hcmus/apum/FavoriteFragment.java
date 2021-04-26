@@ -209,14 +209,12 @@ public class FavoriteFragment extends Fragment {
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
         // Change icon to black/white depending on scroll state
         Menu menu = toolbar.getMenu();
-        MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
+        MenuItem search = menu.findItem(R.id.action_search);
         if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
     }
