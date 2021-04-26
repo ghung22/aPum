@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseFavorites extends SQLiteOpenHelper {
-    private static String DB_PATH = "/data/data/com.hcmus.apum/databases/";
-    private static String DB_NAME = "dbFavorite";
+    private static final String DB_PATH = "/data/data/com.hcmus.apum/databases/";
+    private static final String DB_NAME = "dbFavorite";
     private SQLiteDatabase dbFavorite = null;
     private final Context context;
 
@@ -79,7 +79,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
             checkDB.close();
         }
 
-        return checkDB != null ? true : false;
+        return checkDB != null;
     }
     private void copyDataBase() throws IOException {
         InputStream myInput = context.getAssets().open(DB_NAME);
@@ -120,19 +120,13 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         contentValues.put(COL2, item);
         Log.d(TAG, "addData: " + item + " to " +TABLE_NAME );
         long result = db.insert(TABLE_NAME, null, contentValues);
-        if (result == -1)
-            return false;
-        else
-            return true;
+        return result != -1;
     }
     public boolean removeData (String item){
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d(TAG, "removeData: " + item + " from " +TABLE_NAME );
         long result = db.delete(TABLE_NAME, COL2+"=?",new String[]{item});
-        if (result == -1)
-            return false;
-        else
-            return true;
+        return result != -1;
     }
     public ArrayList<String> getAllFavorite(){
         String[] columns = {
@@ -145,7 +139,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_NAME,columns,null,null,null,null,null);
         if (cursor.moveToFirst()){
             do{
-                String img = new String();
+                String img = "";
                 img = cursor.getString(cursor.getColumnIndex(COL2));
                 fav.add(img);
 

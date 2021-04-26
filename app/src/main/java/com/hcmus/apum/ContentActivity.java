@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
 
 public class ContentActivity extends AppCompatActivity {
-    private Context context = ContentActivity.this;
+    private final Context context = ContentActivity.this;
 
     // GUI Controls
     private Toolbar toolbar;

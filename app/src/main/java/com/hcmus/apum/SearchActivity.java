@@ -21,7 +21,7 @@ import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchActivity extends AppCompatActivity {
-    private Context context = SearchActivity.this;
+    private final Context context = SearchActivity.this;
 
     // GUI Controls
     private Toolbar toolbar;

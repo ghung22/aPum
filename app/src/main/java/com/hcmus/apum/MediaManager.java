@@ -30,10 +30,11 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 public class MediaManager {
     private ArrayList<String> images, albums, faces, favorites;
     private ArrayList<Integer> albumCounts;
-    private ArrayList<String>
+    private final ArrayList<String>
             extImg = new ArrayList<>(
                     Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
-            ), extVid = new ArrayList<>(
+            );
+    private final ArrayList<String> extVid = new ArrayList<>(
                     Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
             );
     DatabaseFavorites db;

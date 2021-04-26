@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         ft_main.commit();
 
         // Init controls
-        navBar = (BottomNavigationView) findViewById(R.id.navBar);
+        navBar = findViewById(R.id.navBar);
         navBar.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
     }
 //    public void AddData(String newEntry){

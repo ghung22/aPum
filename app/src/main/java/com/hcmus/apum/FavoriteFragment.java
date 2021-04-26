@@ -63,7 +63,7 @@ public class FavoriteFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_favorite, container, false);
         // Init controls
-        appbar = (AppBarLayout) view.findViewById(R.id.appbar);
+        appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -76,15 +76,15 @@ public class FavoriteFragment extends Fragment {
             }
         });
 
-        collapsingToolbar = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbar);
-        scroll = (NestedScrollView) view.findViewById(R.id.scroll);
+        collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
+        scroll = view.findViewById(R.id.scroll);
         adapter = new FavoriteAdapter(getActivity());
-        list = (ListView) view.findViewById(R.id.list);
+        list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.no_media));
         list.setAdapter(adapter);
 
         // Init actionbar buttons
-        toolbar = (Toolbar) view.findViewById(R.id.menu_main);
+        toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_overview);
         toolbar.setOnMenuItemClickListener(this::menuAction);
 
