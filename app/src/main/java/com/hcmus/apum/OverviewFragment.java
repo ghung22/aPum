@@ -160,6 +160,7 @@ public class OverviewFragment extends Fragment {
     private void showPreview(int pos) {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString("caller", "overview");
         bundle.putStringArrayList("thumbnails", mediaManager.getImages());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
@@ -169,6 +170,7 @@ public class OverviewFragment extends Fragment {
     private void showSearch(String query, ArrayList<String> results) {
         Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString("caller", "overview");
         bundle.putString("query", query);
         bundle.putStringArrayList("results", results);
         bundle.putString("scope", "overview");
@@ -213,15 +215,14 @@ public class OverviewFragment extends Fragment {
                 break;
             case R.id.action_about:
                 Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("caller", "overview");
+                mainAbout.putExtras(bundle);
+                mainAbout.setFlags(0);
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
         }
         return true;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {

@@ -1,15 +1,24 @@
 package com.hcmus.apum;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
+
+import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchActivity extends AppCompatActivity {
     private Context context = SearchActivity.this;
@@ -51,7 +60,14 @@ public class SearchActivity extends AppCompatActivity {
         results = findViewById(R.id.results);
         results.setEmptyView(findViewById(R.id.no_results));
         results.setAdapter(adapter);
-        results.setOnItemClickListener((adapterView, view, i, l) -> showPreview(i));
+        results.setOnItemClickListener(this::resultClicked);
+
+        // Set values to return
+        Intent searchMain = new Intent();
+        Bundle returnBundle = new Bundle();
+        returnBundle.putString("caller", bundle.getString("caller"));
+        searchMain.putExtras(returnBundle);
+        setResult(Activity.RESULT_OK, searchMain);
     }
 
     private void showContent(int pos) {
@@ -71,6 +87,7 @@ public class SearchActivity extends AppCompatActivity {
     private void showPreview(int pos) {
         Intent searchPreview = new Intent(context, PreviewActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString("caller", "search");
         bundle.putStringArrayList("thumbnails", resultList);
         bundle.putInt("position", pos);
         searchPreview.putExtras(bundle);

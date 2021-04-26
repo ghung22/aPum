@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -146,6 +147,7 @@ public class AlbumsFragment extends Fragment {
 
         Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString("caller", "albums");
         bundle.putString("album", albumPath);
         bundle.putStringArrayList("container", container);
         mainContent.putExtras(bundle);
@@ -155,6 +157,7 @@ public class AlbumsFragment extends Fragment {
     private void showSearch(String query, ArrayList<String> results) {
         Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putString("caller", "albums");
         bundle.putString("query", query);
         bundle.putStringArrayList("results", results);
         bundle.putString("scope", "albums");
@@ -182,6 +185,9 @@ public class AlbumsFragment extends Fragment {
                 break;
             case R.id.action_about:
                 Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("caller", "albums");
+                mainAbout.putExtras(bundle);
                 mainAbout.setFlags(0);
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;

@@ -1,19 +1,25 @@
 package com.hcmus.apum;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,27 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Init controls
         navBar = (BottomNavigationView) findViewById(R.id.navBar);
-        navBar.setOnNavigationItemSelectedListener(item -> {
-            FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
-            switch (item.getItemId()) {
-                case R.id.action_overview:
-                    ft_navBar.replace(R.id.frame, overview);
-                    break;
-                case R.id.action_albums:
-                    ft_navBar.replace(R.id.frame, albums);
-                    break;
-                case R.id.action_faces:
-                    ft_navBar.replace(R.id.frame, faces);
-                    break;
-                case R.id.action_favorite:
-                    ft_navBar.replace(R.id.frame, favorite);
-                    break;
-            }
-            ft_navBar.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft_navBar.addToBackStack(null);
-            ft_navBar.commit();
-            return true;
-        });
+        navBar.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
     }
 //    public void AddData(String newEntry){
 //        insertData = db_fav.addData(newEntry);
@@ -106,6 +92,63 @@ public class MainActivity extends AppCompatActivity {
 //    private void debugMsg(String msg){
 //        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
 //    }
+
+    private boolean switchFragment(int itemId) {
+        FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
+        switch (itemId) {
+            case R.id.action_overview:
+                ft_navBar.replace(R.id.frame, overview);
+                break;
+            case R.id.action_albums:
+                ft_navBar.replace(R.id.frame, albums);
+                break;
+            case R.id.action_faces:
+                ft_navBar.replace(R.id.frame, faces);
+                break;
+            case R.id.action_favorite:
+                ft_navBar.replace(R.id.frame, favorite);
+                break;
+        }
+        ft_navBar.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft_navBar.addToBackStack(null);
+        ft_navBar.commit();
+        return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // When return data exists
+        if (data != null) {
+            Bundle bundle = data.getExtras();
+            String caller = bundle.getString("caller");
+            switch (caller) {
+                case "albums":
+                    switchFragment(R.id.action_albums);
+                    break;
+                case "faces":
+                    switchFragment(R.id.action_faces);
+                    break;
+                case "favorite":
+                    switchFragment(R.id.action_favorite);
+                    break;
+                default:
+                    switchFragment(R.id.action_overview);
+                    break;
+            }
+            return;
+        }
+
+        // Check for which activity returned to MainActivity
+        if (requestCode == CAMERA_REQUEST_CODE) {
+            switchFragment(R.id.action_overview);
+        } else if (requestCode == CONTENT_REQUEST_CODE) {
+            switchFragment(R.id.action_albums);
+        } else {
+            switchFragment(R.id.action_overview);
+        }
+    }
 
     @Override
     public void onBackPressed() {

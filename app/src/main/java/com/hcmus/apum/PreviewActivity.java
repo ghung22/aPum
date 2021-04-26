@@ -3,6 +3,7 @@ package com.hcmus.apum;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class PreviewActivity extends AppCompatActivity {
@@ -96,12 +99,14 @@ public class PreviewActivity extends AppCompatActivity {
             }
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imgPreview.setImageBitmap(myBitmap);
-        } else {
-
         }
-//        imgPreview.setImageResource(thumbnails.get(pos));
 
-
+        // Set values to return
+        Intent previewMain = new Intent();
+        Bundle returnBundle = new Bundle();
+        returnBundle.putString("caller", bundle.getString("caller"));
+        previewMain.putExtras(returnBundle);
+        setResult(Activity.RESULT_OK, previewMain);
     }
 
     @Override
@@ -174,5 +179,11 @@ public class PreviewActivity extends AppCompatActivity {
                 Log.e("ExternalStorage", "-> uri=" + uri);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishActivity(PREVIEW_REQUEST_CODE);
     }
 }
