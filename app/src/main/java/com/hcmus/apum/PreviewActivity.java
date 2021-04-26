@@ -138,14 +138,12 @@ public class PreviewActivity extends AppCompatActivity {
             case R.id.action_favorite:
                 mediaManager.addFavorites(thumbnails, pos, db_fav);
                 if(mediaManager.checkFavorites(thumbnails,pos)) {
-                    fav.getIcon().setColorFilter(this.getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-                    Toast.makeText(this, "add", Toast.LENGTH_LONG).show();
-                }else {
-                    fav.getIcon().setColorFilter(this.getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-                    Toast.makeText(this, "remove", Toast.LENGTH_LONG).show();
+                    fav.setIcon(R.drawable.ic_fav);
+                    Toast.makeText(this, "Added image to Favorite", Toast.LENGTH_LONG).show();
+                } else {
+                    fav.setIcon(R.drawable.ic_fav_outline);
+                    Toast.makeText(this, "Removed image from Favorite", Toast.LENGTH_LONG).show();
                 }
-//                fav_ic.setTint(Color.parseColor("#FF0000"));
-                //Toast.makeText(this, "oke", Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_info:
                 Toast.makeText(this, pos, Toast.LENGTH_LONG).show();

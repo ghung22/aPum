@@ -27,20 +27,13 @@ import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
 public class FavoriteFragment extends Fragment {
 
     // GUI controls
-    AppBarLayout appbar;
-    CollapsingToolbarLayout collapsingToolbar;
-    Toolbar toolbar;
-    NestedScrollView scroll;
-    ListView list;
-    FavoriteAdapter adapter;
-    // Test values
-    final String[] items = {"Ant","Baby","Clown", "Duck", "Elephant", "Family", "Good", "Happy", "Igloo",
-            "Jumping", "King", "Love", "Mother", "Napkin", "Orange", "Pillow"};
-//    final int[] images = {R.drawable.ant, R.drawable.baby, R.drawable.clown, R.drawable.duck,
-//            R.drawable.elephant, R.drawable.family, R.drawable.good, R.drawable.happy,
-//            R.drawable.igloo, R.drawable.jumping, R.drawable.king, R.drawable.love,
-//            R.drawable.mother, R.drawable.napkin, R.drawable.orange, R.drawable.pillow};
-    private ArrayList<String> images;
+    private AppBarLayout appbar;
+    private CollapsingToolbarLayout collapsingToolbar;
+    private Toolbar toolbar;
+    private NestedScrollView scroll;
+    private ListView list;
+    private FavoriteAdapter adapter;
+
     public FavoriteFragment() {
         // Required empty public constructor
     }
