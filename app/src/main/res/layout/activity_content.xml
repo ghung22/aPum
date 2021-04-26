@@ -18,7 +18,7 @@
         android:horizontalSpacing="5dp" android:verticalSpacing="10dp"
         android:gravity="center" android:stretchMode="columnWidth"
         android:nestedScrollingEnabled="true"/>
-    <TextView android:id="@+id/no_content" android:visibility="gone"
+    <TextView android:id="@+id/no_media" android:visibility="gone" android:alpha="0.5"
         android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="@string/info_no_media" android:textAlignment="center" android:textSize="24pt"/>
+        android:text="@string/info_no_media" android:textAlignment="center" android:textSize="10pt"/>
 </LinearLayout>

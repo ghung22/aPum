@@ -80,7 +80,7 @@ public class FavoriteFragment extends Fragment {
         scroll = (NestedScrollView) view.findViewById(R.id.scroll);
         adapter = new FavoriteAdapter(getActivity());
         list = (ListView) view.findViewById(R.id.list);
-        list.setEmptyView(view.findViewById(R.id.empty));
+        list.setEmptyView(view.findViewById(R.id.no_media));
         list.setAdapter(adapter);
 
         // Init actionbar buttons

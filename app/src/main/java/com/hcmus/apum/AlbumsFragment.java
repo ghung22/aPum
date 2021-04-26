@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -75,7 +74,7 @@ public class AlbumsFragment extends Fragment {
         scroll = view.findViewById(R.id.scroll);
         adapter = new AlbumAdapter(getActivity(), mediaManager.getAlbums(), mediaManager.getAlbumCounts());
         list = view.findViewById(R.id.list);
-        list.setEmptyView(view.findViewById(R.id.empty));
+        list.setEmptyView(view.findViewById(R.id.no_media));
         list.setAdapter(adapter);
         list.setOnItemClickListener(this::showContent);
 

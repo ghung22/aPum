@@ -82,7 +82,7 @@ public class OverviewFragment extends Fragment {
         scroll = view.findViewById(R.id.scroll);
         adapter = new OverviewAdapter(getActivity(), mediaManager.getImages());
         grid = view.findViewById(R.id.grid);
-        grid.setEmptyView(view.findViewById(R.id.empty));
+        grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
 

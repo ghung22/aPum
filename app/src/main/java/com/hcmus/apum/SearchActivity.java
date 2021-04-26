@@ -58,7 +58,7 @@ public class SearchActivity extends AppCompatActivity {
         // Update content
         adapter = new SearchAdapter(context, resultList, scope);
         results = findViewById(R.id.results);
-        results.setEmptyView(findViewById(R.id.no_results));
+        results.setEmptyView(findViewById(R.id.no_media));
         results.setAdapter(adapter);
         results.setOnItemClickListener(this::resultClicked);
 

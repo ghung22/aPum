@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -54,7 +53,7 @@ public class ContentActivity extends AppCompatActivity {
         // Update content
         adapter = new ContentAdapter(context, container);
         content = findViewById(R.id.content);
-        content.setEmptyView(findViewById(R.id.no_content));
+        content.setEmptyView(findViewById(R.id.no_media));
         content.setAdapter(adapter);
         content.setOnItemClickListener((adapterView, view, i, l) -> showPreview(i));
 
