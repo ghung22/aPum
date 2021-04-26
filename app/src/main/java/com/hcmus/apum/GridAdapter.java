@@ -1,39 +1,28 @@
 package com.hcmus.apum;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class ContentAdapter extends BaseAdapter {
+public class GridAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
 
-    public ContentAdapter(Context context, ArrayList<String> mediaList) {
+    public GridAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
         this.mediaList = mediaList;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -72,4 +61,5 @@ public class ContentAdapter extends BaseAdapter {
         img.setId(pos);
         return img;
     }
+
 }

@@ -22,7 +22,7 @@ public class ContentActivity extends AppCompatActivity {
     // GUI Controls
     private Toolbar toolbar;
     private GridView content;
-    private ContentAdapter adapter;
+    private GridAdapter adapter;
 
     // Content
     private String album;
@@ -51,7 +51,7 @@ public class ContentActivity extends AppCompatActivity {
         }
 
         // Update content
-        adapter = new ContentAdapter(context, container);
+        adapter = new GridAdapter(context, container);
         content = findViewById(R.id.content);
         content.setEmptyView(findViewById(R.id.no_media));
         content.setAdapter(adapter);

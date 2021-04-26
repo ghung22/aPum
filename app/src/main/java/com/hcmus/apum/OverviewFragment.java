@@ -46,7 +46,7 @@ public class OverviewFragment extends Fragment {
     private Toolbar toolbar;
     private NestedScrollView scroll;
     private GridView grid;
-    private OverviewAdapter adapter;
+    private GridAdapter adapter;
 
     // Search
     private MenuItem searchItem;
@@ -80,7 +80,7 @@ public class OverviewFragment extends Fragment {
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new OverviewAdapter(getActivity(), mediaManager.getImages());
+        adapter = new GridAdapter(getActivity(), mediaManager.getImages());
         grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
