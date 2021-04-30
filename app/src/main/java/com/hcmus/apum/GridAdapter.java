@@ -19,13 +19,11 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class GridAdapter extends BaseAdapter {
     private final Context context;
-    private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
 
     public GridAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
         this.mediaList = mediaList;
-        inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override

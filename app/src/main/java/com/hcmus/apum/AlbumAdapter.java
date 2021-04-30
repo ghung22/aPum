@@ -20,7 +20,6 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class AlbumAdapter extends BaseAdapter {
     private final Context context;
-    private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
     private final ArrayList<Integer> mediaCount;
 
@@ -28,7 +27,6 @@ public class AlbumAdapter extends BaseAdapter {
         this.context = context;
         this.mediaList = mediaList;
         this.mediaCount = mediaCount;
-        inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override

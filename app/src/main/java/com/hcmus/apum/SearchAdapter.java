@@ -21,7 +21,6 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchAdapter extends BaseAdapter {
     private final Context context;
-    private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
     private final String scope;
 
@@ -29,7 +28,6 @@ public class SearchAdapter extends BaseAdapter {
         this.context = context;
         this.mediaList = mediaList;
         this.scope = scope;
-        inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override

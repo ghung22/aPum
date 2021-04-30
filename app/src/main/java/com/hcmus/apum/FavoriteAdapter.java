@@ -19,6 +19,7 @@ public class FavoriteAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
     private final ArrayList<String> fav_images;
     DatabaseFavorites db_fav;
+
     public FavoriteAdapter(Context context) {
         this.context = context;
         //this.fav_images = mediaManager.getFavorites();

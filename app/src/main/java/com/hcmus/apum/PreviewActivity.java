@@ -3,27 +3,32 @@ package com.hcmus.apum;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.database.SQLException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.Scroller;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
@@ -32,22 +37,68 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 public class PreviewActivity extends AppCompatActivity {
 
     // GUI controls
-    Toolbar toolbar;
-    BottomNavigationView bottomToolbar;
+    private Toolbar toolbar;
+    private BottomNavigationView bottomToolbar;
 
     // Elements
-    ImageView imgPreview;
+    private ViewPager imgPreview;
+    private PreviewAdapter adapter;
+
+    // Bundle data
+    ArrayList<String> thumbnails;
+    int pos;
 
     //DB
-    DatabaseFavorites db_fav;
+    private DatabaseFavorites db_fav;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
 
+        // Get values from bundle
+        Intent mainPreview = getIntent();
+        Bundle bundle = mainPreview.getExtras();
+        thumbnails = bundle.getStringArrayList("thumbnails");
+        pos = bundle.getInt("position");
+        File imgFile = new File(thumbnails.get(pos));
+
         // Init preview layout
+        adapter = new PreviewAdapter(this, thumbnails);
         imgPreview = findViewById(R.id.img_preview);
+        imgPreview.setAdapter(adapter);
+        imgPreview.setCurrentItem(pos);
+        setScroller(2f);
+        imgPreview.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            private float lastOffset = 0f;
+
+            // Snap to page based on how much user have scrolled
+            @Override
+            public void onPageScrolled(int position, float offset, int offsetPixels) {
+                if (offset < lastOffset && offset < .9f) {
+                    imgPreview.setCurrentItem(position);
+                } else if (offset > lastOffset && offset > .1f) {
+                    imgPreview.setCurrentItem(position + 1);
+                }
+                lastOffset = offset;
+            }
+
+            // Update favorite status of current image
+            @Override
+            public void onPageSelected(int position) {
+                Menu menu = bottomToolbar.getMenu();
+                MenuItem fav = menu.findItem(R.id.action_favorite);
+                if (mediaManager.isFavorite(thumbnails.get(pos))) {
+                    fav.setIcon(R.drawable.ic_fav);
+                } else {
+                    fav.setIcon(R.drawable.ic_fav_outline);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
 
         //Database
         db_fav = new DatabaseFavorites(this);
@@ -56,19 +107,7 @@ public class PreviewActivity extends AppCompatActivity {
         } catch (IOException ioe) {
             throw new Error("Unable to create database");
         }
-        try {
-            db_fav.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
-
-        // Get values from bundle
-        Intent mainPreview = getIntent();
-        Bundle bundle = mainPreview.getExtras();
-        String[] items = bundle.getStringArray("items");
-        ArrayList<String> thumbnails = bundle.getStringArrayList("thumbnails");
-        int pos = bundle.getInt("position");
-        File imgFile = new File(thumbnails.get(pos));
+        db_fav.openDataBase();
 
         // Init actionbar buttons
         toolbar = findViewById(R.id.menu_preview);
@@ -81,19 +120,6 @@ public class PreviewActivity extends AppCompatActivity {
         }
         bottomToolbar = findViewById(R.id.bottomBar_preview);
         bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction((String) item.getTitle()));
-
-        // Apply data
-        Menu menu = bottomToolbar.getMenu();
-        MenuItem fav = menu.findItem(R.id.action_favorite);
-        if (imgFile.exists()) {
-            if (mediaManager.isFavorite(thumbnails.get(pos))) {
-                fav.setIcon(R.drawable.ic_fav);
-            } else {
-                fav.setIcon(R.drawable.ic_fav_outline);
-            }
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imgPreview.setImageBitmap(myBitmap);
-        }
 
         // Set values to return
         Intent previewMain = new Intent();
@@ -111,20 +137,8 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        Intent mainPreview = getIntent();
-        Bundle bundle = mainPreview.getExtras();
-        String[] items = bundle.getStringArray("items");
-        ArrayList<String> thumbnails = bundle.getStringArrayList("thumbnails");
-        int pos = bundle.getInt("position");
-        File imgFile = new File(thumbnails.get(pos));
         Menu menu = toolbar.getMenu();
         MenuItem fav = menu.findItem(R.id.action_favorite);
-        if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imgPreview.setImageBitmap(myBitmap);
-        } else {
-
-        }
         switch (menuItem.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -199,9 +213,53 @@ public class PreviewActivity extends AppCompatActivity {
         });
     }
 
+    // Set custom scroll speed for ViewPager
+    private void setScroller(float rate) {
+        try {
+            Field scroller = ViewPager.class.getDeclaredField("mScroller");
+            scroller.setAccessible(true);
+            Field interpolator = ViewPager.class.getDeclaredField("sInterpolator");
+            interpolator.setAccessible(true);
+
+            FixedSpeedScroller newScroller = new FixedSpeedScroller(this, (Interpolator) interpolator.get(null));
+            newScroller.setScrollRate(rate);
+            scroller.set(imgPreview, newScroller);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finishActivity(PREVIEW_REQUEST_CODE);
+    }
+}
+
+class FixedSpeedScroller extends Scroller {
+    private double scrollRate = 1;
+
+    public FixedSpeedScroller(Context context) {
+        super(context);
+    }
+
+    public FixedSpeedScroller(Context context, Interpolator interpolator) {
+        super(context, interpolator);
+    }
+
+    public FixedSpeedScroller(Context context, Interpolator interpolator, boolean flywheel) {
+        super(context, interpolator, flywheel);
+    }
+
+    /**
+     * Set the factor by which the duration will change
+     */
+    public void setScrollRate(double scrollRate) {
+        this.scrollRate = scrollRate;
+    }
+
+    @Override
+    public void startScroll(int startX, int startY, int dx, int dy, int duration) {
+        super.startScroll(startX, startY, dx, dy, (int) (duration * scrollRate));
     }
 }
