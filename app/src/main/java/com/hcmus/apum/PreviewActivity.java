@@ -80,7 +80,7 @@ public class PreviewActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         bottomToolbar = findViewById(R.id.bottomBar_preview);
-        bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction(item.getTitle()));
+        bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction((String) item.getTitle()));
 
         // Apply data
         Menu menu = bottomToolbar.getMenu();
@@ -129,6 +129,7 @@ public class PreviewActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
+
             // Top toolbar
             case R.id.action_info:
                 Toast.makeText(this, pos, Toast.LENGTH_LONG).show();
@@ -136,6 +137,7 @@ public class PreviewActivity extends AppCompatActivity {
                 break;
             case R.id.action_wallpaper:
                 break;
+
             // Bottom toolbar
             case R.id.action_favorite:
                 mediaManager.addFavorites(thumbnails, pos, db_fav);
@@ -161,7 +163,7 @@ public class PreviewActivity extends AppCompatActivity {
         return true;
     }
 
-    private void bottomToolbarAction(String title) {
+    private boolean bottomToolbarAction(String title) {
         if (title.equals(getResources().getString(R.string.fragment_favorite))) {
 
         } else if (title.equals(getResources().getString(R.string.action_edit))) {
@@ -173,6 +175,7 @@ public class PreviewActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
         }
+        return true;
     }
 
     public void deleteImg(String path_img){
