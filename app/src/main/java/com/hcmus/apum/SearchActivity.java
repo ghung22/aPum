@@ -51,7 +51,8 @@ public class SearchActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
-            actionBar.setTitle(scope + ":" + query);
+            actionBar.setTitle(String.format("\"%s\" in %s",
+                    query, scope.substring(0, 1).toUpperCase() + scope.substring(1)));
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 

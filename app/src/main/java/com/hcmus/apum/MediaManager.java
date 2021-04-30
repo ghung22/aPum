@@ -248,8 +248,17 @@ public class MediaManager {
         query = query.toLowerCase();
         for (String i: scopedList) {
             String i_lower = i.toLowerCase();
+            // Search by name
             if (i_lower.substring(i.lastIndexOf("/") + 1).contains(query)) {
                 results.add(i);
+            }
+
+            // Search by container
+            if (scope.equals("overview")) {
+                String dir = i_lower.substring(0, i.lastIndexOf("/"));
+                if (dir.substring(dir.lastIndexOf("/") + 1).contains(query)) {
+                    results.add(i);
+                }
             }
         }
 
