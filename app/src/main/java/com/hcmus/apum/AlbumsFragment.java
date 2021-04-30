@@ -190,6 +190,9 @@ public class AlbumsFragment extends Fragment {
                 mainAbout.setFlags(0);
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
+            default:
+                Toast.makeText(getContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                break;
         }
         return true;
     }

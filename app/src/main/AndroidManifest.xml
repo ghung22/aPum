@@ -41,7 +41,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar.FullScreen" />
         <activity
             android:name=".ContentActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -53,7 +53,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar.FullScreen" />
         <activity
             android:name=".SearchActivity"
             android:configChanges="orientation|keyboardHidden"

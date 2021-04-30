@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:padding="3dp"
     android:background="@color/black">
@@ -10,8 +11,26 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:popupTheme="?popupTheme"/>
 
-    <ImageView android:id="@+id/imgPreview"
+    <ImageView android:id="@+id/img_preview"
         android:layout_width="match_parent" android:layout_height="0dip"
         android:layout_gravity="center|fill" android:layout_weight="2"/>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent" android:layout_height="?actionBarSize">
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@android:color/transparent"
+            app:fabAlignmentMode="center"
+            app:contentInsetLeft="0dp" app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp" app:contentInsetEnd="0dp">
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomBar_preview"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                app:menu="@menu/menu_bottom_preview" app:labelVisibilityMode="unlabeled"
+                app:itemIconTint="@color/white"/>
+        </com.google.android.material.bottomappbar.BottomAppBar>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </LinearLayout>

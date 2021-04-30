@@ -99,8 +99,8 @@ public class MediaManager {
         //db.addData(i.get(pos));
     }
 
-    public boolean checkFavorites(ArrayList<String> thumbs, int pos){
-        boolean check = thumbs.contains(thumbs.get(pos));
+    public boolean isFavorite(String thumb){
+        boolean check = favorites.contains(thumb);
         return check;
     }
 

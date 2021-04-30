@@ -33,6 +33,8 @@
     <!--  Preview options  -->
     <string name="action_wallpaper">Set as wallpaper</string>
     <string name="action_info">Information</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
 
     <!--  Placeholder text  -->
     <string name="placeholder_album_name">Null album</string>
@@ -47,4 +49,5 @@
     <!--  Error text  -->
     <string name="err_camera">(!) Problem opening the camera.</string>
     <string name="err_search_not_found">(!) No item found.</string>
+    <string name="action_share">Share</string>
 </resources>

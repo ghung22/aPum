@@ -4,34 +4,26 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
@@ -41,6 +33,7 @@ public class PreviewActivity extends AppCompatActivity {
 
     // GUI controls
     Toolbar toolbar;
+    BottomNavigationView bottomToolbar;
 
     // Elements
     ImageView imgPreview;
@@ -54,7 +47,7 @@ public class PreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_preview);
 
         // Init preview layout
-        imgPreview = findViewById(R.id.imgPreview);
+        imgPreview = findViewById(R.id.img_preview);
 
         //Database
         db_fav = new DatabaseFavorites(this);
@@ -82,20 +75,20 @@ public class PreviewActivity extends AppCompatActivity {
         toolbar.inflateMenu(R.menu.menu_preview);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-
         if (actionBar != null) {
             actionBar.setTitle(imgFile.getName());
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        bottomToolbar = findViewById(R.id.bottomBar_preview);
 
-        Menu menu = toolbar.getMenu();
+        // Apply data
+        Menu menu = bottomToolbar.getMenu();
         MenuItem fav = menu.findItem(R.id.action_favorite);
-
-        if(imgFile.exists()){
-            if(mediaManager.checkFavorites(thumbnails,pos)) {
-                fav.getIcon().setColorFilter(this.getColor(R.color.red), PorterDuff.Mode.SRC_IN);
-            }else {
-                fav.getIcon().setColorFilter(this.getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        if (imgFile.exists()) {
+            if (mediaManager.isFavorite(thumbnails.get(pos))) {
+                fav.setIcon(R.drawable.ic_fav);
+            } else {
+                fav.setIcon(R.drawable.ic_fav_outline);
             }
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imgPreview.setImageBitmap(myBitmap);
@@ -135,24 +128,33 @@ public class PreviewActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
-            case R.id.action_favorite:
-                mediaManager.addFavorites(thumbnails, pos, db_fav);
-                if(mediaManager.checkFavorites(thumbnails,pos)) {
-                    fav.setIcon(R.drawable.ic_fav);
-                    Toast.makeText(this, "Added image to Favorite", Toast.LENGTH_LONG).show();
-                } else {
-                    fav.setIcon(R.drawable.ic_fav_outline);
-                    Toast.makeText(this, "Removed image from Favorite", Toast.LENGTH_LONG).show();
-                }
-                break;
+            // Top toolbar
             case R.id.action_info:
                 Toast.makeText(this, pos, Toast.LENGTH_LONG).show();
                 //Toast.makeText(getContext(),img.toString(), Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_wallpaper:
                 break;
+            // Bottom toolbar
+            case R.id.action_favorite:
+                mediaManager.addFavorites(thumbnails, pos, db_fav);
+                if(mediaManager.isFavorite(thumbnails.get(pos))) {
+                    fav.setIcon(R.drawable.ic_fav);
+                    Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
+                } else {
+                    fav.setIcon(R.drawable.ic_fav_outline);
+                    Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.action_edit:
+                break;
+            case R.id.action_share:
+                break;
             case R.id.action_delete:
                 deleteImg(thumbnails.get(pos));
+                break;
+            default:
+                Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;

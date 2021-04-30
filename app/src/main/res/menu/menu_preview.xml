@@ -4,17 +4,13 @@
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
-        android:id="@+id/action_favorite"
-        android:icon="@drawable/ic_fav_outline"
-        android:title="@string/fragment_favorite"
+        android:id="@+id/action_info"
+        android:icon="@drawable/ic_info"
+        android:title="@string/action_info"
         app:showAsAction="always"
         tools:ignore="AppCompatResource"/>
 
     <!-- Settings, should always be in the overflow -->
-    <item android:id="@+id/action_info"
-        android:title="@string/action_info"
-        app:showAsAction="never"
-        tools:ignore="AppCompatResource"/>
     <item android:id="@+id/action_wallpaper"
         android:title="@string/action_wallpaper"
         app:showAsAction="never"
