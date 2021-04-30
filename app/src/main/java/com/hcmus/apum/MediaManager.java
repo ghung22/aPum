@@ -250,14 +250,18 @@ public class MediaManager {
             String i_lower = i.toLowerCase();
             // Search by name
             if (i_lower.substring(i.lastIndexOf("/") + 1).contains(query)) {
-                results.add(i);
+                if (!results.contains(i)) {
+                    results.add(i);
+                }
             }
 
-            // Search by container
+            // Search by album names
             if (scope.equals("overview")) {
                 String dir = i_lower.substring(0, i.lastIndexOf("/"));
                 if (dir.substring(dir.lastIndexOf("/") + 1).contains(query)) {
-                    results.add(i);
+                    if (!results.contains(i)) {
+                        results.add(i);
+                    }
                 }
             }
         }
