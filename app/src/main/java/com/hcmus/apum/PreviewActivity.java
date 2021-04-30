@@ -80,6 +80,7 @@ public class PreviewActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         bottomToolbar = findViewById(R.id.bottomBar_preview);
+        bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction(item.getTitle()));
 
         // Apply data
         Menu menu = bottomToolbar.getMenu();
@@ -158,6 +159,20 @@ public class PreviewActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    private void bottomToolbarAction(String title) {
+        if (title.equals(getResources().getString(R.string.fragment_favorite))) {
+
+        } else if (title.equals(getResources().getString(R.string.action_edit))) {
+
+        } else if (title.equals(getResources().getString(R.string.action_share))) {
+
+        } else if (title.equals(getResources().getString(R.string.action_delete))) {
+
+        } else {
+            Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void deleteImg(String path_img){
