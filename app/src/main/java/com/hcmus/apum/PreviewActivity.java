@@ -102,16 +102,10 @@ public class PreviewActivity extends AppCompatActivity {
                 lastOffset = offset;
             }
 
-            // Update favorite status of current image
+            // Update UI according to of current image
             @Override
             public void onPageSelected(int position) {
-                Menu menu = bottomToolbar.getMenu();
-                MenuItem fav = menu.findItem(R.id.action_favorite);
-                if (mediaManager.isFavorite(mediaList.get(pos))) {
-                    fav.setIcon(R.drawable.ic_fav);
-                } else {
-                    fav.setIcon(R.drawable.ic_fav_outline);
-                }
+                updateUI(position);
             }
 
             @Override
@@ -132,11 +126,9 @@ public class PreviewActivity extends AppCompatActivity {
         toolbar.inflateMenu(R.menu.menu_preview);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            String path = mediaList.get(pos);
-            actionBar.setTitle(path.substring(path.lastIndexOf('/') + 1));
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        String path = mediaList.get(pos);
+        actionBar.setTitle(path.substring(path.lastIndexOf('/') + 1));
+        actionBar.setDisplayHomeAsUpEnabled(true);
         bottomToolbar = findViewById(R.id.bottomBar_preview);
         bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction((String) item.getTitle()));
 
@@ -146,6 +138,25 @@ public class PreviewActivity extends AppCompatActivity {
         returnBundle.putString("caller", bundle.getString("caller"));
         previewMain.putExtras(returnBundle);
         setResult(Activity.RESULT_OK, previewMain);
+    }
+
+    private void updateUI(int pos) {
+        // Data
+        this.pos = pos;
+
+        // Top toolbar
+        ActionBar actionBar = getSupportActionBar();
+        String path = mediaList.get(pos);
+        actionBar.setTitle(path.substring(path.lastIndexOf('/') + 1));
+
+        // Bottom toolbar
+        Menu menu = bottomToolbar.getMenu();
+        MenuItem fav = menu.findItem(R.id.action_favorite);
+        if (mediaManager.isFavorite(mediaList.get(pos))) {
+            fav.setIcon(R.drawable.ic_fav);
+        } else {
+            fav.setIcon(R.drawable.ic_fav_outline);
+        }
     }
 
     private void initInfoDialog() {
@@ -224,7 +235,7 @@ public class PreviewActivity extends AppCompatActivity {
             info_map_view.getMapAsync(googleMap -> {
                 LatLng location = new LatLng(latitude, longitude);
                 Marker marker = googleMap.addMarker(new MarkerOptions().position(location));
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
             });
         } else {
             info_map_row.setVisibility(View.GONE);
