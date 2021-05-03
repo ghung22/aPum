@@ -80,7 +80,7 @@ public class OverviewFragment extends Fragment {
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new GridAdapter(getActivity(), mediaManager.getImages());
+        adapter = new GridAdapter(getActivity(), mediaManager.sort(mediaManager.getImages(), "date", false));
         grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);

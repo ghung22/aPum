@@ -26,8 +26,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -188,6 +191,10 @@ public class MediaManager {
             modTime = Files.getLastModifiedTime(Paths.get(path));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        if (format.equals("epoch")) {
+            return String.valueOf(modTime.toInstant().getEpochSecond());
         }
         return DateTimeFormatter.ofPattern(format, Locale.ENGLISH)
                 .withZone(ZoneId.systemDefault())
@@ -418,5 +425,41 @@ public class MediaManager {
         }
 
         return results;
+    }
+
+    public ArrayList<String> sort(ArrayList<String> org, String type, boolean ascending) {
+        ArrayList<String> sorted = new ArrayList<>();
+        switch (type) {
+            case "name":
+                TreeMap<String, String> names = new TreeMap<>();
+                for (String path : org) {
+                    names.put(path.substring(path.lastIndexOf('/')), path);
+                }
+                for (Map.Entry<String, String> set : names.entrySet()) {
+                    sorted.add(set.getValue());
+                }
+                break;
+            case "date":
+                TreeMap<Long, String> dates = new TreeMap<>();
+                for (String path : org) {
+                    dates.put(Long.parseLong(getModifiedTime(path, "epoch")), path);
+                }
+                for (Map.Entry<Long, String> set : dates.entrySet()) {
+                    sorted.add(set.getValue());
+                }
+                break;
+            default:
+                sorted = org;
+                break;
+        }
+        if (!ascending) {
+            Collections.reverse(sorted);
+        }
+
+        return sorted;
+    }
+
+    public ArrayList<String> sort(ArrayList<String> org, String type) {
+        return sort(org, type,true);
     }
 }

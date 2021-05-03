@@ -15,6 +15,7 @@ import android.widget.GridView;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class ContentActivity extends AppCompatActivity {
     private final Context context = ContentActivity.this;
@@ -51,7 +52,7 @@ public class ContentActivity extends AppCompatActivity {
         }
 
         // Update content
-        adapter = new GridAdapter(context, container);
+        adapter = new GridAdapter(context, mediaManager.sort(container, "date", false));
         content = findViewById(R.id.content);
         content.setEmptyView(findViewById(R.id.no_media));
         content.setAdapter(adapter);
