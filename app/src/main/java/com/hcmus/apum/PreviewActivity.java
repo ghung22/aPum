@@ -86,21 +86,11 @@ public class PreviewActivity extends AppCompatActivity {
         adapter = new PreviewAdapter(this, mediaList);
         imgPreview = findViewById(R.id.img_preview);
         imgPreview.setAdapter(adapter);
-        imgPreview.setCurrentItem(pos);
-        setScroller(2f);
+        imgPreview.setCurrentItem(pos, true);
         imgPreview.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            private float lastOffset = 0f;
-
             // Snap to page based on how much user have scrolled
             @Override
-            public void onPageScrolled(int position, float offset, int offsetPixels) {
-                if (offset < lastOffset && offset < .9f) {
-                    imgPreview.setCurrentItem(position);
-                } else if (offset > lastOffset && offset > .1f) {
-                    imgPreview.setCurrentItem(position + 1);
-                }
-                lastOffset = offset;
-            }
+            public void onPageScrolled(int position, float offset, int offsetPixels) {}
 
             // Update UI according to of current image
             @Override
@@ -334,22 +324,6 @@ public class PreviewActivity extends AppCompatActivity {
                 Log.e("ExternalStorage", "-> uri=" + uri);
             }
         });
-    }
-
-    // Set custom scroll speed for ViewPager
-    private void setScroller(float rate) {
-        try {
-            Field scroller = ViewPager.class.getDeclaredField("mScroller");
-            scroller.setAccessible(true);
-            Field interpolator = ViewPager.class.getDeclaredField("sInterpolator");
-            interpolator.setAccessible(true);
-
-            FixedSpeedScroller newScroller = new FixedSpeedScroller(this, (Interpolator) interpolator.get(null));
-            newScroller.setScrollRate(rate);
-            scroller.set(imgPreview, newScroller);
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
