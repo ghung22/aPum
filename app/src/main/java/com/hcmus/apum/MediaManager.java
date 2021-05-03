@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Geocoder;
+import android.location.Location;
+import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -23,6 +26,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static com.hcmus.apum.MainActivity.mediaManager;
@@ -30,11 +34,11 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 public class MediaManager {
     private ArrayList<String> images, albums, faces, favorites;
     private ArrayList<Integer> albumCounts;
-    private final ArrayList<String>
+    public final ArrayList<String>
             extImg = new ArrayList<>(
             Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
     );
-    private final ArrayList<String> extVid = new ArrayList<>(
+    public final ArrayList<String> extVid = new ArrayList<>(
             Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
     );
     DatabaseFavorites db;
@@ -194,6 +198,73 @@ public class MediaManager {
         return getModifiedTime(path, "");
     }
 
+    public String getSize(String path) {
+        File f = new File(path);
+        if (!f.isFile()) {
+            return "null";
+        }
+        float size = f.length();
+        if (size < 1024f) {
+            return size + "B";
+        }
+        size /= 1024;
+        if (size < 1024f) {
+            return size + "KB";
+        }
+        size /= 1024;
+        if (size < 1024f) {
+            return size + "MB";
+        }
+        size /= 1024f;
+        return size + "GB";
+    }
+
+    public ArrayList<String> getLocation(Context context, ExifInterface exif) throws IOException {
+        ArrayList<String> geo = new ArrayList<>();
+        Geocoder geocoder = new Geocoder(context);
+        String latitude = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE),
+                longitude = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+        double _lat = -1, _long = -1;
+
+        // Analise latitude
+        if (latitude != null) {
+            String[] latCoordinate = latitude.split(","),
+                    latDegree = latCoordinate[0].split("/"),
+                    latMinute = latCoordinate[1].split("/"),
+                    latSecond = latCoordinate[2].split("/");
+            _lat = Double.parseDouble(latDegree[0]) / Double.parseDouble(latDegree[1]) +
+                    Double.parseDouble(latMinute[0]) / Double.parseDouble(latMinute[1]) / 60 +
+                    Double.parseDouble(latSecond[0]) / Double.parseDouble(latSecond[1]) / 3600;
+        } else {
+            latitude = "";
+        }
+
+        // Analise longitude
+        if (longitude != null) {
+            String[] longCoordinate = longitude.split(","),
+                    longDegree = longCoordinate[0].split("/"),
+                    longMinute = longCoordinate[1].split("/"),
+                    longSecond = longCoordinate[2].split("/");
+            _long = Double.parseDouble(longDegree[0]) / Double.parseDouble(longDegree[1]) +
+                    Double.parseDouble(longMinute[0]) / Double.parseDouble(longMinute[1]) / 60 +
+                    Double.parseDouble(longSecond[0]) / Double.parseDouble(longSecond[1]) / 3600;
+        } else {
+            longitude = "";
+        }
+
+        // Parse latitude and longitude
+        if (!latitude.isEmpty()) {
+            geo.add(geocoder.getFromLocation(_lat, _long, 1).get(0).getAddressLine(0));
+            geo.add(String.valueOf(_lat));
+            geo.add(String.valueOf(_long));
+        } else {
+            geo.add("");
+            geo.add("");
+            geo.add("");
+        }
+        return geo;
+    }
+
     public File getCover(String albumPath) {
         // TODO: Cover image config file
         File dir = new File(albumPath);
@@ -209,6 +280,47 @@ public class MediaManager {
             container.add(f.getAbsolutePath());
         }
         return container;
+    }
+
+    public HashMap<String, String> getInfo(Context context, String path) {
+        HashMap<String, String> info = new HashMap<>();
+
+        // Check extension for file type
+        String ext = path.substring(path.lastIndexOf('.') + 1);
+        if (extImg.contains(ext)) {
+            // Get data from image
+            try {
+                ExifInterface exif = new ExifInterface(path);
+                // File attribute
+                info.put("fileName", path.substring(path.lastIndexOf('/') + 1));
+                info.put("fileSize", getSize(path));
+                info.put("fileLocation", path.substring(0, path.lastIndexOf('/')));
+                // Image attribute
+                // TODO: Image size not showing
+                info.put("imageSize", exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
+                        + "x" +
+                        exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
+                info.put("description", exif.getAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION));
+                info.put("camera", exif.getAttribute(ExifInterface.TAG_MAKE));
+                info.put("artist", exif.getAttribute(ExifInterface.TAG_ARTIST));
+                ArrayList<String> geo = getLocation(context, exif);
+                if (!geo.isEmpty()) {
+                    info.put("imageLocation", geo.get(0));
+                    info.put("imageLocationLat", geo.get(1));
+                    info.put("imageLocationLong", geo.get(2));
+                }
+            } catch (IOException e) {
+                info.put("err", "file not found");
+                return info;
+            }
+        } else if (extVid.contains(ext)) {
+            // Get data from video
+            info.put("err", "video not supported yet");
+        } else {
+            info.put("err", "unsupported file type");
+        }
+
+        return info;
     }
 
     public Bitmap createThumbnail(String path) {
