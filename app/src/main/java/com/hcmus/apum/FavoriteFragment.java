@@ -49,13 +49,17 @@ public class FavoriteFragment extends Fragment {
     private MenuItem searchItem;
     private SearchView searchView;
 
+    // Data
+    private ArrayList<String> mediaList = new ArrayList<>();
+
     public FavoriteFragment() {
         // Required empty public constructor
     }
 
-    public static FavoriteFragment newInstance(String param1, String param2) {
+    public static FavoriteFragment newInstance(ArrayList<String> mediaList) {
         FavoriteFragment fragment = new FavoriteFragment();
         Bundle args = new Bundle();
+        args.putStringArrayList("mediaList", mediaList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,7 +72,11 @@ public class FavoriteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_favorite, container, false);
+
+        // Init data
+        mediaList = getArguments().getStringArrayList("mediaList");
 
         // Init controls
         appbar = view.findViewById(R.id.appbar);

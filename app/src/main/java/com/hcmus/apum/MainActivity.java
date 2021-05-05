@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navBar;
 
     // Fragments
-    private final Fragment overview = new OverviewFragment();
-    private final Fragment albums = new AlbumsFragment();
-    private final Fragment faces = new FacesFragment();
-    private final Fragment favorite = new FavoriteFragment();
+    private Fragment overview;
+    private Fragment albums;
+    private Fragment faces;
+    private Fragment favorite;
 
     // For use/save state values
     private Bundle savedInstanceState;
@@ -58,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavoriteLocations(this);
+
+        // Init fragments
+        overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
+        albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
+        faces = FacesFragment.newInstance();
+        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFavorites(), "date", false));
+
         //Database
         db_fav = new DatabaseFavorites(this);
         try {

@@ -16,6 +16,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -36,7 +38,6 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class MediaManager {
     private ArrayList<String> images, albums, faces, favorites;
-    private ArrayList<Integer> albumCounts;
     public final ArrayList<String>
             extImg = new ArrayList<>(
             Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
@@ -49,7 +50,6 @@ public class MediaManager {
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
                 albums = new ArrayList<>();
-        ArrayList<Integer> albumCounts = new ArrayList<>();
         Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
@@ -72,19 +72,8 @@ public class MediaManager {
             }
         }
 
-        for (String a : albums) {
-            Integer count = 0;
-            for (String i : images) {
-                if (i.contains(a)) {
-                    count++;
-                }
-            }
-            albumCounts.add(count);
-        }
-
         this.images = images;
         this.albums = albums;
-        this.albumCounts = albumCounts;
     }
 
     public void updateFavoriteLocations(Context context) {
@@ -123,7 +112,15 @@ public class MediaManager {
         return favorites;
     }
 
-    public ArrayList<Integer> getAlbumCounts() {
+    public ArrayList<Integer> getAlbumCounts(ArrayList<String> albums) {
+        ArrayList<Integer> albumCounts = new ArrayList<>();
+        for (String album : albums) {
+            File dir = new File(album);
+            if (!dir.isDirectory()) {
+                continue;
+            }
+            albumCounts.add(dir.listFiles(getFileFilter("img")).length);
+        }
         return albumCounts;
     }
 
@@ -427,7 +424,7 @@ public class MediaManager {
         return results;
     }
 
-    public ArrayList<String> sort(ArrayList<String> org, String type, boolean ascending) {
+    public ArrayList<String> sort(@NonNull ArrayList<String> org, String type, boolean ascending) {
         ArrayList<String> sorted = new ArrayList<>();
         switch (type) {
             case "name":

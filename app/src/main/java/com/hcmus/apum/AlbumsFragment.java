@@ -45,13 +45,20 @@ public class AlbumsFragment extends Fragment {
     private MenuItem searchItem;
     private SearchView searchView;
 
+    // Data
+    private ArrayList<String> mediaList = new ArrayList<>();
+    private ArrayList<Integer> mediaCountList = new ArrayList<>();
+
     public AlbumsFragment() {
         // Required empty public constructor
     }
 
-    public static AlbumsFragment newInstance(String param1, String param2) {
+    public static AlbumsFragment newInstance(ArrayList<String> mediaList) {
         AlbumsFragment fragment = new AlbumsFragment();
+        ArrayList<Integer> mediaCountList = mediaManager.getAlbumCounts(mediaList);
         Bundle args = new Bundle();
+        args.putStringArrayList("mediaList", mediaList);
+        args.putIntegerArrayList("mediaCountList", mediaCountList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,12 +74,16 @@ public class AlbumsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_albums, container, false);
 
+        // Init data
+        mediaList = getArguments().getStringArrayList("mediaList");
+        mediaCountList = getArguments().getIntegerArrayList("mediaCountList");
+
         // Init controls
         appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new AlbumAdapter(getActivity(), mediaManager.getAlbums(), mediaManager.getAlbumCounts());
+        adapter = new AlbumAdapter(getActivity(), mediaList, mediaCountList);
         list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.no_media));
         list.setAdapter(adapter);
@@ -140,7 +151,7 @@ public class AlbumsFragment extends Fragment {
     }
 
     private void showContent(AdapterView<?> parent, View view, int pos, long id) {
-        String albumPath = mediaManager.getAlbums().get(pos);
+        String albumPath = mediaList.get(pos);
         ArrayList<String> container = mediaManager.getAlbumContent(albumPath);
         albumPath = albumPath.substring(albumPath.lastIndexOf("/") + 1);
 

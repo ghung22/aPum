@@ -52,13 +52,17 @@ public class OverviewFragment extends Fragment {
     private MenuItem searchItem;
     private SearchView searchView;
 
+    // Data
+    private ArrayList<String> mediaList = new ArrayList<>();
+
     public OverviewFragment() {
         // Required empty public constructor
     }
 
-    public static OverviewFragment newInstance(String param1, String param2) {
+    public static OverviewFragment newInstance(ArrayList<String> mediaList) {
         OverviewFragment fragment = new OverviewFragment();
         Bundle args = new Bundle();
+        args.putStringArrayList("mediaList", mediaList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,12 +79,15 @@ public class OverviewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
         ViewCompat.requestApplyInsets(view); // TODO: restore scroll state
 
+        // Init data
+        mediaList = getArguments().getStringArrayList("mediaList");
+
         // Init controls
         appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new GridAdapter(getActivity(), mediaManager.sort(mediaManager.getImages(), "date", false));
+        adapter = new GridAdapter(getActivity(), mediaList);
         grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
@@ -160,7 +167,7 @@ public class OverviewFragment extends Fragment {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "overview");
-        bundle.putStringArrayList("thumbnails", mediaManager.getImages());
+        bundle.putStringArrayList("thumbnails", mediaList);
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);
