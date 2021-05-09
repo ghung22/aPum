@@ -60,4 +60,8 @@
     <!--  Error text  -->
     <string name="err_camera">(!) Problem opening the camera.</string>
     <string name="err_search_not_found">(!) No item found.</string>
+    <string name="info_no_faces">No faces availible, generate a new dataset?</string>
+    <string name="action_generate">Generate</string>
+    <string name="action_ignore">Ignored faces</string>
+    <string name="action_regenerate">Regenerate dataset</string>
 </resources>

@@ -30,6 +30,7 @@
         android:title="@string/action_vault"
         app:showAsAction="never"
         tools:ignore="AppCompatResource"/>
+
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never"

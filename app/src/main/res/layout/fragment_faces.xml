@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="match_parent" android:layout_height="match_parent"
     tools:context=".FacesFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="faces" />
+    <com.google.android.material.appbar.AppBarLayout android:id="@+id/appbar"
+        android:layout_width="match_parent" android:layout_height="@dimen/heading_size"
+        android:minHeight="?attr/actionBarSize" android:background="@android:color/transparent"
+        android:fitsSystemWindows="true" app:popupTheme="?popupTheme">
+        <com.google.android.material.appbar.CollapsingToolbarLayout android:id="@+id/collapsingToolbar"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:fitsSystemWindows="true" app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleGravity="center" app:collapsedTitleGravity="left"
+            app:expandedTitleTextAppearance="@style/ExpandedAppBar"
+            app:collapsedTitleTextAppearance="@style/CollapsedAppBar"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:title="@string/fragment_faces" android:textAlignment="center">
+            <androidx.appcompat.widget.Toolbar android:id="@+id/menu_faces"
+                android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:layout_collapseMode="pin"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar" android:popupTheme="?popupTheme"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"/>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView android:id="@+id/scroll"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical" android:paddingTop="8dp">
+            <GridView android:id="@+id/grid"
+                android:paddingHorizontal="3dp"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:layout_margin="1dp" android:numColumns="auto_fit"
+                android:columnWidth="50dp"
+                android:horizontalSpacing="5dp" android:verticalSpacing="10dp"
+                android:gravity="center" android:stretchMode="columnWidth"
+                android:nestedScrollingEnabled="true"/>
+            <LinearLayout android:id="@+id/faces_no_faces" android:visibility="gone"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:gravity="center">
+                <TextView android:id="@+id/faces_no_faces_text" android:alpha="0.5"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="@string/info_no_faces" android:textAlignment="center" android:textSize="8pt"/>
+                <Button android:id="@+id/faces_no_faces_btn"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/action_generate" android:backgroundTint="@color/primary"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>
