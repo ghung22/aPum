@@ -1,8 +1,4 @@
-package com.hcmus.apum;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+package com.hcmus.apum.component;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +8,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.hcmus.apum.R;
+import com.hcmus.apum.adapter.SearchAdapter;
 
 import java.util.ArrayList;
 

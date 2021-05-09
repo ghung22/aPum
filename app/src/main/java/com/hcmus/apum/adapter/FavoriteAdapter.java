@@ -1,4 +1,4 @@
-package com.hcmus.apum;
+package com.hcmus.apum.adapter;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import com.hcmus.apum.DatabaseFavorites;
+import com.hcmus.apum.R;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,44 +1,44 @@
-package com.hcmus.apum;
+package com.hcmus.apum.fragment;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
-import androidx.appcompat.widget.SearchView;
-
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.hcmus.apum.AboutActivity;
+import com.hcmus.apum.R;
+import com.hcmus.apum.adapter.GridAdapter;
+import com.hcmus.apum.component.ContentActivity;
+import com.hcmus.apum.component.SearchActivity;
 
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class OverviewFragment extends Fragment {
+public class FacesFragment extends Fragment {
 
     // GUI controls
     private AppBarLayout appbar;
@@ -47,6 +47,7 @@ public class OverviewFragment extends Fragment {
     private NestedScrollView scroll;
     private GridView grid;
     private GridAdapter adapter;
+    private Button faces_no_faces_btn;
 
     // Search
     private MenuItem searchItem;
@@ -55,14 +56,13 @@ public class OverviewFragment extends Fragment {
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
 
-    public OverviewFragment() {
+    public FacesFragment() {
         // Required empty public constructor
     }
 
-    public static OverviewFragment newInstance(ArrayList<String> mediaList) {
+    public static OverviewFragment newInstance() {
         OverviewFragment fragment = new OverviewFragment();
         Bundle args = new Bundle();
-        args.putStringArrayList("mediaList", mediaList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,7 +76,7 @@ public class OverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_overview, container, false);
+        View view = inflater.inflate(R.layout.fragment_faces, container, false);
         ViewCompat.requestApplyInsets(view); // TODO: restore scroll state
 
         // Init data
@@ -89,13 +89,15 @@ public class OverviewFragment extends Fragment {
         scroll = view.findViewById(R.id.scroll);
         adapter = new GridAdapter(getActivity(), mediaList);
         grid = view.findViewById(R.id.grid);
-        grid.setEmptyView(view.findViewById(R.id.no_media));
+        grid.setEmptyView(view.findViewById(R.id.faces_no_faces));
         grid.setAdapter(adapter);
-        grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
+        grid.setOnItemClickListener(this::showContent);
+        faces_no_faces_btn = view.findViewById(R.id.faces_no_faces_btn);
+        faces_no_faces_btn.setOnClickListener(view1 -> mediaManager.updateFaces(getContext()));
 
         // Init actionbar buttons
-        toolbar = view.findViewById(R.id.menu_main);
-        toolbar.inflateMenu(R.menu.menu_overview);
+        toolbar = view.findViewById(R.id.menu_faces);
+        toolbar.inflateMenu(R.menu.menu_faces);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
 
@@ -112,7 +114,7 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_overview, menu);
+        inflater.inflate(R.menu.menu_faces, menu);
 
         // Get controls
         searchItem = menu.findItem(R.id.action_search);
@@ -137,7 +139,7 @@ public class OverviewFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                ArrayList<String> results = mediaManager.search(query, "overview");
+                ArrayList<String> results = mediaManager.search(query, "faces");
                 if (!results.isEmpty()) {
                     showSearch(query, results);
                 } else {
@@ -163,41 +165,32 @@ public class OverviewFragment extends Fragment {
         submitIcon.setImageResource(R.drawable.ic_search);
     }
 
-    private void showPreview(int pos) {
-        Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
+    private void showContent(AdapterView<?> parent, View view, int pos, long id) {
+        String faceName = mediaList.get(pos);
+        ArrayList<String> container = null; //mediaManager.getFaceContent(faceName);
+
+        Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("caller", "overview");
-        bundle.putStringArrayList("thumbnails", mediaList);
-        bundle.putInt("position", pos);
-        mainPreview.putExtras(bundle);
-        startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);
+        bundle.putString("caller", "faces");
+        bundle.putString("face", faceName);
+        bundle.putStringArrayList("container", container);
+        mainContent.putExtras(bundle);
+        startActivityForResult(mainContent, CONTENT_REQUEST_CODE);
     }
 
     private void showSearch(String query, ArrayList<String> results) {
         Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("caller", "overview");
+        bundle.putString("caller", "faces");
         bundle.putString("query", query);
         bundle.putStringArrayList("results", results);
-        bundle.putString("scope", "overview");
+        bundle.putString("scope", "faces");
         mainSearch.putExtras(bundle);
         startActivityForResult(mainSearch, SEARCH_REQUEST_CODE);
     }
 
-    private static String getGalleryPath() {
-        return Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
-    }
-
     private boolean menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.action_add:
-                Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    startActivityForResult(takePicIntent, CAMERA_REQUEST_CODE);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
-                }
-                break;
             case R.id.action_search:
                 searchItem.expandActionView();
                 searchView.requestFocus();
@@ -209,13 +202,9 @@ public class OverviewFragment extends Fragment {
             case R.id.action_sort:
                 // TODO: Sort in Overview
                 break;
-            case R.id.action_reload:
-                mediaManager.updateLocations(getContext());
-                Toast.makeText(getContext(), "Image list reloaded.", Toast.LENGTH_SHORT).show();
+            case R.id.action_regenerate:
                 break;
-            case R.id.action_trash:
-                break;
-            case R.id.action_vault:
+            case R.id.action_ignore:
                 break;
             case R.id.action_settings:
                 break;

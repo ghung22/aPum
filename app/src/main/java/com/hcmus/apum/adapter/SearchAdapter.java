@@ -1,8 +1,9 @@
-package com.hcmus.apum;
+package com.hcmus.apum.adapter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -18,15 +20,15 @@ import java.util.ArrayList;
 import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class AlbumAdapter extends BaseAdapter {
+public class SearchAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<String> mediaList;
-    private final ArrayList<Integer> mediaCount;
+    private final String scope;
 
-    public AlbumAdapter(Context context, ArrayList<String> mediaList, ArrayList<Integer> mediaCount) {
+    public SearchAdapter(Context context, ArrayList<String> mediaList, String scope) {
         this.context = context;
         this.mediaList = mediaList;
-        this.mediaCount = mediaCount;
+        this.scope = scope;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class AlbumAdapter extends BaseAdapter {
     public long getItemId(int pos) { return pos; }
 
     @Override
-    public View getView(int pos, View convertView, ViewGroup parent) {
+    public View getView(int pos, View view, ViewGroup viewGroup) {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(R.layout.layout_visual_listview, null);  // Preview popup
@@ -45,13 +47,23 @@ public class AlbumAdapter extends BaseAdapter {
         TextView visualTitle = row.findViewById(R.id.visualTitle);
         TextView visualSubtitle = row.findViewById(R.id.visualSubtitle);
 
-        // Get cover image (if no config file -> make new one with most recent file)
+        // Get cover image depending on scope
         String path = mediaList.get(pos);
-        File cover = mediaManager.getCover(path);
+        File cover = null;
+        switch (scope) {
+            case "overview":
+                cover = new File(path);
+                break;
+            case "albums":
+                cover = mediaManager.getCover(path);
+                break;
+        }
 
         // Set properties of elements
         visualTitle.setText(path.substring(path.lastIndexOf("/") + 1));
-        visualSubtitle.setText(String.format("%d", mediaCount.get(pos)));
+        String pathDir = path.substring(0, path.lastIndexOf("/"));
+        visualSubtitle.setText(pathDir.substring(pathDir.lastIndexOf("/") + 1));
+        visualSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(cover)

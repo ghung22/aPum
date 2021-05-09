@@ -66,13 +66,13 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".PreviewActivity"
+            android:name=".component.PreviewActivity"
             android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar.FullScreen" />
         <activity
-            android:name=".ContentActivity"
+            android:name=".component.ContentActivity"
             android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -84,7 +84,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar.FullScreen" />
         <activity
-            android:name=".SearchActivity"
+            android:name=".component.SearchActivity"
             android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"

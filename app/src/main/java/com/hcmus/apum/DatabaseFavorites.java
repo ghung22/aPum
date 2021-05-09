@@ -13,12 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseFavorites extends SQLiteOpenHelper {
     private static final String DB_PATH = "/data/data/com.hcmus.apum/databases/";

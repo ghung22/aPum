@@ -1,7 +1,6 @@
-package com.hcmus.apum;
+package com.hcmus.apum.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +10,11 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
 

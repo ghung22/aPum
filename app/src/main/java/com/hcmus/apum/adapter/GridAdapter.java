@@ -1,21 +1,20 @@
-package com.hcmus.apum;
+package com.hcmus.apum.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
-import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class GridAdapter extends BaseAdapter {
     private final Context context;
