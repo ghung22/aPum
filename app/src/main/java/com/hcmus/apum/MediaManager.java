@@ -1,22 +1,27 @@
 package com.hcmus.apum;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.location.Geocoder;
-import android.location.Location;
 import android.media.ExifInterface;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.common.util.Strings;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.face.Face;
+import com.google.mlkit.vision.face.FaceDetection;
+import com.google.mlkit.vision.face.FaceDetector;
+import com.google.mlkit.vision.face.FaceDetectorOptions;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -30,14 +35,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.hcmus.apum.MainActivity.mediaManager;
-
 public class MediaManager {
-    private ArrayList<String> images, albums, faces, favorites;
+    private ArrayList<String> images, albums, favorites;
+    private HashMap<String, ArrayList<Rect>> faces;
     public final ArrayList<String>
             extImg = new ArrayList<>(
             Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
@@ -45,7 +50,8 @@ public class MediaManager {
     public final ArrayList<String> extVid = new ArrayList<>(
             Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
     );
-    DatabaseFavorites db;
+    private DatabaseFavorites db;
+    private FaceDetector detector = null;
 
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
@@ -80,6 +86,34 @@ public class MediaManager {
         ArrayList<String> listFavorites = new ArrayList<>();
         //listFavorites = db.getAllFavorite();
         favorites = listFavorites;
+    }
+
+    public void updateFaces(Context context) {
+        try {
+            HashMap<String, ArrayList<Rect>> faces = new HashMap<>();
+            if (detector == null) {
+                FaceDetectorOptions options =
+                        new FaceDetectorOptions.Builder()
+                                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                                .setContourMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
+                                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
+                                .build();
+                detector = FaceDetection.getClient(options);
+            }
+            for (String path : images) {
+                ArrayList<Rect> recs = new ArrayList<>();
+                InputImage img;
+                img = InputImage.fromFilePath(context, Uri.parse(path));
+                Task<List<Face>> result =
+                        detector.process(img)
+                                .addOnSuccessListener(
+                                        faces1 -> recs.add(faces1.get(0).getBoundingBox()));
+                faces.put(path, recs);
+            }
+        } catch (Exception e) {
+            Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
+            Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void addFavorites(ArrayList<String> thumbs, int pos, DatabaseFavorites db) {
@@ -366,7 +400,8 @@ public class MediaManager {
                 scopedList = albums;
                 break;
             case "faces":
-                scopedList = faces;
+                // scopedList = faces;
+                scopedList = images;
                 break;
             case "favorite":
                 scopedList = favorites;
