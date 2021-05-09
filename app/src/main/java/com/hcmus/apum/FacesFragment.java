@@ -244,5 +244,4 @@ public class FacesFragment extends Fragment {
         }
         return true;
     }
-    }
 }
