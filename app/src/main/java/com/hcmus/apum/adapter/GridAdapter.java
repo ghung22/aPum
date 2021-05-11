@@ -2,6 +2,7 @@ package com.hcmus.apum.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 
 import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,10 +21,18 @@ import static com.hcmus.apum.MainActivity.debugEnabled;
 public class GridAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<String> mediaList;
+    private final ArrayList<Rect> boundingBoxes;
 
     public GridAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
         this.mediaList = mediaList;
+        this.boundingBoxes = null;
+    }
+
+    public GridAdapter(Context context, ArrayList<String> mediaList, ArrayList<Rect> boundingBoxes) {
+        this.context = context;
+        this.mediaList = mediaList;
+        this.boundingBoxes = boundingBoxes;
     }
 
     @Override
@@ -49,12 +59,34 @@ public class GridAdapter extends BaseAdapter {
         // Generate thumbnails
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(mediaList.get(pos)))
-                .fit()
-                .config(Bitmap.Config.RGB_565)
-                .centerInside()
-                .placeholder(R.drawable.ic_image)
-                .into(img);
+        if (boundingBoxes == null) {
+            picasso.load(new File(mediaList.get(pos)))
+                    .fit()
+                    .config(Bitmap.Config.RGB_565)
+                    .centerInside()
+                    .placeholder(R.drawable.ic_image)
+                    .into(img);
+        } else {
+            Rect box = boundingBoxes.get(pos);
+            Integer left = box.left, top = box.top, right = box.right, bottom = box.bottom;
+            picasso.load(new File(mediaList.get(pos)))
+                    .transform(new Transformation() {
+                        @Override
+                        public Bitmap transform(Bitmap source) {
+                            Bitmap result = Bitmap.createBitmap(source, left, top, right - left, bottom - top);
+                            source.recycle();
+                            return result;
+                        }
+
+                        @Override
+                        public String key() {
+                            return left + "," + top + "," + right + "," + bottom;
+                        }
+                    })
+                    .config(Bitmap.Config.RGB_565)
+                    .placeholder(R.drawable.ic_image)
+                    .into(img);
+        }
         img.setId(pos);
         return img;
     }

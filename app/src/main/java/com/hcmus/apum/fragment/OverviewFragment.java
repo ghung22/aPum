@@ -79,7 +79,7 @@ public class OverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
-        ViewCompat.requestApplyInsets(view); // TODO: restore scroll state
+        ViewCompat.requestApplyInsets(view);
 
         // Init data
         mediaList = getArguments().getStringArrayList("mediaList");

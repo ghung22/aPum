@@ -2,6 +2,7 @@ package com.hcmus.apum.fragment;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +34,7 @@ import com.hcmus.apum.component.ContentActivity;
 import com.hcmus.apum.component.SearchActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
@@ -55,14 +58,16 @@ public class FacesFragment extends Fragment {
 
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
+    private HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
 
     public FacesFragment() {
         // Required empty public constructor
     }
 
-    public static OverviewFragment newInstance() {
-        OverviewFragment fragment = new OverviewFragment();
+    public static FacesFragment newInstance(ArrayList<String> mediaList) {
+        FacesFragment fragment = new FacesFragment();
         Bundle args = new Bundle();
+        args.putStringArrayList("mediaList", mediaList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,10 +82,22 @@ public class FacesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_faces, container, false);
-        ViewCompat.requestApplyInsets(view); // TODO: restore scroll state
+        ViewCompat.requestApplyInsets(view);
 
         // Init data
         mediaList = getArguments().getStringArrayList("mediaList");
+        ArrayList<String> mediaListClone = (ArrayList<String>) mediaList.clone();
+        for (String img : mediaList) {
+            ArrayList<Rect> temp = mediaManager.getFaceRect(img);
+            if (temp != null) {
+                // Found a face is found, add to list
+                faceList.put(img, temp);
+            } else {
+                // If not, remove this image from mediaList
+                mediaListClone.remove(img);
+            }
+        }
+        mediaList = mediaListClone;
 
         // Init controls
         appbar = view.findViewById(R.id.appbar);
@@ -89,11 +106,12 @@ public class FacesFragment extends Fragment {
         scroll = view.findViewById(R.id.scroll);
         adapter = new GridAdapter(getActivity(), mediaList);
         grid = view.findViewById(R.id.grid);
-        grid.setEmptyView(view.findViewById(R.id.faces_no_faces));
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(this::showContent);
+        // Empty view of grid TODO: LinearLayout on way up
         faces_no_faces_btn = view.findViewById(R.id.faces_no_faces_btn);
         faces_no_faces_btn.setOnClickListener(view1 -> mediaManager.updateFaces(getContext()));
+        grid.setEmptyView(view.findViewById(R.id.faces_no_faces));
 
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_faces);
@@ -166,13 +184,17 @@ public class FacesFragment extends Fragment {
     }
 
     private void showContent(AdapterView<?> parent, View view, int pos, long id) {
-        String faceName = mediaList.get(pos);
-        ArrayList<String> container = null; //mediaManager.getFaceContent(faceName);
+        String img = mediaList.get(pos);
+        ArrayList<String> container = new ArrayList<>();
+        // Create a list of rect values in this format: <left>,<top>,<right>,<bottom>
+        for (Rect rect : faceList.get(img)) {
+            container.add(rect.left + "," + rect.top + "," + rect.right + "," + rect.bottom);
+        }
 
         Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "faces");
-        bundle.putString("face", faceName);
+        bundle.putString("host", img);
         bundle.putStringArrayList("container", container);
         mainContent.putExtras(bundle);
         startActivityForResult(mainContent, CONTENT_REQUEST_CODE);
@@ -203,6 +225,7 @@ public class FacesFragment extends Fragment {
                 // TODO: Sort in Overview
                 break;
             case R.id.action_regenerate:
+                mediaManager.updateFaces(getContext());
                 break;
             case R.id.action_ignore:
                 break;
@@ -211,7 +234,7 @@ public class FacesFragment extends Fragment {
             case R.id.action_about:
                 Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("caller", "overview");
+                bundle.putString("caller", "faces");
                 mainAbout.putExtras(bundle);
                 mainAbout.setFlags(0);
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
@@ -226,14 +249,12 @@ public class FacesFragment extends Fragment {
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
         // Change icon to black/white depending on scroll state
         Menu menu = toolbar.getMenu();
-        MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
+        MenuItem search = menu.findItem(R.id.action_search);
         if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
     }

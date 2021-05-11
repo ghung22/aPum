@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
         // Init fragments
         overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
         albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
-        faces = FacesFragment.newInstance();
-        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFavorites(), "date", false));
+        faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
+        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
 
         //Database
         db_fav = new DatabaseFavorites(this);
@@ -68,11 +68,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException ioe) {
             throw new Error("Unable to create database");
         }
-        try {
-            db_fav.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
+        db_fav.openDataBase();
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
         ft_main.replace(R.id.frame, overview);

@@ -3,6 +3,7 @@ package com.hcmus.apum.component;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -29,8 +30,12 @@ public class ContentActivity extends AppCompatActivity {
     private GridAdapter adapter;
 
     // Content
-    private String album;
+    private String caller;
+    private String host;
     private ArrayList<String> container;
+
+    // Caller-dependant data
+    private ArrayList<Rect> boundingBoxes = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,30 @@ public class ContentActivity extends AppCompatActivity {
         // Get values from bundle
         Intent mainContent = getIntent();
         Bundle bundle = mainContent.getExtras();
-        album = bundle.getString("album");
+        caller = bundle.getString("caller");
+        host = bundle.getString("host");
         container = bundle.getStringArrayList("container");
+        if (caller.equals("albums")) {
+            container = mediaManager.sort(container, "date", false);
+        } else if (caller.equals("faces")) {
+            // Convert String into Rect objects
+            boundingBoxes = new ArrayList<>();
+            for (String con : container) {
+                String[] sizesStr = con.split(",");
+                Rect rect = new Rect(
+                        Integer.parseInt(sizesStr[0]),
+                        Integer.parseInt(sizesStr[1]),
+                        Integer.parseInt(sizesStr[2]),
+                        Integer.parseInt(sizesStr[3])
+                );
+                boundingBoxes.add(rect);
+            }
+            // Create a list of image path (host) duplicates
+            container.clear();
+            for (int i = 0; i < boundingBoxes.size(); ++i) {
+                container.add(host);
+            }
+        }
 
         // Update controls
         toolbar = findViewById(R.id.menu_content);
@@ -50,12 +77,12 @@ public class ContentActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
 
         if (actionBar != null) {
-            actionBar.setTitle(album);
+            actionBar.setTitle(host);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         // Update content
-        adapter = new GridAdapter(context, mediaManager.sort(container, "date", false));
+        adapter = new GridAdapter(context, container, boundingBoxes);
         content = findViewById(R.id.content);
         content.setEmptyView(findViewById(R.id.no_media));
         content.setAdapter(adapter);
@@ -64,7 +91,7 @@ public class ContentActivity extends AppCompatActivity {
         // Set values to return
         Intent contentMain = new Intent();
         Bundle returnBundle = new Bundle();
-        returnBundle.putString("caller", bundle.getString("caller"));
+        returnBundle.putString("caller", caller);
         contentMain.putExtras(returnBundle);
         setResult(Activity.RESULT_OK, contentMain);
     }

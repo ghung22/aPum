@@ -84,7 +84,7 @@ public class FavoriteFragment extends Fragment {
 
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
-        adapter = new GridAdapter(getActivity(), mediaManager.getFavorites());
+        adapter = new GridAdapter(getActivity(), mediaList);
         grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);

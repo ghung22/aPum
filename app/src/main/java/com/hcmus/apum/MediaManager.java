@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.util.Strings;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
@@ -41,8 +40,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class MediaManager {
-    private ArrayList<String> images, albums, favorites;
-    private HashMap<String, ArrayList<Rect>> faces;
+    private ArrayList<String> images, albums, faces, favorites;
+    private HashMap<String, ArrayList<Rect>> faceData;
     public final ArrayList<String>
             extImg = new ArrayList<>(
             Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
@@ -90,7 +89,7 @@ public class MediaManager {
 
     public void updateFaces(Context context) {
         try {
-            HashMap<String, ArrayList<Rect>> faces = new HashMap<>();
+            HashMap<String, ArrayList<Rect>> faceData = new HashMap<>();
             if (detector == null) {
                 FaceDetectorOptions options =
                         new FaceDetectorOptions.Builder()
@@ -103,13 +102,20 @@ public class MediaManager {
             for (String path : images) {
                 ArrayList<Rect> recs = new ArrayList<>();
                 InputImage img;
-                img = InputImage.fromFilePath(context, Uri.parse(path));
-                Task<List<Face>> result =
-                        detector.process(img)
-                                .addOnSuccessListener(
-                                        faces1 -> recs.add(faces1.get(0).getBoundingBox()));
-                faces.put(path, recs);
+                img = InputImage.fromFilePath(context, Uri.fromFile(new File(path)));
+                List<Face> result = detector.process(img).getResult();
+                if (!result.isEmpty()) {
+                    for (Face face : result) {
+                        recs.add(face.getBoundingBox());
+                    }
+                }
+
+                if (!recs.isEmpty()) {
+                    faces.add(path);
+                    faceData.put(path, recs);
+                }
             }
+            this.faceData = faceData;
         } catch (Exception e) {
             Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
             Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -124,9 +130,6 @@ public class MediaManager {
             favorites.remove(thumbs.get(pos));
             db.removeData(thumbs.get(pos));
         }
-        //System.out.println("TEST 123 " + db.addData(thumbs.get(pos)));
-        //db.addData(favorites.get(favorites.size()-1));
-        //db.addData(i.get(pos));
     }
 
     public boolean isFavorite(String thumb) {
@@ -140,6 +143,14 @@ public class MediaManager {
 
     public ArrayList<String> getAlbums() {
         return albums;
+    }
+
+    public ArrayList<String> getFaces() {
+        return faces;
+    }
+
+    public ArrayList<Rect> getFaceRect(String img) {
+        return (faceData != null) ? faceData.get(img) : null;
     }
 
     public ArrayList<String> getFavorites() {
@@ -334,7 +345,6 @@ public class MediaManager {
                 info.put("fileSize", getSize(path));
                 info.put("fileLocation", path.substring(0, path.lastIndexOf('/')));
                 // Image attribute
-                // TODO: Image size not showing
                 info.put("imageSize", exif.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
                         + "x" +
                         exif.getAttribute(ExifInterface.TAG_IMAGE_LENGTH));
@@ -459,7 +469,10 @@ public class MediaManager {
         return results;
     }
 
-    public ArrayList<String> sort(@NonNull ArrayList<String> org, String type, boolean ascending) {
+    public ArrayList<String> sort(ArrayList<String> org, String type, boolean ascending) {
+        if (org == null) {
+            return new ArrayList<>();
+        }
         ArrayList<String> sorted = new ArrayList<>();
         switch (type) {
             case "name":

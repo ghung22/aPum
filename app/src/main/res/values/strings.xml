@@ -29,6 +29,11 @@
     <string name="action_test">Test</string>
     <string name="action_about">About aPum</string>
 
+    <!--  Faces options  -->
+    <string name="action_generate">Generate</string>
+    <string name="action_ignore">Ignored faces</string>
+    <string name="action_regenerate">Regenerate face data</string>
+
     <!--  Preview options  -->
     <string name="action_wallpaper">Set as wallpaper</string>
     <string name="action_info">Information</string>
@@ -60,8 +65,5 @@
     <!--  Error text  -->
     <string name="err_camera">(!) Problem opening the camera.</string>
     <string name="err_search_not_found">(!) No item found.</string>
-    <string name="info_no_faces">No faces availible, generate a new dataset?</string>
-    <string name="action_generate">Generate</string>
-    <string name="action_ignore">Ignored faces</string>
-    <string name="action_regenerate">Regenerate dataset</string>
+    <string name="info_no_faces">No faces available, generate a new dataset?</string>
 </resources>

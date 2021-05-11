@@ -162,7 +162,7 @@ public class AlbumsFragment extends Fragment {
         Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "albums");
-        bundle.putString("album", albumPath);
+        bundle.putString("host", albumPath);
         bundle.putStringArrayList("container", container);
         mainContent.putExtras(bundle);
         startActivityForResult(mainContent, CONTENT_REQUEST_CODE);
