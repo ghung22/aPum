@@ -371,34 +371,6 @@ public class MediaManager {
         return info;
     }
 
-    public Bitmap createThumbnail(String path) {
-        File img = new File(path);
-        if (!img.exists()) {
-            img = new File(Uri.parse("android.resource://" + R.class.getPackage().getName() + "/" + R.drawable.ic_image).toString());
-        }
-        BitmapFactory.Options bitmapOpt = new BitmapFactory.Options();
-        bitmapOpt.inJustDecodeBounds = true;  // Get img size
-        BitmapFactory.decodeFile(img.getAbsolutePath(), bitmapOpt);
-
-        // find the best scaling factor for the desired dimensions
-        int preferredW = 400, preferredH = 300;
-        float wScale = (float) bitmapOpt.outWidth / preferredW,
-                hScale = (float) bitmapOpt.outHeight / preferredH;
-        float scale = Math.min(wScale, hScale);
-        int sampleSize = 1;
-        while (sampleSize < scale) {
-            sampleSize *= 2;
-        }
-        bitmapOpt.inSampleSize = sampleSize;  // inSampleSize must be power of 2
-        bitmapOpt.inJustDecodeBounds = false;  // Load the image
-
-        // Load part of image to make thumbnail
-        Bitmap thumbnail = BitmapFactory.decodeFile(img.getAbsolutePath(), bitmapOpt);
-
-        // Use the thumbnail on an ImageView or recycle it!
-        return thumbnail;
-    }
-
     public ArrayList<String> search(String query, String scope) {
         ArrayList<String> results = new ArrayList<>(),
                 scopedList;

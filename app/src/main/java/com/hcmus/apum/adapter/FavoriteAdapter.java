@@ -2,6 +2,7 @@ package com.hcmus.apum.adapter;
 
 import android.content.Context;
 import android.database.SQLException;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +12,13 @@ import android.widget.ImageView;
 
 import com.hcmus.apum.DatabaseFavorites;
 import com.hcmus.apum.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class FavoriteAdapter extends BaseAdapter {
@@ -50,7 +54,7 @@ public class FavoriteAdapter extends BaseAdapter {
     public long getItemId(int pos) { return pos; }
 
     // Create a view for each thumbnail
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int pos, View convertView, ViewGroup parent) {
         ImageView img = null;
         // Use existing convertView in cache (if possible)
         if (convertView == null) {
@@ -64,8 +68,15 @@ public class FavoriteAdapter extends BaseAdapter {
         }
 
         // Generate thumbnails
-        img.setImageBitmap(mediaManager.createThumbnail(fav_images.get(position)));
-        img.setId(position);
+        Picasso picasso = Picasso.get();
+        picasso.setLoggingEnabled(debugEnabled);
+        picasso.load(new File(fav_images.get(pos)))
+                .fit()
+                .config(Bitmap.Config.RGB_565)
+                .centerInside()
+                .placeholder(R.drawable.ic_image)
+                .into(img);
+        img.setId(pos);
         return img;
     }
 
