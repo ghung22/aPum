@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
-import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class FavoriteAdapter extends BaseAdapter {
     private final Context context;

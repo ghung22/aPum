@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -58,7 +57,7 @@ public class FacesFragment extends Fragment {
 
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
-    private HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
+    private final HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
 
     public FacesFragment() {
         // Required empty public constructor

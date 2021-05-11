@@ -1,7 +1,6 @@
 package com.hcmus.apum;
 
 import android.content.Intent;
-import android.database.SQLException;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
