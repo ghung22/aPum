@@ -37,7 +37,7 @@
                 android:paddingHorizontal="3dp"
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:layout_margin="1dp" android:numColumns="auto_fit"
-                android:columnWidth="40dp"
+                android:columnWidth="100dp"
                 android:horizontalSpacing="5dp" android:verticalSpacing="10dp"
                 android:gravity="center" android:stretchMode="columnWidth"
                 android:nestedScrollingEnabled="true"/>

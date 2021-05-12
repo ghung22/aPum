@@ -68,6 +68,8 @@ public class ContentActivity extends AppCompatActivity {
             for (int i = 0; i < boundingBoxes.size(); ++i) {
                 container.add(host);
             }
+            // Trim file path to file name for toolbar title
+            host = host.substring(host.lastIndexOf("/"));
         }
 
         // Update controls

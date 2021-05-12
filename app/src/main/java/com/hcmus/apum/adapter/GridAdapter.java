@@ -20,8 +20,8 @@ import static com.hcmus.apum.MainActivity.debugEnabled;
 
 public class GridAdapter extends BaseAdapter {
     private final Context context;
-    private final ArrayList<String> mediaList;
-    private final ArrayList<Rect> boundingBoxes;
+    private ArrayList<String> mediaList;
+    private ArrayList<Rect> boundingBoxes;
 
     public GridAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
@@ -33,6 +33,12 @@ public class GridAdapter extends BaseAdapter {
         this.context = context;
         this.mediaList = mediaList;
         this.boundingBoxes = boundingBoxes;
+    }
+
+    public void addAll(ArrayList<String> mediaList) {
+        this.mediaList.clear();
+        this.mediaList.addAll(mediaList);
+        notifyDataSetChanged();
     }
 
     @Override

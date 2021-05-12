@@ -1,21 +1,31 @@
 package com.hcmus.apum;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.util.Strings;
+import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
+import com.hcmus.apum.component.LayoutDialog;
+import com.hcmus.apum.fragment.FacesFragment;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,7 +42,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
+
+import static com.hcmus.apum.MainActivity.debugEnabled;
 
 public class MediaManager {
     private ArrayList<String> images, albums, faces, favorites;
@@ -45,7 +58,6 @@ public class MediaManager {
             Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
     );
     private DatabaseFavorites db;
-    private FaceDetector detector = null;
 
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
@@ -82,38 +94,17 @@ public class MediaManager {
         favorites = listFavorites;
     }
 
-    public void updateFaces(Context context) {
+    public void updateFaces(Context context, FacesFragment fragment) {
         try {
-            HashMap<String, ArrayList<Rect>> faceData = new HashMap<>();
-            if (detector == null) {
-                FaceDetectorOptions options =
-                        new FaceDetectorOptions.Builder()
-                                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-                                .setContourMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
-                                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
-                                .build();
-                detector = FaceDetection.getClient(options);
-            }
-            for (String path : images) {
-                ArrayList<Rect> recs = new ArrayList<>();
-                InputImage img;
-                img = InputImage.fromFilePath(context, Uri.fromFile(new File(path)));
-                List<Face> result = detector.process(img).getResult();
-                if (!result.isEmpty()) {
-                    for (Face face : result) {
-                        recs.add(face.getBoundingBox());
-                    }
-                }
-
-                if (!recs.isEmpty()) {
-                    faces.add(path);
-                    faceData.put(path, recs);
-                }
-            }
-            this.faceData = faceData;
+            faces = new ArrayList<>();
+            faceData = new HashMap<>();
+            AsyncUpdater updater = new AsyncUpdater(context, fragment);
+            updater.execute();
         } catch (Exception e) {
-            Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
-            Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            if (debugEnabled) {
+                Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
+                Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -144,8 +135,16 @@ public class MediaManager {
         return faces;
     }
 
-    public ArrayList<Rect> getFaceRect(String img) {
-        return (faceData != null) ? faceData.get(img) : null;
+    public HashMap<String, ArrayList<Rect>> getFaceData(ArrayList<String> faces) {
+        HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
+        for (String img : faces) {
+            ArrayList<Rect> temp = (faceData != null) ? faceData.get(img) : null;
+            if (temp != null) {
+                // Found a face is found, add to map
+                faceList.put(img, temp);
+            }
+        }
+        return faceList;
     }
 
     public ArrayList<String> getFavorites() {
@@ -473,5 +472,127 @@ public class MediaManager {
 
     public ArrayList<String> sort(ArrayList<String> org, String type) {
         return sort(org, type,true);
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class AsyncUpdater extends AsyncTask<String, String, String> {
+        // GUI controls
+        private final Context context;
+        private final FacesFragment fragment;
+        private LayoutDialog dialog;
+        private LinearLayout generate_err_row;
+        private TextView generate_progress, generate_progress_info, generate_err;
+        private ProgressBar generate_progress_bar;
+        private Button generate_close_btn;
+
+        // Data
+        private final int progressStep = 10;
+        private final int maxProgress;
+        private FaceDetector detector = null;
+
+        public AsyncUpdater(Context context, FacesFragment fragment) {
+            super();
+            this.context = context;
+            this.fragment = fragment;
+            maxProgress = images.size();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // INIT ELEMENTS
+            dialog = new LayoutDialog(context, R.layout.layout_faces_generate_dialog);
+            generate_err_row = dialog.findViewById(R.id.generate_err_row);
+            generate_progress = dialog.findViewById(R.id.generate_progress);
+            generate_progress_info = dialog.findViewById(R.id.generate_progress_info);
+            generate_err = dialog.findViewById(R.id.generate_err);
+            generate_progress_bar = dialog.findViewById(R.id.generate_progress_bar);
+            generate_close_btn = dialog.findViewById(R.id.generate_close_btn);
+
+            // APPLY DATA
+            generate_progress_bar.setProgress(0);
+            generate_progress_bar.setMax(maxProgress);
+            generate_progress_info.setText("");
+            generate_err_row.setVisibility(View.GONE);
+            generate_close_btn.setVisibility(View.GONE);
+            generate_close_btn.setOnClickListener(view -> dialog.dismiss());
+            if (detector == null) {
+                FaceDetectorOptions options =
+                        new FaceDetectorOptions.Builder()
+                                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                                .setContourMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
+                                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
+                                .build();
+                detector = FaceDetection.getClient(options);
+            }
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                publishProgress("Loading images…");
+                int i = 0;
+                for (String path : images) {
+                    publishProgress(path);
+
+                    ArrayList<Rect> recs = new ArrayList<>();
+                    InputImage img;
+                    img = InputImage.fromFilePath(context, Uri.fromFile(new File(path)));
+                    Task<List<Face>> resultTask =
+                            detector.process(img)
+                                    .addOnSuccessListener(result -> {
+                                        if (!result.isEmpty()) {
+                                            for (Face face : result) {
+                                                recs.add(face.getBoundingBox());
+                                            }
+                                        }
+
+                                        if (!recs.isEmpty()) {
+                                            faces.add(path);
+                                            faceData.put(path, recs);
+                                        }
+                                    })
+                                    .addOnFailureListener(Throwable::getMessage);
+                    generate_progress_bar.setProgress(++i);
+                    while (!resultTask.isComplete()) {
+                        // Wait till image is processed
+                    }
+                }
+                // Fake finishing step
+                publishProgress("Finishing up…");
+                Random r = new Random();
+                r.setSeed(maxProgress);
+                Thread.sleep(1000 + r.nextInt(2000));
+            } catch (Exception e) {
+                if (debugEnabled) {
+                    Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
+                }
+                return e.getMessage();
+            }
+            return "";
+        }
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+            if (text.length > 0) {
+                generate_progress_info.setText(text[0]);
+            } else {
+                generate_progress_info.setText("…");
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result.isEmpty()) {
+                fragment.getAdapter().addAll(faces);
+                dialog.dismiss();
+            } else {
+                generate_err.setText(result);
+                generate_progress_info.setVisibility(View.GONE);
+                generate_err_row.setVisibility(View.VISIBLE);
+                generate_close_btn.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

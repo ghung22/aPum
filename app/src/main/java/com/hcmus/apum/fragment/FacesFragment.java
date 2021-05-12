@@ -57,7 +57,7 @@ public class FacesFragment extends Fragment {
 
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
-    private final HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
+    private HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
 
     public FacesFragment() {
         // Required empty public constructor
@@ -69,6 +69,10 @@ public class FacesFragment extends Fragment {
         args.putStringArrayList("mediaList", mediaList);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public GridAdapter getAdapter() {
+        return adapter;
     }
 
     @Override
@@ -85,18 +89,8 @@ public class FacesFragment extends Fragment {
 
         // Init data
         mediaList = getArguments().getStringArrayList("mediaList");
-        ArrayList<String> mediaListClone = (ArrayList<String>) mediaList.clone();
-        for (String img : mediaList) {
-            ArrayList<Rect> temp = mediaManager.getFaceRect(img);
-            if (temp != null) {
-                // Found a face is found, add to list
-                faceList.put(img, temp);
-            } else {
-                // If not, remove this image from mediaList
-                mediaListClone.remove(img);
-            }
-        }
-        mediaList = mediaListClone;
+        faceList = mediaManager.getFaceData(mediaList);
+        mediaList = new ArrayList<>(faceList.keySet());
 
         // Init controls
         appbar = view.findViewById(R.id.appbar);
@@ -107,9 +101,9 @@ public class FacesFragment extends Fragment {
         grid = view.findViewById(R.id.grid);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(this::showContent);
-        // Empty view of grid TODO: LinearLayout on way up
+        // Empty view of grid
         faces_no_faces_btn = view.findViewById(R.id.faces_no_faces_btn);
-        faces_no_faces_btn.setOnClickListener(view1 -> mediaManager.updateFaces(getContext()));
+        faces_no_faces_btn.setOnClickListener(view1 -> mediaManager.updateFaces(getContext(), this));
         grid.setEmptyView(view.findViewById(R.id.faces_no_faces));
 
         // Init actionbar buttons
@@ -224,7 +218,7 @@ public class FacesFragment extends Fragment {
                 // TODO: Sort in Overview
                 break;
             case R.id.action_regenerate:
-                mediaManager.updateFaces(getContext());
+                mediaManager.updateFaces(getContext(), this);
                 break;
             case R.id.action_ignore:
                 break;
