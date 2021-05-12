@@ -586,6 +586,8 @@ public class MediaManager {
         protected void onPostExecute(String result) {
             if (result.isEmpty()) {
                 fragment.getAdapter().addAll(faces);
+                fragment.setMediaList(faces);
+                fragment.setFaceList(faceData);
                 dialog.dismiss();
             } else {
                 generate_err.setText(result);
