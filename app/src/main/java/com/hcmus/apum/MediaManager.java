@@ -3,6 +3,8 @@ package com.hcmus.apum;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.location.Geocoder;
 import android.media.ExifInterface;
@@ -27,6 +29,8 @@ import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.hcmus.apum.component.LayoutDialog;
 import com.hcmus.apum.fragment.FacesFragment;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -48,8 +52,11 @@ import java.util.TreeMap;
 import static com.hcmus.apum.MainActivity.debugEnabled;
 
 public class MediaManager {
+    // Data
     private ArrayList<String> images, albums, faces, favorites;
     private HashMap<String, ArrayList<Rect>> faceData;
+
+    // Constant
     public final ArrayList<String>
             extImg = new ArrayList<>(
             Arrays.asList("gif", "png", "bmp", "jpg", "svg", "raw", "jpeg", "webp")
@@ -57,7 +64,12 @@ public class MediaManager {
     public final ArrayList<String> extVid = new ArrayList<>(
             Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
     );
+
+    // Interface
     private DatabaseFavorites db;
+
+    // Global agent
+    public static AsyncUpdater faceUpdater;
 
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
@@ -98,8 +110,8 @@ public class MediaManager {
         try {
             faces = new ArrayList<>();
             faceData = new HashMap<>();
-            AsyncUpdater updater = new AsyncUpdater(context, fragment);
-            updater.execute();
+            faceUpdater = new AsyncUpdater(context, fragment);
+            faceUpdater.execute();
         } catch (Exception e) {
             if (debugEnabled) {
                 Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
@@ -119,8 +131,7 @@ public class MediaManager {
     }
 
     public boolean isFavorite(String thumb) {
-        boolean check = favorites.contains(thumb);
-        return check;
+        return favorites.contains(thumb);
     }
 
     public ArrayList<String> getImages() {
@@ -147,8 +158,31 @@ public class MediaManager {
         return faceList;
     }
 
+    public ArrayList<Rect> getFaceRect(ArrayList<String> container) {
+        // Convert Strings into Rect objects
+        ArrayList<Rect> faceRect = new ArrayList<>();
+        for (String con : container) {
+            String[] sizesStr = con.split(",");
+            Rect rect = new Rect(
+                    Integer.parseInt(sizesStr[0]),
+                    Integer.parseInt(sizesStr[1]),
+                    Integer.parseInt(sizesStr[2]),
+                    Integer.parseInt(sizesStr[3])
+            );
+            faceRect.add(rect);
+        }
+        return faceRect;
+    }
+
     public ArrayList<String> getFavorites() {
         return favorites;
+    }
+
+    public Bitmap getCompressedBitmap(String path, int quality) {
+        Bitmap bmp = BitmapFactory.decodeFile(path);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, quality, out);
+        return BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
     }
 
     public ArrayList<Integer> getAlbumCounts(ArrayList<String> albums) {
@@ -377,7 +411,7 @@ public class MediaManager {
                 break;
             case "faces":
                 // scopedList = faces;
-                scopedList = images;
+                scopedList = faces;
                 break;
             case "favorite":
                 scopedList = favorites;
@@ -486,7 +520,6 @@ public class MediaManager {
         private Button generate_close_btn;
 
         // Data
-        private final int progressStep = 10;
         private final int maxProgress;
         private FaceDetector detector = null;
 
@@ -513,7 +546,6 @@ public class MediaManager {
             generate_progress_bar.setMax(maxProgress);
             generate_progress_info.setText("");
             generate_err_row.setVisibility(View.GONE);
-            generate_close_btn.setVisibility(View.GONE);
             generate_close_btn.setOnClickListener(view -> dialog.dismiss());
             if (detector == null) {
                 FaceDetectorOptions options =
@@ -524,7 +556,6 @@ public class MediaManager {
                                 .build();
                 detector = FaceDetection.getClient(options);
             }
-            dialog.setCancelable(false);
             dialog.show();
         }
 
@@ -535,10 +566,9 @@ public class MediaManager {
                 int i = 0;
                 for (String path : images) {
                     publishProgress(path);
-
                     ArrayList<Rect> recs = new ArrayList<>();
-                    InputImage img;
-                    img = InputImage.fromFilePath(context, Uri.fromFile(new File(path)));
+
+                    InputImage img = InputImage.fromBitmap(getCompressedBitmap(path, 20), 0);
                     Task<List<Face>> resultTask =
                             detector.process(img)
                                     .addOnSuccessListener(result -> {
@@ -551,6 +581,7 @@ public class MediaManager {
                                         if (!recs.isEmpty()) {
                                             faces.add(path);
                                             faceData.put(path, recs);
+                                            publishProgress(path, "done");
                                         }
                                     })
                                     .addOnFailureListener(Throwable::getMessage);
@@ -577,6 +608,12 @@ public class MediaManager {
         protected void onProgressUpdate(String... text) {
             if (text.length > 0) {
                 generate_progress_info.setText(text[0]);
+                if (text.length == 2) {
+                    if (text[1].equals("done")) {
+                        // Add image path with faces into FacesFragment's mediaList
+                        fragment.addMediaFace(text[0], faceData.get(text[0]));
+                    }
+                }
             } else {
                 generate_progress_info.setText("…");
             }
@@ -585,15 +622,11 @@ public class MediaManager {
         @Override
         protected void onPostExecute(String result) {
             if (result.isEmpty()) {
-                fragment.getAdapter().addAll(faces);
-                fragment.setMediaList(faces);
-                fragment.setFaceList(faceData);
                 dialog.dismiss();
             } else {
                 generate_err.setText(result);
                 generate_progress_info.setVisibility(View.GONE);
                 generate_err_row.setVisibility(View.VISIBLE);
-                generate_close_btn.setVisibility(View.VISIBLE);
             }
         }
     }

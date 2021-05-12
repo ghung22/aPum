@@ -51,25 +51,15 @@ public class ContentActivity extends AppCompatActivity {
         if (caller.equals("albums")) {
             container = mediaManager.sort(container, "date", false);
         } else if (caller.equals("faces")) {
-            // Convert String into Rect objects
-            boundingBoxes = new ArrayList<>();
-            for (String con : container) {
-                String[] sizesStr = con.split(",");
-                Rect rect = new Rect(
-                        Integer.parseInt(sizesStr[0]),
-                        Integer.parseInt(sizesStr[1]),
-                        Integer.parseInt(sizesStr[2]),
-                        Integer.parseInt(sizesStr[3])
-                );
-                boundingBoxes.add(rect);
-            }
+            // Convert Strings into Rect objects
+            boundingBoxes = mediaManager.getFaceRect(container);
             // Create a list of image path (host) duplicates
             container.clear();
             for (int i = 0; i < boundingBoxes.size(); ++i) {
                 container.add(host);
             }
             // Trim file path to file name for toolbar title
-            host = host.substring(host.lastIndexOf("/"));
+            host = host.substring(host.lastIndexOf("/") + 1);
         }
 
         // Update controls

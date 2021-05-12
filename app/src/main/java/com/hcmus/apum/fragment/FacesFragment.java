@@ -74,11 +74,10 @@ public class FacesFragment extends Fragment {
     public GridAdapter getAdapter() {
         return adapter;
     }
-    public void setMediaList(ArrayList<String> mediaList) {
-        this.mediaList = mediaList;
-    }
-    public void setFaceList(HashMap<String, ArrayList<Rect>> faceList) {
-        this.faceList = faceList;
+    public void addMediaFace(String media, ArrayList<Rect> face) {
+//        mediaList.add(media);
+        faceList.put(media, face);
+        adapter.add(media);
     }
 
     @Override

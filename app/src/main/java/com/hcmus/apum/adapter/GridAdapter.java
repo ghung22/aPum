@@ -35,6 +35,11 @@ public class GridAdapter extends BaseAdapter {
         this.boundingBoxes = boundingBoxes;
     }
 
+    public void add(String media) {
+        mediaList.add(media);
+        notifyDataSetChanged();
+    }
+
     public void addAll(ArrayList<String> mediaList) {
         this.mediaList.clear();
         this.mediaList.addAll(mediaList);
