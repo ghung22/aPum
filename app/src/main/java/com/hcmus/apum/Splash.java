@@ -30,7 +30,7 @@ public class Splash extends Activity {
                 /* Create an Intent that will start the Menu-Activity. */
                 main = new Intent(Splash.this, MainActivity.class);
                 //Request permission
-                checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
+//                checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
                 checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
             }
         }, SPLASH_DURATION);

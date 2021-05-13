@@ -1,7 +1,6 @@
 package com.hcmus.apum.component;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -12,14 +11,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -34,6 +32,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hcmus.apum.DatabaseFavorites;
+import com.hcmus.apum.PathUtils;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.PreviewAdapter;
 
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.hcmus.apum.MainActivity.CHOOSER_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -251,7 +251,14 @@ public class PreviewActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
 
-            // Top toolbar
+            // Top
+            case R.id.action_copy:
+                Intent previewChooser = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                previewChooser.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivityForResult(Intent.createChooser(previewChooser, "Choose a directory"), CHOOSER_REQUEST_CODE);
+                break;
+            case R.id.action_move:
+                break;
             case R.id.action_info:
                 initInfoDialog();
                 break;
@@ -318,38 +325,25 @@ public class PreviewActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CHOOSER_REQUEST_CODE) {
+            Uri dest = data.getData();
+            if (mediaManager.copy(mediaList.get(pos), PathUtils.findFullPath(dest.getPath()))) {
+                Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
+                // TODO: update list with new file
+            } else {
+                Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finishActivity(PREVIEW_REQUEST_CODE);
-    }
-}
-
-class FixedSpeedScroller extends Scroller {
-    private double scrollRate = 1;
-
-    public FixedSpeedScroller(Context context) {
-        super(context);
-    }
-
-    public FixedSpeedScroller(Context context, Interpolator interpolator) {
-        super(context, interpolator);
-    }
-
-    public FixedSpeedScroller(Context context, Interpolator interpolator, boolean flywheel) {
-        super(context, interpolator, flywheel);
-    }
-
-    /**
-     * Set the factor by which the duration will change
-     */
-    public void setScrollRate(double scrollRate) {
-        this.scrollRate = scrollRate;
-    }
-
-    @Override
-    public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-        super.startScroll(startX, startY, dx, dy, (int) (duration * scrollRate));
     }
 }

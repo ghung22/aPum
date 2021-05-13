@@ -35,6 +35,8 @@
     <string name="action_regenerate">Regenerate face data</string>
 
     <!--  Preview options  -->
+    <string name="action_copy">Copy to…</string>
+    <string name="action_move">Move to…</string>
     <string name="action_wallpaper">Set as wallpaper</string>
     <string name="action_info">Information</string>
     <string name="action_edit">Edit</string>
@@ -63,8 +65,10 @@
     <string name="info_unknown_location">Unknown location</string>
     <string name="info_no_faces">No faces available, generate a new face data?</string>
     <string name="info_faces_processing">Processing images…</string>
+    <string name="info_faces_processing_completed">Face data processing completed.</string>
 
     <!--  Error text  -->
+    <string name="err_generic">(!) A problem occurred.</string>
     <string name="err_camera">(!) Problem opening the camera.</string>
     <string name="err_search_not_found">(!) No item found.</string>
 </resources>

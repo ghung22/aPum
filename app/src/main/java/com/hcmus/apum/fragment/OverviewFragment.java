@@ -193,9 +193,9 @@ public class OverviewFragment extends Fragment {
     private boolean menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_add:
-                Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent overviewCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
-                    startActivityForResult(takePicIntent, CAMERA_REQUEST_CODE);
+                    startActivityForResult(overviewCamera, CAMERA_REQUEST_CODE);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
                 }

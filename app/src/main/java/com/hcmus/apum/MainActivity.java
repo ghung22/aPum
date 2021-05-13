@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     public static int SEARCH_REQUEST_CODE = 5;
     public static int CAMERA_REQUEST_CODE = 71;
     public static int ABOUT_REQUEST_CODE = 46;
+    public static int CHOOSER_REQUEST_CODE = 75;
 
     // GUI controls
     private BottomNavigationView navBar;
@@ -117,34 +118,33 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // When return data exists
-        if (data != null) {
-            Bundle bundle = data.getExtras();
-            String caller = bundle.getString("caller");
-            switch (caller) {
-                case "albums":
-                    switchFragment(R.id.action_albums);
-                    break;
-                case "faces":
-                    switchFragment(R.id.action_faces);
-                    break;
-                case "favorite":
-                    switchFragment(R.id.action_favorite);
-                    break;
-                default:
-                    switchFragment(R.id.action_overview);
-                    break;
-            }
-            return;
-        }
-
         // Check for which activity returned to MainActivity
         if (requestCode == CAMERA_REQUEST_CODE) {
             switchFragment(R.id.action_overview);
-        } else if (requestCode == CONTENT_REQUEST_CODE) {
-            switchFragment(R.id.action_albums);
         } else {
-            switchFragment(R.id.action_overview);
+            // When return data exists
+            if (data != null) {
+                if (data.hasExtra("caller")) {
+                    String caller = data.getStringExtra("caller");
+                    switch (caller) {
+                        case "albums":
+                            switchFragment(R.id.action_albums);
+                            break;
+                        case "faces":
+                            switchFragment(R.id.action_faces);
+                            break;
+                        case "favorite":
+                            switchFragment(R.id.action_favorite);
+                            break;
+                        default:
+                            switchFragment(R.id.action_overview);
+                            break;
+                    }
+                    return;
+                }
+            } else {
+                switchFragment(R.id.action_overview);
+            }
         }
     }
 

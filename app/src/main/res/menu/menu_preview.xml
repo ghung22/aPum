@@ -11,6 +11,14 @@
         tools:ignore="AppCompatResource"/>
 
     <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_copy"
+        android:title="@string/action_copy"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
+    <item android:id="@+id/action_move"
+        android:title="@string/action_move"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
     <item android:id="@+id/action_wallpaper"
         android:title="@string/action_wallpaper"
         app:showAsAction="never"
