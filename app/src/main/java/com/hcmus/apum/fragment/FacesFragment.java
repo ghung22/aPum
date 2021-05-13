@@ -3,6 +3,7 @@ package com.hcmus.apum.fragment;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -27,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
+import com.hcmus.apum.MediaManager;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.component.ContentActivity;
@@ -50,6 +54,7 @@ public class FacesFragment extends Fragment {
     private GridView grid;
     private GridAdapter adapter;
     private Button faces_no_faces_btn;
+    private ImageView action_regenerate;
 
     // Search
     private MenuItem searchItem;
@@ -58,6 +63,7 @@ public class FacesFragment extends Fragment {
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
     private HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
+    boolean toolbarCollapsed = false;
 
     public FacesFragment() {
         // Required empty public constructor
@@ -74,6 +80,10 @@ public class FacesFragment extends Fragment {
     public GridAdapter getAdapter() {
         return adapter;
     }
+    public Menu getMenu() {
+        return toolbar.getMenu();
+    }
+
     public void addMediaFace(String media, ArrayList<Rect> face) {
 //        mediaList.add(media);
         faceList.put(media, face);
@@ -108,8 +118,9 @@ public class FacesFragment extends Fragment {
         grid.setOnItemClickListener(this::showContent);
         // Empty view of grid
         faces_no_faces_btn = view.findViewById(R.id.faces_no_faces_btn);
-        faces_no_faces_btn.setOnClickListener(view1 -> mediaManager.updateFaces(getContext(), this));
+        faces_no_faces_btn.setOnClickListener(view1 -> regenerate());
         grid.setEmptyView(view.findViewById(R.id.faces_no_faces));
+        action_regenerate = (ImageView) inflater.inflate(R.layout.layout_refresh_icon, null);
 
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_faces);
@@ -133,6 +144,7 @@ public class FacesFragment extends Fragment {
         inflater.inflate(R.menu.menu_faces, menu);
 
         // Get controls
+        menu.findItem(R.id.action_regenerate).setActionView(action_regenerate);
         searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) searchItem.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);
@@ -209,7 +221,7 @@ public class FacesFragment extends Fragment {
         startActivityForResult(mainSearch, SEARCH_REQUEST_CODE);
     }
 
-    private boolean menuAction(MenuItem menuItem) {
+    private void menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_search:
                 searchItem.expandActionView();
@@ -223,7 +235,7 @@ public class FacesFragment extends Fragment {
                 // TODO: Sort in Overview
                 break;
             case R.id.action_regenerate:
-                mediaManager.updateFaces(getContext(), this);
+                regenerate();
                 break;
             case R.id.action_ignore:
                 break;
@@ -241,20 +253,29 @@ public class FacesFragment extends Fragment {
                 Toast.makeText(getContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
-        return true;
     }
 
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
+        menuRecolor(
+                (collapsingToolbar.getHeight() + verticalOffset) <
+                (collapsingToolbar.getScrimVisibleHeightTrigger())
+        );
+    }
+
+    private void menuRecolor(boolean toolbarCollapsed) {
         // Change icon to black/white depending on scroll state
         Menu menu = toolbar.getMenu();
-        MenuItem search = menu.findItem(R.id.action_search);
-        if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
+        MenuItem regenerate = menu.findItem(R.id.action_regenerate), search = menu.findItem(R.id.action_search);
+        if (toolbarCollapsed) {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            regenerate.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
             toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            regenerate.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
             search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
+        this.toolbarCollapsed = toolbarCollapsed;
     }
 
     private boolean menuShow(Menu menu, boolean show) {
@@ -264,5 +285,34 @@ public class FacesFragment extends Fragment {
                 item.setVisible(show);
         }
         return true;
+    }
+
+    private void regenerate() {
+        MediaManager.AsyncUpdater updater = mediaManager.updateFaces(getContext(), this);
+        Thread thread = new Thread(() -> {
+            Menu menu = toolbar.getMenu();
+            MenuItem regenerate = menu.findItem(R.id.action_regenerate);
+            // Animate generate icon TODO: Not animated yet
+            RotateAnimation rotate = new RotateAnimation(
+                    0, 360,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f
+            );
+            rotate.setDuration(1000);
+            rotate.setRepeatCount(Animation.INFINITE);
+            while (true) {
+                if (updater.getStatus() == AsyncTask.Status.RUNNING) {
+                    if (regenerate.getActionView().getAnimation() == null) {
+                        regenerate.getActionView().startAnimation(rotate);
+                        menuRecolor(toolbarCollapsed);
+                    }
+                } else if (updater.getStatus() == AsyncTask.Status.FINISHED){
+                    regenerate.getActionView().clearAnimation();
+                    menuRecolor(toolbarCollapsed);
+                    break;
+                }
+            }
+        });
+        thread.start();
     }
 }

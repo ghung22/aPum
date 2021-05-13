@@ -261,6 +261,7 @@ public class PreviewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_preview, menu);
+        // TODO: Text became invisible
         return true;
     }
 

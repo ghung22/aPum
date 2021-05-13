@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -109,7 +110,7 @@ public class MediaManager {
         favorites = listFavorites;
     }
 
-    public void updateFaces(Context context, FacesFragment fragment) {
+    public AsyncUpdater updateFaces(Context context, FacesFragment fragment) {
         try {
             faces = new ArrayList<>();
             faceData = new HashMap<>();
@@ -119,8 +120,10 @@ public class MediaManager {
             if (debugEnabled) {
                 Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
                 Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                return null;
             }
         }
+        return faceUpdater;
     }
 
     public void addFavorites(ArrayList<String> thumbs, int pos, DatabaseFavorites db) {
@@ -550,7 +553,7 @@ public class MediaManager {
     }
 
     @SuppressLint("StaticFieldLeak")
-    class AsyncUpdater extends AsyncTask<String, String, String> {
+    public class AsyncUpdater extends AsyncTask<String, String, String> {
         // GUI controls
         private final Context context;
         private final FacesFragment fragment;
@@ -559,6 +562,7 @@ public class MediaManager {
         private TextView generate_progress, generate_progress_info, generate_err;
         private ProgressBar generate_progress_bar;
         private Button generate_close_btn;
+        private MenuItem regenerate;
 
         // Data
         private final int maxProgress;
@@ -581,6 +585,7 @@ public class MediaManager {
             generate_err = dialog.findViewById(R.id.generate_err);
             generate_progress_bar = dialog.findViewById(R.id.generate_progress_bar);
             generate_close_btn = dialog.findViewById(R.id.generate_close_btn);
+            regenerate = fragment.getMenu().findItem(R.id.action_regenerate);
 
             // APPLY DATA
             generate_progress_bar.setProgress(0);
@@ -588,6 +593,8 @@ public class MediaManager {
             generate_progress_info.setText("");
             generate_err_row.setVisibility(View.GONE);
             generate_close_btn.setOnClickListener(view -> dialog.dismiss());
+
+            // PREPARE PROCESSING DATA
             if (detector == null) {
                 FaceDetectorOptions options =
                         new FaceDetectorOptions.Builder()
@@ -664,6 +671,9 @@ public class MediaManager {
         protected void onPostExecute(String result) {
             if (result.isEmpty()) {
                 dialog.dismiss();
+                regenerate.getActionView().getAnimation().cancel();
+                regenerate.getActionView().getAnimation().reset();
+                Toast.makeText(context, R.string.info_faces_processing_completed, Toast.LENGTH_SHORT).show();
             } else {
                 generate_err.setText(result);
                 generate_progress_info.setVisibility(View.GONE);
