@@ -84,7 +84,18 @@ public class GridAdapter extends BaseAdapter {
                     .transform(new Transformation() {
                         @Override
                         public Bitmap transform(Bitmap source) {
-                            Bitmap result = Bitmap.createBitmap(source, left, top, right - left, bottom - top);
+                            Bitmap result;
+                            try {
+                                result = Bitmap.createBitmap(source, Math.abs(left), top, right - left, bottom - top);
+                            } catch (Exception e) {
+                                result = Bitmap.createBitmap(
+                                        source,
+                                        Math.abs(left),
+                                        Math.abs(top),
+                                        Math.abs(right - left),
+                                        Math.abs(bottom - top)
+                                );
+                            }
                             source.recycle();
                             return result;
                         }
