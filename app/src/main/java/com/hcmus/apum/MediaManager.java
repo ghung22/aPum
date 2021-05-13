@@ -32,8 +32,11 @@ import com.hcmus.apum.fragment.FacesFragment;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
@@ -506,6 +509,44 @@ public class MediaManager {
 
     public ArrayList<String> sort(ArrayList<String> org, String type) {
         return sort(org, type,true);
+    }
+
+    public boolean copy(String source, String destination) {
+        destination += "/" + source.substring(source.lastIndexOf("/") + 1);
+        // Alter destination file name if file exists
+        File temp = new File(destination);
+        if (temp.exists()) {
+            int i = 0;
+            do {
+                temp = new File(destination + i);
+            } while (temp.exists());
+            destination += Integer.toString(i);
+        }
+
+        // Copy bytes to new file
+        FileInputStream in = null;
+        FileOutputStream out = null;
+        try {
+            in = new FileInputStream(source);
+            out = new FileOutputStream(destination);
+
+            FileChannel inChannel = in.getChannel(),
+                        outChannel = out.getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            in.close();
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            Log.e("COPY", e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean move(String source, String destination) {
+        boolean result = copy(source, destination);
+        // TODO: Delete source
+        return result;
     }
 
     @SuppressLint("StaticFieldLeak")
