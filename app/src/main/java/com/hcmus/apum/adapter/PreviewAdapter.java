@@ -1,6 +1,7 @@
 package com.hcmus.apum.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,10 +24,19 @@ public class PreviewAdapter extends PagerAdapter {
     private final Context context;
     private final LayoutInflater inflater;
     private final ArrayList<String> mediaList;
+    private final Uri mediaUri;
 
     public PreviewAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
         this.mediaList = mediaList;
+        this.mediaUri = null;
+        inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public PreviewAdapter(Context context, Uri mediaUri) {
+        this.context = context;
+        this.mediaList = new ArrayList<>();
+        this.mediaUri = mediaUri;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -46,7 +57,13 @@ public class PreviewAdapter extends PagerAdapter {
         ImageView img = view.findViewById(R.id.imgViewPager);
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
-        picasso.load(new File(mediaList.get(pos)))
+        RequestCreator requestCreator;
+        if (mediaUri == null) {
+            requestCreator = picasso.load(new File(mediaList.get(pos)));
+        } else {
+            requestCreator = picasso.load(mediaUri);
+        }
+        requestCreator
                 .fit()
                 .centerInside()
                 .placeholder(R.drawable.ic_image)

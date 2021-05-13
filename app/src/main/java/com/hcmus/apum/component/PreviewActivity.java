@@ -38,6 +38,8 @@ import com.hcmus.apum.adapter.PreviewAdapter;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -71,12 +73,38 @@ public class PreviewActivity extends AppCompatActivity {
 
         // Get values from bundle
         Intent mainPreview = getIntent();
-        Bundle bundle = mainPreview.getExtras();
-        mediaList = bundle.getStringArrayList("thumbnails");
-        pos = bundle.getInt("position");
+        String action = mainPreview.getAction();
+        Bundle bundle = null;
+        if (action == null) {
+            // Preview opened from aPum
+            bundle = mainPreview.getExtras();
+            mediaList = bundle.getStringArrayList("thumbnails");
+            pos = bundle.getInt("position");
+
+            // Set values to return
+            Intent previewMain = new Intent();
+            Bundle returnBundle = new Bundle();
+            returnBundle.putString("caller", bundle.getString("caller"));
+            previewMain.putExtras(returnBundle);
+            setResult(Activity.RESULT_OK, previewMain);
+        } else if (action.equals(Intent.ACTION_VIEW)) {
+            // Preview opened from outside
+            mediaList = new ArrayList<>();
+            pos = 0;
+            Uri mediaUri = mainPreview.getData();
+            String temp = PathUtils.fromUri(mediaUri.getPath());
+            if (Files.exists(Paths.get(temp))) {
+                mediaList.add(temp);
+            } else {
+                adapter = new PreviewAdapter(this, mediaUri);
+                mediaList.add("null");
+            }
+        }
 
         // Init preview layout
-        adapter = new PreviewAdapter(this, mediaList);
+        if (adapter == null) {
+            adapter = new PreviewAdapter(this, mediaList);
+        }
         imgPreview = findViewById(R.id.img_preview);
         imgPreview.setAdapter(adapter);
         imgPreview.setCurrentItem(pos, true);
@@ -114,13 +142,6 @@ public class PreviewActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         bottomToolbar = findViewById(R.id.bottomBar_preview);
         bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction((String) item.getTitle()));
-
-        // Set values to return
-        Intent previewMain = new Intent();
-        Bundle returnBundle = new Bundle();
-        returnBundle.putString("caller", bundle.getString("caller"));
-        previewMain.putExtras(returnBundle);
-        setResult(Activity.RESULT_OK, previewMain);
     }
 
     private void updateUI(int pos) {
@@ -331,12 +352,15 @@ public class PreviewActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CHOOSER_REQUEST_CODE) {
-            Uri dest = data.getData();
-            if (mediaManager.copy(mediaList.get(pos), PathUtils.findFullPath(dest.getPath()))) {
-                Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
-                // TODO: update list with new file
-            } else {
-                Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
+            if (data != null) {
+                Uri dest = data.getData();
+                // TODO: Path not 100% correct
+                if (mediaManager.copy(mediaList.get(pos), PathUtils.fromUri(dest.getPath()))) {
+                    Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
+                    // TODO: update list with new file
+                } else {
+                    Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
