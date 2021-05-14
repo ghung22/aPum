@@ -2,11 +2,15 @@ package com.hcmus.apum.component;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -261,19 +265,24 @@ public class PreviewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_preview, menu);
-        // TODO: Text became invisible
+        // Fix menu color in Light mode
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            SpannableString string = new SpannableString(item.getTitle());
+            int nightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            int color = (nightMode == Configuration.UI_MODE_NIGHT_YES) ? Color.WHITE : Color.BLACK;
+            string.setSpan(new ForegroundColorSpan(color), 0, string.length(), 0);
+            item.setTitle(string);
+        }
         return true;
     }
 
+    // TOP TOOLBAR ACTION
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        Menu menu = toolbar.getMenu();
-        MenuItem fav = menu.findItem(R.id.action_favorite);
         switch (menuItem.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 break;
-
-            // Top
             case R.id.action_copy:
                 Intent previewChooser = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 previewChooser.addCategory(Intent.CATEGORY_DEFAULT);
@@ -286,17 +295,6 @@ public class PreviewActivity extends AppCompatActivity {
                 break;
             case R.id.action_wallpaper:
                 break;
-
-            // Bottom toolbar
-            case R.id.action_favorite:
-                break;
-            case R.id.action_edit:
-                break;
-            case R.id.action_share:
-                break;
-            case R.id.action_delete:
-                deleteImg(mediaList.get(pos));
-                break;
             default:
                 Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
@@ -304,6 +302,7 @@ public class PreviewActivity extends AppCompatActivity {
         return true;
     }
 
+    // BOTTOM TOOLBAR ACTION
     private boolean bottomToolbarAction(String title) {
         Menu menu = bottomToolbar.getMenu();
         MenuItem fav = menu.findItem(R.id.action_favorite);
@@ -317,9 +316,9 @@ public class PreviewActivity extends AppCompatActivity {
                 Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
             }
         } else if (title.equals(getResources().getString(R.string.action_edit))) {
-            Toast.makeText(this, mediaList.get(pos).toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, mediaList.get(pos), Toast.LENGTH_LONG).show();
         } else if (title.equals(getResources().getString(R.string.action_share))) {
-
+            mediaManager.share(this, mediaList.get(pos));
         } else if (title.equals(getResources().getString(R.string.action_delete))) {
             deleteImg(mediaList.get(pos));
         } else {
@@ -356,10 +355,11 @@ public class PreviewActivity extends AppCompatActivity {
         if (requestCode == CHOOSER_REQUEST_CODE) {
             if (data != null) {
                 Uri dest = data.getData();
-                // TODO: Path not 100% correct
-                if (mediaManager.copy(mediaList.get(pos), PathUtils.fromUri(dest.getPath()))) {
+                String destination = PathUtils.fromUri(dest.getPath());
+                if (mediaManager.copy(mediaList.get(pos), destination)) {
                     Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
-                    // TODO: update list with new file
+                    mediaList.add(destination);
+                    adapter.add(destination);
                 } else {
                     Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
                 }

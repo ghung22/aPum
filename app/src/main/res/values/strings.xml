@@ -7,6 +7,7 @@
         18127044 - Nguyễn Gia Hưng \n
         18127073 - Phan Quang Đại"
     </string>
+    <string name="app_receiver">com.hcmus.apum.RECEIVE_BROADCAST</string>
 
     <!--  Main top bar  -->
     <string name="action_add">Add</string>
@@ -45,6 +46,13 @@
 
     <!--  Dialog options  -->
     <string name="action_close">Close</string>
+    <string name="action_cancel">Cancel</string>
+
+    <!--  Sort options  -->
+    <string name="action_sort_by_name">by Name</string>
+    <string name="action_sort_by_date">by Date</string>
+    <string name="action_sort_ascending">Ascending</string>
+    <string name="action_sort_descending">Descending</string>
 
     <!--  Placeholder text  -->
     <string name="placeholder_album_name">Null album</string>
@@ -66,6 +74,14 @@
     <string name="info_no_faces">No faces available, generate a new face data?</string>
     <string name="info_faces_processing">Processing images…</string>
     <string name="info_faces_processing_completed">Face data processing completed.</string>
+    <string name="info_overview_reload">Image list reloaded.</string>
+    <string name="info_albums_reload">Album list reloaded.</string>
+    <string name="info_favorite_reload">Favorite list reloaded.</string>
+    <string name="info_overview_sort">Image list sorted.</string>
+    <string name="info_album_sort">Album list sorted.</string>
+    <string name="info_favorite_sort">Favorite list sorted.</string>
+    <string name="info_sort_method">Sort method:</string>
+    <string name="info_sort_order">Sort order:</string>
 
     <!--  Error text  -->
     <string name="err_generic">(!) A problem occurred.</string>

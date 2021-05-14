@@ -23,7 +23,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
+
 import com.hcmus.apum.DatabaseFavorites;
+
+import com.hcmus.apum.FragmentCallbacks;
+
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.component.PreviewActivity;
@@ -36,7 +40,7 @@ import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class FavoriteFragment extends Fragment {
+public class FavoriteFragment extends Fragment implements FragmentCallbacks {
 
     // GUI controls
     private AppBarLayout appbar;
@@ -190,14 +194,14 @@ public class FavoriteFragment extends Fragment {
                 searchItem.expandActionView();
                 searchView.requestFocus();
                 break;
-            case R.id.action_select:
-                break;
-            case R.id.action_zoom:
-                break;
             case R.id.action_sort:
-                // TODO: Sort in Overview
+                mediaManager.sortUI(getContext(), "favorite", mediaList);
                 break;
             case R.id.action_reload:
+                mediaManager.updateFavoriteLocations(getContext());
+                mediaList = mediaManager.sort(mediaManager.getFavorites(), "date", false);
+                adapter.addAll(mediaList);
+                Toast.makeText(getContext(), getString(R.string.info_favorite_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_trash:
                 break;
@@ -240,5 +244,21 @@ public class FavoriteFragment extends Fragment {
                 item.setVisible(show);
         }
         return true;
+    }
+
+    @Override
+    public void mainToFrag(Bundle bundle) {
+        String action = bundle.getString("action");
+        if (action != null) {
+            switch (action) {
+                case "sort":
+                case "reload":
+                    mediaList = bundle.getStringArrayList("mediaList");
+                    adapter.addAll(mediaList);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

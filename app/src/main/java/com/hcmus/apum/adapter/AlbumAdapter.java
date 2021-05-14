@@ -22,12 +22,12 @@ import static com.hcmus.apum.MainActivity.mediaManager;
 public class AlbumAdapter extends BaseAdapter {
     private final Context context;
     private final ArrayList<String> mediaList;
-    private final ArrayList<Integer> mediaCount;
+    private final ArrayList<Integer> mediaCountList;
 
-    public AlbumAdapter(Context context, ArrayList<String> mediaList, ArrayList<Integer> mediaCount) {
+    public AlbumAdapter(Context context, ArrayList<String> mediaList, ArrayList<Integer> mediaCountList) {
         this.context = context;
         this.mediaList = mediaList;
-        this.mediaCount = mediaCount;
+        this.mediaCountList = mediaCountList;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class AlbumAdapter extends BaseAdapter {
 
         // Set properties of elements
         visualTitle.setText(path.substring(path.lastIndexOf("/") + 1));
-        visualSubtitle.setText(String.format("%d", mediaCount.get(pos)));
+        visualSubtitle.setText(String.format("%d", mediaCountList.get(pos)));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(cover)
@@ -63,5 +63,13 @@ public class AlbumAdapter extends BaseAdapter {
                 .into(visual);
         row.setId(pos);
         return(row);
+    }
+
+    public void addAll(ArrayList<String> mediaList, ArrayList<Integer> mediaCountList) {
+        this.mediaList.clear();
+        this.mediaList.addAll(mediaList);
+        this.mediaCountList.clear();
+        this.mediaCountList.addAll(mediaCountList);
+        notifyDataSetChanged();
     }
 }

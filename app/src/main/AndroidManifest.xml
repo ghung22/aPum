@@ -48,6 +48,19 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="face" />
 
+        <!--      Access Uri permission for sharing image      -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.hcmus.apum.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <!-- ressource file to create -->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths">
+            </meta-data>
+        </provider>
+
         <activity
             android:name=".Splash"
             android:configChanges="orientation|keyboardHidden"
@@ -72,6 +85,7 @@
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar.FullScreen" >
+            <!--      Open image with aPum      -->
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
