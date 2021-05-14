@@ -224,19 +224,15 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
 
     private void menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
+            case R.id.action_regenerate:
+                regenerate();
+                break;
             case R.id.action_search:
                 searchItem.expandActionView();
                 searchView.requestFocus();
                 break;
             case R.id.action_sort:
                 mediaManager.sortUI(getContext(), "faces", mediaList);
-                break;
-            case R.id.action_regenerate:
-                regenerate();
-                break;
-            case R.id.action_ignore:
-                break;
-            case R.id.action_settings:
                 break;
             case R.id.action_about:
                 Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);

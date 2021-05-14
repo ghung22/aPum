@@ -9,12 +9,12 @@
         android:title="@string/fragment_favorite"
         app:showAsAction="always"
         tools:ignore="AppCompatResource"/>
-    <item
-        android:id="@+id/action_edit"
-        android:icon="@drawable/ic_edit"
-        android:title="@string/action_edit"
-        app:showAsAction="always"
-        tools:ignore="AppCompatResource"/>
+<!--    <item-->
+<!--        android:id="@+id/action_edit"-->
+<!--        android:icon="@drawable/ic_edit"-->
+<!--        android:title="@string/action_edit"-->
+<!--        app:showAsAction="always"-->
+<!--        tools:ignore="AppCompatResource"/>-->
     <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_share"

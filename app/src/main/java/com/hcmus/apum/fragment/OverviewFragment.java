@@ -214,12 +214,6 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
                 adapter.addAll(mediaList);
                 Toast.makeText(getContext(), getString(R.string.info_overview_reload), Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.action_trash:
-                break;
-            case R.id.action_vault:
-                break;
-            case R.id.action_settings:
-                break;
             case R.id.action_about:
                 Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
                 Bundle bundle = new Bundle();
