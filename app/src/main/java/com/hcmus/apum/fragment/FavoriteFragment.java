@@ -28,11 +28,13 @@ import com.hcmus.apum.DatabaseFavorites;
 
 import com.hcmus.apum.FragmentCallbacks;
 
+import com.hcmus.apum.MainActivity;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.component.PreviewActivity;
 import com.hcmus.apum.component.SearchActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
@@ -56,8 +58,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
 
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
-    //Database
-    DatabaseFavorites db_fav;
+
     public FavoriteFragment() {
         // Required empty public constructor
     }
@@ -82,8 +83,9 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
         View view =  inflater.inflate(R.layout.fragment_favorite, container, false);
 
         // Init data
-        mediaList = getArguments().getStringArrayList("mediaList");
-        
+//        mediaList = getArguments().getStringArrayList("mediaList");
+        mediaList = mediaManager.getFavoriteImages();
+
         // Init controls
         appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
@@ -199,7 +201,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
                 break;
             case R.id.action_reload:
                 mediaManager.updateFavoriteLocations(getContext());
-                mediaList = mediaManager.sort(mediaManager.getFavorites(), "date", false);
+                mediaList = mediaManager.sort(mediaManager.getFavoriteImages(), "date", false);
                 adapter.addAll(mediaList);
                 Toast.makeText(getContext(), getString(R.string.info_favorite_reload), Toast.LENGTH_SHORT).show();
                 break;

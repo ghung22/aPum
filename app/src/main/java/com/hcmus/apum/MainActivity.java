@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private Bundle savedInstanceState;
 
     //Database
-    DatabaseFavorites db_fav;
+    public static DatabaseFavorites db_fav;
 
     // For threads
     private String currentFragment = "overview";
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         mediaManager.updateLocations(this);
         mediaManager.updateFavoriteLocations(this);
 
+        //Database
         db_fav = new DatabaseFavorites(this);
         try {
             db_fav.createDataBase();
@@ -97,14 +98,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         faces = FacesFragment.newInstance(overviewData);
         favorite = FavoriteFragment.newInstance(favoriteData);
 
-        //Database
-        db_fav = new DatabaseFavorites(this);
-        try {
-            db_fav.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        db_fav.openDataBase();
 
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
@@ -120,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init updater
         updater = new AsyncUpdater();
         updater.execute();
+        db_fav.close();
     }
 
 //    @Override

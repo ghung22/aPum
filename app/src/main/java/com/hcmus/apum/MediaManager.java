@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -76,7 +77,7 @@ public class MediaManager {
     );
 
     // Interface
-    private DatabaseFavorites db;
+    private DatabaseFavorites db = MainActivity.db_fav;
 
     // Global agent
     public static AsyncFacesUpdater faceUpdater;
@@ -111,9 +112,22 @@ public class MediaManager {
     }
 
     public void updateFavoriteLocations(Context context) {
-        ArrayList<String> listFavorites = new ArrayList<>();
+//        ArrayList<String> listFavorites = new ArrayList<>();
+        db = new DatabaseFavorites(context);
+        try {
+            db.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+        try {
+            db.openDataBase();
+        } catch (SQLException sqle) {
+            throw sqle;
+        }
+        this.favorites = db.getAllFavorite();
+        db.close();
         //listFavorites = db.getAllFavorite();
-        favorites = listFavorites;
+//        favorites = listFavorites;
     }
 
     public AsyncFacesUpdater updateFaces(Context context, FacesFragment fragment) {
@@ -188,9 +202,6 @@ public class MediaManager {
         return faceRect;
     }
 
-    public ArrayList<String> getFavorites() {
-        return favorites;
-    }
 
     public Bitmap getCompressedBitmap(String path, int quality) {
         Bitmap bmp = BitmapFactory.decodeFile(path);
