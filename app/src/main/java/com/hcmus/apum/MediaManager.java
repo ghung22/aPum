@@ -143,7 +143,9 @@ public class MediaManager {
     public ArrayList<String> getImages() {
         return images;
     }
-
+    public ArrayList<String> getFavoriteImages() {
+        return favorites;
+    }
     public ArrayList<String> getAlbums() {
         return albums;
     }

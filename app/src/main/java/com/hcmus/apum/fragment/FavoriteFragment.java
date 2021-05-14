@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
+import com.hcmus.apum.DatabaseFavorites;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.component.PreviewActivity;
@@ -51,7 +52,8 @@ public class FavoriteFragment extends Fragment {
 
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
-
+    //Database
+    DatabaseFavorites db_fav;
     public FavoriteFragment() {
         // Required empty public constructor
     }
@@ -77,7 +79,7 @@ public class FavoriteFragment extends Fragment {
 
         // Init data
         mediaList = getArguments().getStringArrayList("mediaList");
-
+        
         // Init controls
         appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
@@ -85,6 +87,7 @@ public class FavoriteFragment extends Fragment {
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
         adapter = new GridAdapter(getActivity(), mediaList);
+
         grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
@@ -164,7 +167,7 @@ public class FavoriteFragment extends Fragment {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "favorite");
-        bundle.putStringArrayList("thumbnails", mediaManager.getImages());
+        bundle.putStringArrayList("thumbnails", mediaManager.getFavoriteImages());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);

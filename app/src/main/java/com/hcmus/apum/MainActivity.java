@@ -1,6 +1,7 @@
 package com.hcmus.apum;
 
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -54,12 +55,22 @@ public class MainActivity extends AppCompatActivity {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavoriteLocations(this);
-
+        db_fav = new DatabaseFavorites(this);
+        try {
+            db_fav.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+        try {
+            db_fav.openDataBase();
+        } catch (SQLException sqle) {
+            throw sqle;
+        }
         // Init fragments
         overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
         albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
-        faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
-        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
+        faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
+        favorite = FavoriteFragment.newInstance(mediaManager.sort(db_fav.getAllFavorite(), "date", false));
 
         //Database
         db_fav = new DatabaseFavorites(this);
