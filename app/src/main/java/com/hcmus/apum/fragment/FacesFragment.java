@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
+import com.hcmus.apum.FragmentCallbacks;
 import com.hcmus.apum.MediaManager;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
@@ -44,7 +45,7 @@ import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class FacesFragment extends Fragment {
+public class FacesFragment extends Fragment implements FragmentCallbacks {
 
     // GUI controls
     private AppBarLayout appbar;
@@ -228,7 +229,7 @@ public class FacesFragment extends Fragment {
                 searchView.requestFocus();
                 break;
             case R.id.action_sort:
-                // TODO: Sort in Overview
+                mediaManager.sortUI(getContext(), "faces", mediaList);
                 break;
             case R.id.action_regenerate:
                 regenerate();
@@ -310,5 +311,16 @@ public class FacesFragment extends Fragment {
             }
         });
         thread.start();
+    }
+
+    @Override
+    public void mainToFrag(Bundle bundle) {
+        String action = bundle.getString("action");
+        if (action != null) {
+            if (action.equals("sort")) {
+                mediaList = bundle.getStringArrayList("mediaList");
+                adapter.addAll(mediaList);
+            }
+        }
     }
 }

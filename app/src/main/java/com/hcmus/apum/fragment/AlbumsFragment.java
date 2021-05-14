@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
+import com.hcmus.apum.FragmentCallbacks;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.AlbumAdapter;
 import com.hcmus.apum.component.ContentActivity;
@@ -35,7 +36,7 @@ import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
-public class AlbumsFragment extends Fragment {
+public class AlbumsFragment extends Fragment implements FragmentCallbacks {
 
     // GUI controls
     private AppBarLayout appbar;
@@ -59,10 +60,8 @@ public class AlbumsFragment extends Fragment {
 
     public static AlbumsFragment newInstance(ArrayList<String> mediaList) {
         AlbumsFragment fragment = new AlbumsFragment();
-        ArrayList<Integer> mediaCountList = mediaManager.getAlbumCounts(mediaList);
         Bundle args = new Bundle();
         args.putStringArrayList("mediaList", mediaList);
-        args.putIntegerArrayList("mediaCountList", mediaCountList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,7 +79,7 @@ public class AlbumsFragment extends Fragment {
 
         // Init data
         mediaList = getArguments().getStringArrayList("mediaList");
-        mediaCountList = getArguments().getIntegerArrayList("mediaCountList");
+        mediaCountList = mediaManager.getAlbumCounts(mediaList);
 
         // Init controls
         appbar = view.findViewById(R.id.appbar);
@@ -186,10 +185,13 @@ public class AlbumsFragment extends Fragment {
                 searchView.requestFocus();
                 break;
             case R.id.action_sort:
+                mediaManager.sortUI(getContext(), "albums", mediaList);
                 break;
             case R.id.action_reload:
                 mediaManager.updateLocations(getContext());
-                adapter.addAll(mediaManager.sort(mediaManager.getAlbums(), "name"));
+                mediaList = mediaManager.sort(mediaManager.getAlbums(), "name");
+                mediaCountList = mediaManager.getAlbumCounts(mediaList);
+                adapter.addAll(mediaList, mediaCountList);
                 Toast.makeText(getContext(), getString(R.string.info_albums_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_trash:
@@ -233,5 +235,17 @@ public class AlbumsFragment extends Fragment {
                 item.setVisible(show);
         }
         return true;
+    }
+
+    @Override
+    public void mainToFrag(Bundle bundle) {
+        String action = bundle.getString("action");
+        if (action != null) {
+            if (action.equals("sort")) {
+                mediaList = bundle.getStringArrayList("mediaList");
+                mediaCountList = mediaManager.getAlbumCounts(mediaList);
+                adapter.addAll(mediaList, mediaCountList);
+            }
+        }
     }
 }

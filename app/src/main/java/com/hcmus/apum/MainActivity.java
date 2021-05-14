@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -16,7 +15,7 @@ import com.hcmus.apum.fragment.OverviewFragment;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     // Static objects
     public static MediaManager mediaManager = new MediaManager();
@@ -34,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navBar;
 
     // Fragments
-    private Fragment overview;
-    private Fragment albums;
-    private Fragment faces;
-    private Fragment favorite;
+    private OverviewFragment overview;
+    private AlbumsFragment albums;
+    private FacesFragment faces;
+    private FavoriteFragment favorite;
 
     // For use/save state values
     private Bundle savedInstanceState;
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             throw new Error("Unable to create database");
         }
         db_fav.openDataBase();
+
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
         ft_main.replace(R.id.frame, overview);
@@ -80,17 +80,6 @@ public class MainActivity extends AppCompatActivity {
         navBar = findViewById(R.id.navBar);
         navBar.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
     }
-//    public void AddData(String newEntry){
-//        insertData = db_fav.addData(newEntry);
-//        if(insertData){
-//            debugMsg("added successfully data");
-//        }else{
-//            debugMsg("Add Data false");
-//        }
-//    }
-//    private void debugMsg(String msg){
-//        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
-//    }
 
     private boolean switchFragment(int itemId) {
         FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
@@ -145,6 +134,27 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 switchFragment(R.id.action_overview);
             }
+        }
+    }
+
+    @Override
+    public void fragToMain(String caller, Bundle bundle) {
+        // Forward bundle to fragments
+        switch (caller) {
+            case "overview":
+                overview.mainToFrag(bundle);
+                break;
+            case "albums":
+                albums.mainToFrag(bundle);
+                break;
+            case "faces":
+                faces.mainToFrag(bundle);
+                break;
+            case "favorite":
+                favorite.mainToFrag(bundle);
+                break;
+            default:
+                break;
         }
     }
 

@@ -11,6 +11,7 @@ import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,6 +19,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -517,9 +520,56 @@ public class MediaManager {
         return sort(org, type,true);
     }
 
+    public void sortUI(Context context, String caller, ArrayList<String> mediaList) {
+        // INIT ELEMENTS
+        LayoutDialog dialog = new LayoutDialog(context, R.layout.layout_sort_dialog);
+        RadioGroup sort_radio_group_method = dialog.findViewById(R.id.sort_radio_group_method),
+                sort_radio_group_order = dialog.findViewById(R.id.sort_radio_group_order);
+        RadioButton sort_radio_by_name = dialog.findViewById(R.id.sort_radio_by_name),
+                sort_radio_by_date = dialog.findViewById(R.id.sort_radio_by_date),
+                sort_radio_ascending = dialog.findViewById(R.id.sort_radio_ascending),
+                sort_radio_descending = dialog.findViewById(R.id.sort_radio_descending);
+        LinearLayout sort_err_row = dialog.findViewById(R.id.sort_err_row);
+        TextView sort_err = dialog.findViewById(R.id.sort_err);
+        Button sort_cancel_btn = dialog.findViewById(R.id.sort_cancel_btn),
+                sort_sort_btn = dialog.findViewById(R.id.sort_sort_btn);
+
+        // APPLY DATA
+        String[] method = { "name" };
+        boolean[] ascending = { true };
+        sort_err_row.setVisibility(View.GONE);
+
+        // INIT CONTROLS
+        sort_radio_group_method.setOnCheckedChangeListener((radioGroup, radioId) -> {
+            if (radioId == R.id.sort_radio_by_name) {
+                method[0] = "name";
+            } else if (radioId == R.id.sort_radio_by_date) {
+                method[0] = "date";
+            }
+        });
+        sort_radio_group_order.setOnCheckedChangeListener(((radioGroup, radioId) -> {
+            if (radioId == R.id.sort_radio_ascending) {
+                ascending[0] = true;
+            } else if (radioId == R.id.sort_radio_descending) {
+                ascending[0] = false;
+            }
+        }));
+        sort_cancel_btn.setOnClickListener(view -> dialog.dismiss());
+        sort_sort_btn.setOnClickListener(view -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("caller", caller);
+            bundle.putString("action", "sort");
+            bundle.putStringArrayList("mediaList", sort(mediaList, method[0], ascending[0]));
+            ((MainActivity) context).fragToMain(caller, bundle);
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
     public boolean copy(String source, String destination) {
         destination += "/" + source.substring(source.lastIndexOf("/") + 1);
-        // Alter destination file name if file exists
+        // Alter destination file name if file exists TODO: put before Extension
         File temp = new File(destination);
         if (temp.exists()) {
             int i = 0;

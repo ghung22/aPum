@@ -104,13 +104,13 @@
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:paddingVertical="4dp"
         android:orientation="horizontal" android:gravity="center_vertical">
-        <Button android:id="@+id/info_edit_btn"
-            android:layout_width="0dip" android:layout_height="wrap_content"
-            android:layout_weight=".5" android:layout_marginHorizontal="40dp"
-            android:text="@string/action_edit" android:backgroundTint="@color/primary"/>
         <Button android:id="@+id/info_close_btn"
             android:layout_width="0dip" android:layout_height="wrap_content"
             android:layout_weight=".5" android:layout_marginHorizontal="40dp"
             android:text="@string/action_close" android:backgroundTint="@color/primary"/>
+        <Button android:id="@+id/info_edit_btn"
+            android:layout_width="0dip" android:layout_height="wrap_content"
+            android:layout_weight=".5" android:layout_marginHorizontal="40dp"
+            android:text="@string/action_edit" android:backgroundTint="@color/primary"/>
     </LinearLayout>
 </LinearLayout>
