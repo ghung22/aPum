@@ -304,7 +304,7 @@ public class PreviewActivity extends AppCompatActivity {
                 Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
             }
         } else if (title.equals(getResources().getString(R.string.action_edit))) {
-
+            Toast.makeText(this, mediaList.get(pos), Toast.LENGTH_LONG).show();
         } else if (title.equals(getResources().getString(R.string.action_share))) {
             mediaManager.share(this, mediaList.get(pos));
         } else if (title.equals(getResources().getString(R.string.action_delete))) {
