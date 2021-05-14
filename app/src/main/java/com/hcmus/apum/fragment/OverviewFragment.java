@@ -213,7 +213,8 @@ public class OverviewFragment extends Fragment {
                 break;
             case R.id.action_reload:
                 mediaManager.updateLocations(getContext());
-                Toast.makeText(getContext(), "Image list reloaded.", Toast.LENGTH_SHORT).show();
+                adapter.addAll(mediaManager.sort(mediaManager.getImages(), "date", false));
+                Toast.makeText(getContext(), getString(R.string.info_overview_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_trash:
                 break;

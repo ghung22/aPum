@@ -190,6 +190,9 @@ public class AlbumsFragment extends Fragment {
             case R.id.action_sort:
                 break;
             case R.id.action_reload:
+                mediaManager.updateLocations(getContext());
+                adapter.addAll(mediaManager.sort(mediaManager.getAlbums(), "name"));
+                Toast.makeText(getContext(), getString(R.string.info_albums_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_trash:
                 break;

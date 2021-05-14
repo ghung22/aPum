@@ -64,4 +64,10 @@ public class AlbumAdapter extends BaseAdapter {
         row.setId(pos);
         return(row);
     }
+
+    public void addAll(ArrayList<String> mediaList) {
+        this.mediaList.clear();
+        this.mediaList.addAll(mediaList);
+        notifyDataSetChanged();
+    }
 }
