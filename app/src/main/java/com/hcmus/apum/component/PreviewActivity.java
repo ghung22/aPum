@@ -289,14 +289,6 @@ public class PreviewActivity extends AppCompatActivity {
 
             // Bottom toolbar
             case R.id.action_favorite:
-                mediaManager.addFavorites(mediaList, pos, db_fav);
-                if(mediaManager.isFavorite(mediaList.get(pos))) {
-                    fav.setIcon(R.drawable.ic_fav);
-                    Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
-                } else {
-                    fav.setIcon(R.drawable.ic_fav_outline);
-                    Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
-                }
                 break;
             case R.id.action_edit:
                 break;
@@ -313,14 +305,23 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
     private boolean bottomToolbarAction(String title) {
+        Menu menu = bottomToolbar.getMenu();
+        MenuItem fav = menu.findItem(R.id.action_favorite);
         if (title.equals(getResources().getString(R.string.fragment_favorite))) {
-
+            mediaManager.addFavorites(mediaList, pos, db_fav);
+            if(mediaManager.isFavorite(mediaList.get(pos))) {
+                fav.setIcon(R.drawable.ic_fav);
+                Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
+            } else {
+                fav.setIcon(R.drawable.ic_fav_outline);
+                Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
+            }
         } else if (title.equals(getResources().getString(R.string.action_edit))) {
-
+            Toast.makeText(this, mediaList.get(pos).toString(), Toast.LENGTH_LONG).show();
         } else if (title.equals(getResources().getString(R.string.action_share))) {
 
         } else if (title.equals(getResources().getString(R.string.action_delete))) {
-
+            deleteImg(mediaList.get(pos));
         } else {
             Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
         }
