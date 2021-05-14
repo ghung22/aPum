@@ -101,11 +101,21 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         updater.execute();
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        updater.cancel(true);
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (updater.isCancelled()) {
+            updater.execute();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (updater.isCancelled()) {
+            updater.execute();
+        }
+    }
 
     private boolean switchFragment(int itemId) {
         FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
