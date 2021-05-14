@@ -2,6 +2,9 @@ package com.hcmus.apum;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+
+import android.database.SQLException;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private Bundle savedInstanceState;
 
     //Database
-    DatabaseFavorites db_fav;
+    public static DatabaseFavorites db_fav;
 
     // For threads
     private String currentFragment = "overview";
@@ -65,6 +68,25 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavoriteLocations(this);
+
+        //Database
+        db_fav = new DatabaseFavorites(this);
+        try {
+            db_fav.createDataBase();
+        } catch (IOException ioe) {
+            throw new Error("Unable to create database");
+        }
+        try {
+            db_fav.openDataBase();
+        } catch (SQLException sqle) {
+            throw sqle;
+        }
+        // Init fragments
+        overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
+        albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
+        faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
+        favorite = FavoriteFragment.newInstance(mediaManager.sort(db_fav.getAllFavorite(), "date", false));
+
         overviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
         albumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
         favoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
@@ -78,14 +100,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         faces = FacesFragment.newInstance(overviewData);
         favorite = FavoriteFragment.newInstance(favoriteData);
 
-        //Database
-        db_fav = new DatabaseFavorites(this);
-        try {
-            db_fav.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        db_fav.openDataBase();
 
         // Init GUI
         FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
@@ -101,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init updater
         updater = new AsyncUpdater();
         updater.execute();
+        db_fav.close();
     }
 
     @Override

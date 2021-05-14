@@ -23,12 +23,18 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
+
+import com.hcmus.apum.DatabaseFavorites;
+
 import com.hcmus.apum.FragmentCallbacks;
+
+import com.hcmus.apum.MainActivity;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.component.PreviewActivity;
 import com.hcmus.apum.component.SearchActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
@@ -77,7 +83,8 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
         View view =  inflater.inflate(R.layout.fragment_favorite, container, false);
 
         // Init data
-        mediaList = getArguments().getStringArrayList("mediaList");
+//        mediaList = getArguments().getStringArrayList("mediaList");
+        mediaList = mediaManager.getFavoriteImages();
 
         // Init controls
         appbar = view.findViewById(R.id.appbar);
@@ -86,6 +93,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
         scroll = view.findViewById(R.id.scroll);
         adapter = new GridAdapter(getActivity(), mediaList);
+
         grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
@@ -165,7 +173,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "favorite");
-        bundle.putStringArrayList("thumbnails", mediaManager.getImages());
+        bundle.putStringArrayList("thumbnails", mediaManager.getFavoriteImages());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);
@@ -193,7 +201,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
                 break;
             case R.id.action_reload:
                 mediaManager.updateFavoriteLocations(getContext());
-                mediaList = mediaManager.sort(mediaManager.getFavorites(), "date", false);
+                mediaList = mediaManager.sort(mediaManager.getFavoriteImages(), "date", false);
                 adapter.addAll(mediaList);
                 Toast.makeText(getContext(), getString(R.string.info_favorite_reload), Toast.LENGTH_SHORT).show();
                 break;

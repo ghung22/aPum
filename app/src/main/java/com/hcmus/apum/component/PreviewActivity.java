@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hcmus.apum.DatabaseFavorites;
+import com.hcmus.apum.MainActivity;
 import com.hcmus.apum.PathUtils;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.PreviewAdapter;
@@ -68,7 +69,7 @@ public class PreviewActivity extends AppCompatActivity {
     double latitude, longitude;
 
     //DB
-    private DatabaseFavorites db_fav;
+    private DatabaseFavorites db_fav = MainActivity.db_fav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,15 +127,6 @@ public class PreviewActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
-
-        //Database
-        db_fav = new DatabaseFavorites(this);
-        try {
-            db_fav.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        db_fav.openDataBase();
 
         // Init actionbar buttons
         toolbar = findViewById(R.id.menu_preview);
