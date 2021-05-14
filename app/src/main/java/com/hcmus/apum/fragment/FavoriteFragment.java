@@ -187,14 +187,13 @@ public class FavoriteFragment extends Fragment {
                 searchItem.expandActionView();
                 searchView.requestFocus();
                 break;
-            case R.id.action_select:
-                break;
-            case R.id.action_zoom:
-                break;
             case R.id.action_sort:
                 // TODO: Sort in Overview
                 break;
             case R.id.action_reload:
+                mediaManager.updateFavoriteLocations(getContext());
+                adapter.addAll(mediaManager.sort(mediaManager.getFavorites(), "date", false));
+                Toast.makeText(getContext(), getString(R.string.info_favorite_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_trash:
                 break;

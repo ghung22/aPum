@@ -185,8 +185,6 @@ public class AlbumsFragment extends Fragment {
                 searchItem.expandActionView();
                 searchView.requestFocus();
                 break;
-            case R.id.action_select:
-                break;
             case R.id.action_sort:
                 break;
             case R.id.action_reload:

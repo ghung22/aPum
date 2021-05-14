@@ -68,6 +68,7 @@
     <string name="info_faces_processing_completed">Face data processing completed.</string>
     <string name="info_overview_reload">Image list reloaded.</string>
     <string name="info_albums_reload">Album list reloaded.</string>
+    <string name="info_favorite_reload" >Favorite list reloaded.</string>
 
     <!--  Error text  -->
     <string name="err_generic">(!) A problem occurred.</string>

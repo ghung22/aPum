@@ -227,10 +227,6 @@ public class FacesFragment extends Fragment {
                 searchItem.expandActionView();
                 searchView.requestFocus();
                 break;
-            case R.id.action_select:
-                break;
-            case R.id.action_zoom:
-                break;
             case R.id.action_sort:
                 // TODO: Sort in Overview
                 break;
