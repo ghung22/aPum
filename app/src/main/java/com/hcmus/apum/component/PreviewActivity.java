@@ -294,6 +294,11 @@ public class PreviewActivity extends AppCompatActivity {
                 initInfoDialog();
                 break;
             case R.id.action_wallpaper:
+                Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setDataAndType(Uri.parse(mediaList.get(pos)), "image/*");
+                intent.putExtra("mimeType", "image/*");
+                this.startActivity(Intent.createChooser(intent, getResources().getString(R.string.action_wallpaper)));
                 break;
             default:
                 Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
