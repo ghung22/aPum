@@ -1,7 +1,10 @@
 package com.hcmus.apum;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +17,7 @@ import com.hcmus.apum.fragment.FavoriteFragment;
 import com.hcmus.apum.fragment.OverviewFragment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
@@ -44,6 +48,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     //Database
     DatabaseFavorites db_fav;
 
+    // For threads
+    private String currentFragment = "overview";
+    private ArrayList<String> overviewData, albumsData, favoriteData,
+            newOverviewData, newAlbumsData, newFavoriteData;
+    private AsyncUpdater updater;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +63,18 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavoriteLocations(this);
+        overviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
+        albumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
+        favoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
+        newOverviewData = overviewData;
+        newAlbumsData = albumsData;
+        newFavoriteData = favoriteData;
 
         // Init fragments
-        overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
-        albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
-        faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
-        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
+        overview = OverviewFragment.newInstance(overviewData);
+        albums = AlbumsFragment.newInstance(albumsData);
+        faces = FacesFragment.newInstance(overviewData);
+        favorite = FavoriteFragment.newInstance(favoriteData);
 
         //Database
         db_fav = new DatabaseFavorites(this);
@@ -79,22 +95,36 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init controls
         navBar = findViewById(R.id.navBar);
         navBar.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
+
+        // Init updater
+        updater = new AsyncUpdater();
+        updater.execute();
     }
+
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        updater.cancel(true);
+//    }
 
     private boolean switchFragment(int itemId) {
         FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
         switch (itemId) {
             case R.id.action_overview:
                 ft_navBar.replace(R.id.frame, overview);
+                currentFragment = "overview";
                 break;
             case R.id.action_albums:
                 ft_navBar.replace(R.id.frame, albums);
+                currentFragment = "albums";
                 break;
             case R.id.action_faces:
                 ft_navBar.replace(R.id.frame, faces);
+                currentFragment = "face";
                 break;
             case R.id.action_favorite:
                 ft_navBar.replace(R.id.frame, favorite);
+                currentFragment = "favorite";
                 break;
         }
         ft_navBar.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -162,5 +192,92 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class AsyncUpdater extends AsyncTask<String, String, String> {
+        private final Bundle bundle = new Bundle();
+        private final String TAG = "ASYNC_UPDATER";
+        private final int UPDATE_INTERVAL = 10000;
+
+        @Override
+        protected void onPreExecute() {
+            bundle.putString("action", "reload");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            while (true) {
+                try {
+                    mediaManager.updateLocations(MainActivity.this);
+                    mediaManager.updateFavoriteLocations(MainActivity.this);
+                    newOverviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
+                    newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
+                    newFavoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
+                    switch (currentFragment) {
+                        case "overview":
+                            if (!newOverviewData.equals(overviewData)) {
+                                publishProgress("overview");
+                            }
+                            break;
+                        case "albums":
+                            if (!newAlbumsData.equals(albumsData)) {
+                                publishProgress("albums");
+                            }
+                            break;
+                        case "faces":
+                            if (!newOverviewData.equals(overviewData)) {
+                                publishProgress("faces");
+                            }
+                            break;
+                        case "favorite":
+                            if (!newFavoriteData.equals(favoriteData)) {
+                                publishProgress("favorite");
+                            }
+                            break;
+                    }
+//                    wait(UPDATE_INTERVAL);
+//                    Thread.sleep(UPDATE_INTERVAL);
+                } catch (Exception e) {
+                    return e.getMessage();
+                }
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+            switch (text[0]) {
+                case "overview":
+                    overviewData = newOverviewData;
+                    bundle.putStringArrayList("mediaList", overviewData);
+                    overview.mainToFrag(bundle);
+                    break;
+                case "albums":
+                    albumsData = newAlbumsData;
+                    bundle.putStringArrayList("mediaList", albumsData);
+                    albums.mainToFrag(bundle);
+                    break;
+                case "faces":
+                    overviewData = newOverviewData;
+                    bundle.putStringArrayList("mediaList", overviewData);
+                    faces.mainToFrag(bundle);
+                    break;
+                case "favorite":
+                    favoriteData = newFavoriteData;
+                    bundle.putStringArrayList("mediaList", favoriteData);
+                    favorite.mainToFrag(bundle);
+                    break;
+            }
+            bundle.clear();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result.isEmpty()) {
+                Log.e(TAG, "mediaUpdater: Ended.");
+            } else {
+                Log.e(TAG, String.format("mediaUpdater: Ended due to exception '%s'.", result));
+            }
+        }
     }
 }

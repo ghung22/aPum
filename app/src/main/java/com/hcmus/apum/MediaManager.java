@@ -79,7 +79,7 @@ public class MediaManager {
     private DatabaseFavorites db;
 
     // Global agent
-    public static AsyncUpdater faceUpdater;
+    public static AsyncFacesUpdater faceUpdater;
 
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
@@ -116,11 +116,11 @@ public class MediaManager {
         favorites = listFavorites;
     }
 
-    public AsyncUpdater updateFaces(Context context, FacesFragment fragment) {
+    public AsyncFacesUpdater updateFaces(Context context, FacesFragment fragment) {
         try {
             faces = new ArrayList<>();
             faceData = new HashMap<>();
-            faceUpdater = new AsyncUpdater(context, fragment);
+            faceUpdater = new AsyncFacesUpdater(context, fragment);
             faceUpdater.execute();
         } catch (Exception e) {
             if (debugEnabled) {
@@ -617,7 +617,7 @@ public class MediaManager {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class AsyncUpdater extends AsyncTask<String, String, String> {
+    public class AsyncFacesUpdater extends AsyncTask<String, String, String> {
         // GUI controls
         private final Context context;
         private final FacesFragment fragment;
@@ -632,7 +632,7 @@ public class MediaManager {
         private final int maxProgress;
         private FaceDetector detector = null;
 
-        public AsyncUpdater(Context context, FacesFragment fragment) {
+        public AsyncFacesUpdater(Context context, FacesFragment fragment) {
             super();
             this.context = context;
             this.fragment = fragment;

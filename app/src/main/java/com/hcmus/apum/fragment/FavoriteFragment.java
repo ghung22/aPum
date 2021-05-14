@@ -244,9 +244,14 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
     public void mainToFrag(Bundle bundle) {
         String action = bundle.getString("action");
         if (action != null) {
-            if (action.equals("sort")) {
-                mediaList = bundle.getStringArrayList("mediaList");
-                adapter.addAll(mediaList);
+            switch (action) {
+                case "sort":
+                case "reload":
+                    mediaList = bundle.getStringArrayList("mediaList");
+                    adapter.addAll(mediaList);
+                    break;
+                default:
+                    break;
             }
         }
     }

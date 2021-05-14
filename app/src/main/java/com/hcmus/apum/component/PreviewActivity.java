@@ -355,10 +355,11 @@ public class PreviewActivity extends AppCompatActivity {
         if (requestCode == CHOOSER_REQUEST_CODE) {
             if (data != null) {
                 Uri dest = data.getData();
-                // TODO: Path not 100% correct
-                if (mediaManager.copy(mediaList.get(pos), PathUtils.fromUri(dest.getPath()))) {
+                String destination = PathUtils.fromUri(dest.getPath());
+                if (mediaManager.copy(mediaList.get(pos), destination)) {
                     Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
-                    // TODO: update list with new file
+                    mediaList.add(destination);
+                    adapter.add(destination);
                 } else {
                     Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
                 }

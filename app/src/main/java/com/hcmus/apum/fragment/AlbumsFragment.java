@@ -241,10 +241,15 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
     public void mainToFrag(Bundle bundle) {
         String action = bundle.getString("action");
         if (action != null) {
-            if (action.equals("sort")) {
-                mediaList = bundle.getStringArrayList("mediaList");
-                mediaCountList = mediaManager.getAlbumCounts(mediaList);
-                adapter.addAll(mediaList, mediaCountList);
+            switch (action) {
+                case "sort":
+                case "reload":
+                    mediaList = bundle.getStringArrayList("mediaList");
+                    mediaCountList = mediaManager.getAlbumCounts(mediaList);
+                    adapter.addAll(mediaList, mediaCountList);
+                    break;
+                default:
+                    break;
             }
         }
     }

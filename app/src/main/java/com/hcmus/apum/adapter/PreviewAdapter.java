@@ -76,4 +76,9 @@ public class PreviewAdapter extends PagerAdapter {
     public void destroyItem(@NonNull ViewGroup container, int pos, @NonNull Object object) {
         container.removeView((LinearLayout) object);
     }
+
+    public void add(String media) {
+        mediaList.add(media);
+        notifyDataSetChanged();
+    }
 }
