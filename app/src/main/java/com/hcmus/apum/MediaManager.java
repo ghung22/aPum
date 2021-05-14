@@ -587,7 +587,7 @@ public class MediaManager {
             out = new FileOutputStream(destination);
 
             FileChannel inChannel = in.getChannel(),
-                        outChannel = out.getChannel();
+                    outChannel = out.getChannel();
             inChannel.transferTo(0, inChannel.size(), outChannel);
             in.close();
             out.flush();
@@ -599,9 +599,57 @@ public class MediaManager {
         return true;
     }
 
-    public boolean move(String source, String destination) {
-        boolean result = copy(source, destination);
-        // TODO: Delete source
+    public boolean copy(Context context, String source, String destination) {
+        destination += "/" + source.substring(source.lastIndexOf("/") + 1);
+        // Alter destination file name if file exists
+        File temp = new File(destination);
+        if (temp.exists()) {
+            int i = 0;
+            do {
+                String path = destination.substring(0, destination.lastIndexOf('/')),
+                        file = destination.substring(destination.lastIndexOf('/') + 1);
+                String[] parts = file.split("\\.");
+                temp = new File(path + parts[0] + i + "." + parts[1]);
+            } while (temp.exists());
+            destination += Integer.toString(i);
+        }
+
+        // Copy bytes to new file
+        FileInputStream in = null;
+        FileOutputStream out = null;
+        try {
+            in = new FileInputStream(source);
+            out = new FileOutputStream(destination);
+
+            FileChannel inChannel = in.getChannel(),
+                    outChannel = out.getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            in.close();
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            Log.e("COPY", e.getMessage());
+            return false;
+        }
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(destination))));
+        updateLocations(context);
+        return true;
+    }
+
+    public boolean delete(Context context, String path) {
+        File file = new File(path);
+        if (!file.delete()) {
+            return false;
+        } else {
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+            updateLocations(context);
+        }
+        return true;
+    }
+
+    public boolean move(Context context, String source, String destination) {
+        boolean result = copy(source, destination) && delete(context, source);
+        updateLocations(context);
         return result;
     }
 

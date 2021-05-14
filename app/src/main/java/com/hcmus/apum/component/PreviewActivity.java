@@ -40,14 +40,14 @@ import com.hcmus.apum.PathUtils;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.PreviewAdapter;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.hcmus.apum.MainActivity.CHOOSER_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.COPY_CHOOSER_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.MOVE_CHOOSER_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
@@ -279,16 +279,20 @@ public class PreviewActivity extends AppCompatActivity {
 
     // TOP TOOLBAR ACTION
     public boolean onOptionsItemSelected(MenuItem menuItem) {
+        Intent previewChooser;
         switch (menuItem.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 break;
             case R.id.action_copy:
-                Intent previewChooser = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                previewChooser = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 previewChooser.addCategory(Intent.CATEGORY_DEFAULT);
-                startActivityForResult(Intent.createChooser(previewChooser, "Choose a directory"), CHOOSER_REQUEST_CODE);
+                startActivityForResult(Intent.createChooser(previewChooser, "Choose a directory"), COPY_CHOOSER_REQUEST_CODE);
                 break;
             case R.id.action_move:
+                previewChooser = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                previewChooser.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivityForResult(Intent.createChooser(previewChooser, "Choose a directory"), MOVE_CHOOSER_REQUEST_CODE);
                 break;
             case R.id.action_info:
                 initInfoDialog();
@@ -325,23 +329,22 @@ public class PreviewActivity extends AppCompatActivity {
         } else if (title.equals(getResources().getString(R.string.action_share))) {
             mediaManager.share(this, mediaList.get(pos));
         } else if (title.equals(getResources().getString(R.string.action_delete))) {
-            deleteImg(mediaList.get(pos));
+            if (!mediaManager.delete(this, mediaList.get(pos))) {
+                Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
+            } else {
+                int curItem = imgPreview.getCurrentItem();
+                if (curItem > 0) {
+                    imgPreview.setCurrentItem(imgPreview.getCurrentItem() - 1, true);
+                } else if (mediaList.size() > 1) {
+                    imgPreview.setCurrentItem(imgPreview.getCurrentItem() + 1, true);
+                } else {
+                    onBackPressed();
+                }
+            }
         } else {
             Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
         }
         return true;
-    }
-
-    public void deleteImg(String path_img){
-        File f_del = new File(path_img);
-        if(f_del.exists()){
-            if(f_del.delete()){
-                Log.e("Delete", "file Deleted :" + path_img);
-                callBroadCast();
-            }else{
-                Log.e("Delete", "file not Deleted :" + path_img);
-            }
-        }
     }
 
     public void callBroadCast() {
@@ -357,17 +360,28 @@ public class PreviewActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CHOOSER_REQUEST_CODE) {
+        if (requestCode == COPY_CHOOSER_REQUEST_CODE || requestCode == MOVE_CHOOSER_REQUEST_CODE) {
             if (data != null) {
                 Uri dest = data.getData();
                 String destination = PathUtils.fromUri(dest.getPath());
-                if (mediaManager.copy(mediaList.get(pos), destination)) {
-                    Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
-                    mediaList.add(destination);
-                    adapter.add(destination);
-                } else {
+                try {
+                    if (requestCode == COPY_CHOOSER_REQUEST_CODE) {
+                        if (mediaManager.copy(this, mediaList.get(pos), destination)) {
+                            Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            throw new Throwable();
+                        }
+                    } else if (requestCode == MOVE_CHOOSER_REQUEST_CODE) {
+                        if (mediaManager.move(this, mediaList.get(pos), destination)) {
+                            Toast.makeText(this, "Moved.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            throw new Throwable();
+                        }
+                    }
+                } catch (Throwable throwable) {
                     Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
                 }
+
             }
         }
     }

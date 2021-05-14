@@ -18,6 +18,7 @@ import com.hcmus.apum.fragment.OverviewFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
@@ -31,7 +32,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public static int SEARCH_REQUEST_CODE = 5;
     public static int CAMERA_REQUEST_CODE = 71;
     public static int ABOUT_REQUEST_CODE = 46;
-    public static int CHOOSER_REQUEST_CODE = 75;
+    public static int COPY_CHOOSER_REQUEST_CODE = 77;
+    public static int MOVE_CHOOSER_REQUEST_CODE = 37;
 
     // GUI controls
     private BottomNavigationView navBar;
@@ -208,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public class AsyncUpdater extends AsyncTask<String, String, String> {
         private final Bundle bundle = new Bundle();
         private final String TAG = "ASYNC_UPDATER";
-        private final int UPDATE_INTERVAL = 10000;
+        private final int UPDATE_INTERVAL = 10;
 
         @Override
         protected void onPreExecute() {
@@ -219,6 +221,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         protected String doInBackground(String... params) {
             while (true) {
                 try {
+                    // Run every 10 secs
+                    long now = new Date().toInstant().getEpochSecond();
+                    if (now % UPDATE_INTERVAL != 0) {
+                        continue;
+                    }
+                    Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
                     mediaManager.updateFavoriteLocations(MainActivity.this);
                     newOverviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
@@ -248,14 +256,13 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     }
 //                    wait(UPDATE_INTERVAL);
 //                    Thread.sleep(UPDATE_INTERVAL);
-                } catch (Exception e) {
-                    return e.getMessage();
-                }
+                } catch (Exception ignored) {}
             }
         }
 
         @Override
         protected void onProgressUpdate(String... text) {
+            Log.i(TAG, "onProgressUpdate: Found changes");
             switch (text[0]) {
                 case "overview":
                     overviewData = newOverviewData;
