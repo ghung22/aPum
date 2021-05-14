@@ -304,7 +304,7 @@ public class PreviewActivity extends AppCompatActivity {
 
     // BOTTOM TOOLBAR ACTION
     private boolean bottomToolbarAction(String title) {
-        Menu menu = toolbar.getMenu();
+        Menu menu = bottomToolbar.getMenu();
         MenuItem fav = menu.findItem(R.id.action_favorite);
         if (title.equals(getResources().getString(R.string.fragment_favorite))) {
             mediaManager.addFavorites(mediaList, pos, db_fav);
