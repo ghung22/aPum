@@ -265,15 +265,12 @@ public class PreviewActivity extends AppCompatActivity {
         return true;
     }
 
+    // TOP TOOLBAR ACTION
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        Menu menu = toolbar.getMenu();
-        MenuItem fav = menu.findItem(R.id.action_favorite);
         switch (menuItem.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 break;
-
-            // Top
             case R.id.action_copy:
                 Intent previewChooser = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 previewChooser.addCategory(Intent.CATEGORY_DEFAULT);
@@ -286,25 +283,6 @@ public class PreviewActivity extends AppCompatActivity {
                 break;
             case R.id.action_wallpaper:
                 break;
-
-            // Bottom toolbar
-            case R.id.action_favorite:
-                mediaManager.addFavorites(mediaList, pos, db_fav);
-                if(mediaManager.isFavorite(mediaList.get(pos))) {
-                    fav.setIcon(R.drawable.ic_fav);
-                    Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
-                } else {
-                    fav.setIcon(R.drawable.ic_fav_outline);
-                    Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.action_edit:
-                break;
-            case R.id.action_share:
-                break;
-            case R.id.action_delete:
-                deleteImg(mediaList.get(pos));
-                break;
             default:
                 Toast.makeText(this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
@@ -312,15 +290,25 @@ public class PreviewActivity extends AppCompatActivity {
         return true;
     }
 
+    // BOTTOM TOOLBAR ACTION
     private boolean bottomToolbarAction(String title) {
+        Menu menu = toolbar.getMenu();
+        MenuItem fav = menu.findItem(R.id.action_favorite);
         if (title.equals(getResources().getString(R.string.fragment_favorite))) {
-
+            mediaManager.addFavorites(mediaList, pos, db_fav);
+            if(mediaManager.isFavorite(mediaList.get(pos))) {
+                fav.setIcon(R.drawable.ic_fav);
+                Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
+            } else {
+                fav.setIcon(R.drawable.ic_fav_outline);
+                Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
+            }
         } else if (title.equals(getResources().getString(R.string.action_edit))) {
 
         } else if (title.equals(getResources().getString(R.string.action_share))) {
-
+            mediaManager.share(this, mediaList.get(pos));
         } else if (title.equals(getResources().getString(R.string.action_delete))) {
-
+            deleteImg(mediaList.get(pos));
         } else {
             Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
         }

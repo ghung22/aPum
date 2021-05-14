@@ -2,6 +2,7 @@ package com.hcmus.apum;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.Task;
@@ -550,6 +553,17 @@ public class MediaManager {
         boolean result = copy(source, destination);
         // TODO: Delete source
         return result;
+    }
+
+    public void share(Context context, String path) {
+        Intent mediaShare = new Intent(Intent.ACTION_SEND);
+        Uri uri = FileProvider.getUriForFile(
+                context,
+                "com.hcmus.apum.provider",
+                new File(path));
+        mediaShare.setType("image/*");
+        mediaShare.putExtra(Intent.EXTRA_STREAM, uri);
+        context.startActivity(mediaShare);
     }
 
     @SuppressLint("StaticFieldLeak")
