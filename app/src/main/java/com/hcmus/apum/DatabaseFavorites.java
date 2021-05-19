@@ -25,6 +25,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "favorite_images";
     private static final String COL1 = "ID";
     private static final String COL2 = "Name";
+
     public DatabaseFavorites(Context context){
         super(context, TABLE_NAME, null, 1);
         this.context = context;
@@ -41,6 +42,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
+
     public void createDataBase() throws IOException {
 //        SQLiteDatabase db = null;
         dbFavorite = null;
@@ -61,7 +63,9 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
                 throw new Error("Error copying database");
             }
         }
+        close();
     }
+
     private boolean checkDataBase() {
         SQLiteDatabase checkDB = null;
         try {
@@ -76,6 +80,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
 
         return checkDB != null;
     }
+
     private void copyDataBase() throws IOException {
         InputStream myInput = context.getAssets().open(DB_NAME);
         String outFileName = DB_PATH + DB_NAME;
@@ -89,16 +94,19 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         myOutput.close();
         myInput.close();
     }
+
     public void openDataBase() throws SQLException {
         String myPath = DB_PATH + DB_NAME;
         dbFavorite = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
     }
+
     @Override
     public synchronized void close() {
         if (dbFavorite != null)
             dbFavorite.close();
         super.close();
     }
+
     public boolean checkDataExists(String item){
         String sql_check = "Select * from " + TABLE_NAME + " where " + COL2 + "=" + item;
         Cursor cursor = dbFavorite.rawQuery(sql_check, null);
@@ -109,20 +117,25 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         cursor.close();
         return true;
     }
+
     public boolean addData (String item){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, item);
         Log.d(TAG, "addData: " + item + " to " +TABLE_NAME );
         long result = db.insert(TABLE_NAME, null, contentValues);
+        close();
         return result != -1;
     }
+
     public boolean removeData (String item){
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d(TAG, "removeData: " + item + " from " +TABLE_NAME );
         long result = db.delete(TABLE_NAME, COL2+"=?",new String[]{item});
+        close();
         return result != -1;
     }
+
     public ArrayList<String> getAllFavorite(){
         String[] columns = {
                 COL2
@@ -142,6 +155,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
+        close();
         return fav;
     }
 }
