@@ -2,12 +2,8 @@ package com.hcmus.apum.fragment;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.*;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +16,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
 import com.hcmus.apum.FragmentCallbacks;
-import com.hcmus.apum.MediaManager;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.component.ContentActivity;
@@ -49,7 +44,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
 
     // Data
     private ArrayList<String> mediaList = new ArrayList<>();
-    private HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
+    private HashMap<String, ArrayList<String>> faceList = new HashMap<>();
     boolean toolbarCollapsed = false;
 
     public FacesFragment() {
@@ -71,7 +66,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
         return toolbar.getMenu();
     }
 
-    public void addMediaFace(String media, ArrayList<Rect> face) {
+    public void addMediaFace(String media, ArrayList<String> face) {
 //        mediaList.add(media);
         faceList.put(media, face);
         adapter.add(media);
@@ -91,7 +86,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
 
         // Init data
         mediaList = getArguments().getStringArrayList("mediaList");
-        faceList = mediaManager.getFaceData(mediaList);
+        faceList = mediaManager.getFaceData();
         mediaList = new ArrayList<>(faceList.keySet());
 
         // Init controls
@@ -182,11 +177,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
 
     private void showContent(AdapterView<?> parent, View view, int pos, long id) {
         String img = mediaList.get(pos);
-        ArrayList<String> container = new ArrayList<>();
-        // Create a list of rect values in this format: <left>,<top>,<right>,<bottom>
-        for (Rect rect : faceList.get(img)) {
-            container.add(rect.left + "," + rect.top + "," + rect.right + "," + rect.bottom);
-        }
+        ArrayList<String> container = faceList.get(img);
 
         Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
@@ -267,32 +258,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
     }
 
     private void regenerate() {
-        MediaManager.AsyncFacesUpdater updater = mediaManager.updateFaces(getContext(), this);
-        Thread thread = new Thread(() -> {
-            Menu menu = toolbar.getMenu();
-            MenuItem regenerate = menu.findItem(R.id.action_regenerate);
-            // Animate generate icon TODO: Not animated yet
-            RotateAnimation rotate = new RotateAnimation(
-                    0, 360,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF, 0.5f
-            );
-            rotate.setDuration(1000);
-            rotate.setRepeatCount(Animation.INFINITE);
-            while (true) {
-                if (updater.getStatus() == AsyncTask.Status.RUNNING) {
-                    if (regenerate.getActionView().getAnimation() == null) {
-                        regenerate.getActionView().startAnimation(rotate);
-                        menuRecolor(toolbarCollapsed);
-                    }
-                } else if (updater.getStatus() == AsyncTask.Status.FINISHED){
-                    regenerate.getActionView().clearAnimation();
-                    menuRecolor(toolbarCollapsed);
-                    break;
-                }
-            }
-        });
-        thread.start();
+        mediaManager.updateFaces(getContext(), this);
     }
 
     @Override

@@ -42,7 +42,7 @@ import static com.hcmus.apum.MainActivity.debugEnabled;
 public class MediaManager {
     // Data
     private ArrayList<String> images, albums, faces, favorites;
-    private HashMap<String, ArrayList<Rect>> faceData;
+    private HashMap<String, ArrayList<String>> faceData = new HashMap<>();
 
     // Constant
     public final ArrayList<String>
@@ -104,20 +104,22 @@ public class MediaManager {
 //        favorites = listFavorites;
     }
 
-    public AsyncFacesUpdater updateFaces(Context context, FacesFragment fragment) {
+    public void updateFaces(Context context, FacesFragment fragment) {
         try {
-            faces = new ArrayList<>();
-            faceData = new HashMap<>();
-            faceUpdater = new AsyncFacesUpdater(context, fragment);
-            faceUpdater.execute();
+            if (faceUpdater == null) {
+                faces = new ArrayList<>();
+                faceData = new HashMap<>();
+                faceUpdater = new AsyncFacesUpdater(context, fragment);
+                faceUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else if (faceUpdater.getStatus() != AsyncTask.Status.RUNNING) {
+                faceUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         } catch (Exception e) {
             if (debugEnabled) {
                 Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
                 Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                return null;
             }
         }
-        return faceUpdater;
     }
 
     public void addFavorites(ArrayList<String> thumbs, int pos, DatabaseFavorites db) {
@@ -143,21 +145,11 @@ public class MediaManager {
     public ArrayList<String> getAlbums() {
         return albums;
     }
-
     public ArrayList<String> getFaces() {
         return faces;
     }
-
-    public HashMap<String, ArrayList<Rect>> getFaceData(ArrayList<String> faces) {
-        HashMap<String, ArrayList<Rect>> faceList = new HashMap<>();
-        for (String img : faces) {
-            ArrayList<Rect> temp = (faceData != null) ? faceData.get(img) : null;
-            if (temp != null) {
-                // Found a face is found, add to map
-                faceList.put(img, temp);
-            }
-        }
-        return faceList;
+    public HashMap<String, ArrayList<String>> getFaceData() {
+        return faceData;
     }
 
     public ArrayList<Rect> getFaceRect(ArrayList<String> container) {
@@ -686,7 +678,7 @@ public class MediaManager {
                 int i = 0;
                 for (String path : images) {
                     publishProgress(path);
-                    ArrayList<Rect> recs = new ArrayList<>();
+                    ArrayList<String> recs = new ArrayList<>();
 
                     InputImage img = InputImage.fromBitmap(getCompressedBitmap(path, 20), 0);
                     Task<List<Face>> resultTask =
@@ -694,7 +686,8 @@ public class MediaManager {
                                     .addOnSuccessListener(result -> {
                                         if (!result.isEmpty()) {
                                             for (Face face : result) {
-                                                recs.add(face.getBoundingBox());
+                                                Rect rect = face.getBoundingBox();
+                                                recs.add(rect.left + "," + rect.top + "," + rect.right + "," + rect.bottom);
                                             }
                                         }
 

@@ -66,7 +66,7 @@ public class PreviewActivity extends AppCompatActivity {
     boolean fullScreen = false, viewPagerMoved;
 
     //DB
-    private DatabaseFavorites db_fav = MainActivity.db_fav;
+    private final DatabaseFavorites db_fav = MainActivity.db_fav;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
