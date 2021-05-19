@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     // Static objects
     public static MediaManager mediaManager = new MediaManager();
+    public static DatabaseFavorites db_fav;
     public static Boolean debugEnabled = true;
 
     // Request codes
@@ -49,9 +50,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     // For use/save state values
     private Bundle savedInstanceState;
-
-    //Database
-    public static DatabaseFavorites db_fav;
 
     // For threads
     private String currentFragment = "overview";

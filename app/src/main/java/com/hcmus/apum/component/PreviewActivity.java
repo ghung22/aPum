@@ -138,7 +138,6 @@ public class PreviewActivity extends AppCompatActivity {
             return false;
         });
         viewPager.setOnClickListener(view -> {
-//            int visibility = fullScreen ? View.VISIBLE : View.GONE;
             if (!fullScreen) {
                 toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
                 bottomAppBar.performHide();
@@ -146,8 +145,6 @@ public class PreviewActivity extends AppCompatActivity {
                 toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
                 bottomAppBar.performShow();
             }
-//                toolbar.setVisibility(visibility);
-//            bottomToolbar.setVisibility(visibility);
             fullScreen = !fullScreen;
         });
 
@@ -164,6 +161,12 @@ public class PreviewActivity extends AppCompatActivity {
         bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction((String) item.getTitle()));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUI(pos);
+    }
+
     private void updateUI(int pos) {
         // Data
         this.pos = pos;
@@ -171,6 +174,7 @@ public class PreviewActivity extends AppCompatActivity {
         // Top toolbar
         ActionBar actionBar = getSupportActionBar();
         String path = mediaList.get(pos);
+        assert actionBar != null;
         actionBar.setTitle(path.substring(path.lastIndexOf('/') + 1));
 
         // Bottom toolbar

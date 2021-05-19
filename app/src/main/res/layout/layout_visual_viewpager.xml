@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:gravity="center">
 
-    <ImageView android:id="@+id/imgViewPager"
+    <com.ortiz.touchview.TouchImageView android:id="@+id/imgViewPager"
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:scaleType="centerInside"/>
 

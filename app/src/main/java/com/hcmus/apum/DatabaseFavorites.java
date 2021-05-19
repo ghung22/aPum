@@ -33,13 +33,13 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTable = "create table " + TABLE_NAME + " (ID integer primary key autoincrement," + COL2 + " TEXT)";
+        String createTable = String.format(context.getString(R.string.sql_create_table), TABLE_NAME, COL2);
         sqLiteDatabase.execSQL(createTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        sqLiteDatabase.execSQL(String.format(context.getString(R.string.sql_upgrade_table), TABLE_NAME));
         onCreate(sqLiteDatabase);
     }
 
@@ -49,12 +49,11 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         try {
             dbFavorite = SQLiteDatabase.openOrCreateDatabase(DB_PATH+DB_NAME, null);
         } catch (SQLiteException ex) {
-
             Log.e(TAG, ex.getMessage());
         }
 
         boolean dbExist = checkDataBase();
-        if (dbExist) { } else {
+        if (!dbExist) {
             this.getReadableDatabase();
             this.close();
             try {
@@ -108,7 +107,7 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
     }
 
     public boolean checkDataExists(String item){
-        String sql_check = "Select * from " + TABLE_NAME + " where " + COL2 + "=" + item;
+        String sql_check = String.format(context.getString(R.string.sql_select_column), TABLE_NAME, COL2, item);
         Cursor cursor = dbFavorite.rawQuery(sql_check, null);
         if(cursor.getCount() <= 0){
             cursor.close();
@@ -140,10 +139,8 @@ public class DatabaseFavorites extends SQLiteOpenHelper {
         String[] columns = {
                 COL2
         };
-//        String sortOrder = COL1 + " ASC";
         ArrayList<String> fav = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.query(TABLE_NAME,columns,null,null,null,null,sortOrder);
         Cursor cursor = db.query(TABLE_NAME,columns,null,null,null,null,null);
         if (cursor.moveToFirst()){
             do{

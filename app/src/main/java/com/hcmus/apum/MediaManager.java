@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -98,11 +97,7 @@ public class MediaManager {
         } catch (IOException ioe) {
             throw new Error("Unable to create database");
         }
-        try {
-            db.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
+        db.openDataBase();
         this.favorites = db.getAllFavorite();
         db.close();
         //listFavorites = db.getAllFavorite();
