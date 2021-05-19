@@ -17,16 +17,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import androidx.core.content.FileProvider;
-
 import com.google.android.gms.common.util.Strings;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
@@ -37,28 +29,14 @@ import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.hcmus.apum.component.LayoutDialog;
 import com.hcmus.apum.fragment.FacesFragment;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
 
@@ -109,6 +87,7 @@ public class MediaManager {
 
         this.images = images;
         this.albums = albums;
+        cursor.close();
     }
 
     public void updateFavoriteLocations(Context context) {
@@ -582,38 +561,6 @@ public class MediaManager {
 
     public boolean copy(String source, String destination) {
         destination += "/" + source.substring(source.lastIndexOf("/") + 1);
-        // Alter destination file name if file exists TODO: put before Extension
-        File temp = new File(destination);
-        if (temp.exists()) {
-            int i = 0;
-            do {
-                temp = new File(destination + i);
-            } while (temp.exists());
-            destination += Integer.toString(i);
-        }
-
-        // Copy bytes to new file
-        FileInputStream in = null;
-        FileOutputStream out = null;
-        try {
-            in = new FileInputStream(source);
-            out = new FileOutputStream(destination);
-
-            FileChannel inChannel = in.getChannel(),
-                    outChannel = out.getChannel();
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-            in.close();
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            Log.e("COPY", e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    public boolean copy(Context context, String source, String destination) {
-        destination += "/" + source.substring(source.lastIndexOf("/") + 1);
         // Alter destination file name if file exists
         File temp = new File(destination);
         if (temp.exists()) {
@@ -644,9 +591,14 @@ public class MediaManager {
             Log.e("COPY", e.getMessage());
             return false;
         }
+        return true;
+    }
+
+    public boolean copy(Context context, String source, String destination) {
+        boolean copy = copy(source, destination);
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(destination))));
         updateLocations(context);
-        return true;
+        return copy;
     }
 
     public boolean delete(Context context, String path) {

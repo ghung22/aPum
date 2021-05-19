@@ -2,23 +2,22 @@ package com.hcmus.apum;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-
 import android.database.SQLException;
-
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hcmus.apum.fragment.AlbumsFragment;
 import com.hcmus.apum.fragment.FacesFragment;
 import com.hcmus.apum.fragment.FavoriteFragment;
 import com.hcmus.apum.fragment.OverviewFragment;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,13 +29,14 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public static Boolean debugEnabled = true;
 
     // Request codes
-    public static int PREVIEW_REQUEST_CODE = 97;
-    public static int CONTENT_REQUEST_CODE = 27;
-    public static int SEARCH_REQUEST_CODE = 5;
-    public static int CAMERA_REQUEST_CODE = 71;
-    public static int ABOUT_REQUEST_CODE = 46;
-    public static int COPY_CHOOSER_REQUEST_CODE = 77;
-    public static int MOVE_CHOOSER_REQUEST_CODE = 37;
+    public static int
+            PREVIEW_REQUEST_CODE = 97,
+            CONTENT_REQUEST_CODE = 27,
+            SEARCH_REQUEST_CODE = 5,
+            CAMERA_REQUEST_CODE = 71,
+            ABOUT_REQUEST_CODE = 46,
+            COPY_CHOOSER_REQUEST_CODE = 77,
+            MOVE_CHOOSER_REQUEST_CODE = 37;
 
     // GUI controls
     private BottomNavigationView navBar;
@@ -161,18 +161,33 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Check for which activity returned to MainActivity
         if (requestCode == CAMERA_REQUEST_CODE) {
+            Bundle bundle = data.getExtras();
+            Bitmap bitmap = (Bitmap) bundle.get("data");
+            try {
+                File file = new File("/storage/emulated/0/DCIM/Camera/" + new Date().toInstant().getEpochSecond() + ".png");
+                file.createNewFile();
+                // Convert bitmap to bytes
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0 , outputStream);
+                byte[] bmpData = outputStream.toByteArray();
+                // Write bytes
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bmpData);
+                fos.flush();
+                fos.close();
+            } catch (Exception ignored) {}
             switchFragment(R.id.action_overview);
         } else {
             // When return data exists
             if (data != null) {
                 if (data.hasExtra("caller")) {
                     String caller = data.getStringExtra("caller");
-                    switch (caller) {
+                    switch (caller != null ? caller : "overview") {
                         case "albums":
                             switchFragment(R.id.action_albums);
                             break;
@@ -186,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                             switchFragment(R.id.action_overview);
                             break;
                     }
-                    return;
                 }
             } else {
                 switchFragment(R.id.action_overview);

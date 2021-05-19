@@ -3,23 +3,16 @@ package com.hcmus.apum.fragment;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
@@ -31,10 +24,7 @@ import com.hcmus.apum.component.SearchActivity;
 
 import java.util.ArrayList;
 
-import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.mediaManager;
+import static com.hcmus.apum.MainActivity.*;
 
 public class AlbumsFragment extends Fragment implements FragmentCallbacks {
 

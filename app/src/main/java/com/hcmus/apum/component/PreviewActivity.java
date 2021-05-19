@@ -1,5 +1,6 @@
 package com.hcmus.apum.component;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,26 +15,24 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.text.HtmlCompat;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hcmus.apum.DatabaseFavorites;
 import com.hcmus.apum.MainActivity;
@@ -41,25 +40,22 @@ import com.hcmus.apum.PathUtils;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.PreviewAdapter;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.hcmus.apum.MainActivity.COPY_CHOOSER_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.MOVE_CHOOSER_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.mediaManager;
+import static com.hcmus.apum.MainActivity.*;
 
 public class PreviewActivity extends AppCompatActivity {
 
     // GUI controls
     private Toolbar toolbar;
+    private BottomAppBar bottomAppBar;
     private BottomNavigationView bottomToolbar;
 
     // Elements
-    private ViewPager imgPreview;
+    private ViewPager viewPager;
     private PreviewAdapter adapter;
     private LayoutDialog dialog;
 
@@ -67,10 +63,12 @@ public class PreviewActivity extends AppCompatActivity {
     ArrayList<String> mediaList;
     int pos;
     double latitude, longitude;
+    boolean fullScreen = false, viewPagerMoved;
 
     //DB
     private DatabaseFavorites db_fav = MainActivity.db_fav;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,10 +108,10 @@ public class PreviewActivity extends AppCompatActivity {
         if (adapter == null) {
             adapter = new PreviewAdapter(this, mediaList);
         }
-        imgPreview = findViewById(R.id.img_preview);
-        imgPreview.setAdapter(adapter);
-        imgPreview.setCurrentItem(pos, true);
-        imgPreview.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager = findViewById(R.id.img_preview);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(pos, true);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             // Snap to page based on how much user have scrolled
             @Override
             public void onPageScrolled(int position, float offset, int offsetPixels) {}
@@ -127,6 +125,31 @@ public class PreviewActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
+        viewPager.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                viewPagerMoved = false;
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                viewPagerMoved = true;
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                if (!viewPagerMoved) {
+                    view.performClick();
+                }
+            }
+            return false;
+        });
+        viewPager.setOnClickListener(view -> {
+//            int visibility = fullScreen ? View.VISIBLE : View.GONE;
+            if (!fullScreen) {
+                toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+                bottomAppBar.performHide();
+            } else {
+                toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                bottomAppBar.performShow();
+            }
+//                toolbar.setVisibility(visibility);
+//            bottomToolbar.setVisibility(visibility);
+            fullScreen = !fullScreen;
+        });
 
         // Init actionbar buttons
         toolbar = findViewById(R.id.menu_preview);
@@ -136,6 +159,7 @@ public class PreviewActivity extends AppCompatActivity {
         String path = mediaList.get(pos);
         actionBar.setTitle(path.substring(path.lastIndexOf('/') + 1));
         actionBar.setDisplayHomeAsUpEnabled(true);
+        bottomAppBar = findViewById(R.id.bottomAppBar_preview);
         bottomToolbar = findViewById(R.id.bottomBar_preview);
         bottomToolbar.setOnNavigationItemSelectedListener(item -> bottomToolbarAction((String) item.getTitle()));
     }
@@ -324,11 +348,11 @@ public class PreviewActivity extends AppCompatActivity {
             if (!mediaManager.delete(this, mediaList.get(pos))) {
                 Toast.makeText(this, R.string.err_generic, Toast.LENGTH_SHORT).show();
             } else {
-                int curItem = imgPreview.getCurrentItem();
+                int curItem = viewPager.getCurrentItem();
                 if (curItem > 0) {
-                    imgPreview.setCurrentItem(imgPreview.getCurrentItem() - 1, true);
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
                 } else if (mediaList.size() > 1) {
-                    imgPreview.setCurrentItem(imgPreview.getCurrentItem() + 1, true);
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
                 } else {
                     onBackPressed();
                 }

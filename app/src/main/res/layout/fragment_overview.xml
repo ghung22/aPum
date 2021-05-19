@@ -14,8 +14,8 @@
             android:layout_width="match_parent" android:layout_height="match_parent"
             android:fitsSystemWindows="true" app:contentScrim="?attr/colorPrimary"
             app:expandedTitleGravity="center" app:collapsedTitleGravity="left"
-            app:expandedTitleTextAppearance="@style/ExpandedAppBar"
-            app:collapsedTitleTextAppearance="@style/CollapsedAppBar"
+            app:expandedTitleTextAppearance="@style/Theme.APum.AppBar.Expanded"
+            app:collapsedTitleTextAppearance="@style/Theme.APum.AppBar.Collapsed"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="@string/fragment_overview" android:textAlignment="center">
             <androidx.appcompat.widget.Toolbar android:id="@+id/menu_main"
