@@ -68,7 +68,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
 
         // Init data
 //        mediaList = getArguments().getStringArrayList("mediaList");
-        mediaList = mediaManager.getFavoriteImages();
+        mediaList = mediaManager.getFavorite();
 
         // Init controls
         appbar = view.findViewById(R.id.appbar);
@@ -157,7 +157,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
         Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "favorite");
-        bundle.putStringArrayList("thumbnails", mediaManager.getFavoriteImages());
+        bundle.putStringArrayList("thumbnails", mediaManager.getFavorite());
         bundle.putInt("position", pos);
         mainPreview.putExtras(bundle);
         startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);
@@ -184,8 +184,8 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
                 mediaManager.sortUI(getContext(), "favorite", mediaList);
                 break;
             case R.id.action_reload:
-                mediaManager.updateFavoriteLocations(getContext());
-                mediaList = mediaManager.sort(mediaManager.getFavoriteImages(), "date", false);
+                mediaManager.updateFavorite(getContext());
+                mediaList = mediaManager.sort(mediaManager.getFavorite(), "date", false);
                 adapter.addAll(mediaList);
                 Toast.makeText(getContext(), getString(R.string.info_favorite_reload), Toast.LENGTH_SHORT).show();
                 break;

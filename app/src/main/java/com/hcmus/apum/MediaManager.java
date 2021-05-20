@@ -53,11 +53,9 @@ public class MediaManager {
             Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
     );
 
-    // Interface
-    private DatabaseFavorites db = MainActivity.db_fav;
-
     // Global agent
-    public static AsyncFacesUpdater faceUpdater;
+    private Database database;
+    private AsyncFacesUpdater faceUpdater;
 
     public void updateLocations(Context context) {
         ArrayList<String> images = new ArrayList<>(),
@@ -89,19 +87,11 @@ public class MediaManager {
         cursor.close();
     }
 
-    public void updateFavoriteLocations(Context context) {
-//        ArrayList<String> listFavorites = new ArrayList<>();
-        db = new DatabaseFavorites(context);
-        try {
-            db.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
+    public void updateFavorite(Context context) {
+        if (database == null) {
+            database = new Database(context);
         }
-        db.openDataBase();
-        this.favorites = db.getAllFavorite();
-        db.close();
-        //listFavorites = db.getAllFavorite();
-//        favorites = listFavorites;
+        favorites = database.getFavorite();
     }
 
     public void updateFaces(Context context, FacesFragment fragment) {
@@ -122,13 +112,15 @@ public class MediaManager {
         }
     }
 
-    public void addFavorites(ArrayList<String> thumbs, int pos, DatabaseFavorites db) {
+    public void toggleFavorite(ArrayList<String> thumbs, int pos) {
         if (!favorites.contains(thumbs.get(pos))) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("String", thumbs.get(pos));
+            database.insert(map, Database.TABLE_FAVORITE);
             favorites.add(thumbs.get(pos));
-            db.addData(thumbs.get(pos));
         } else {
+            database.delete(thumbs.get(pos), Database.TABLE_FAVORITE);
             favorites.remove(thumbs.get(pos));
-            db.removeData(thumbs.get(pos));
         }
     }
 
@@ -139,7 +131,7 @@ public class MediaManager {
     public ArrayList<String> getImages() {
         return images;
     }
-    public ArrayList<String> getFavoriteImages() {
+    public ArrayList<String> getFavorite() {
         return favorites;
     }
     public ArrayList<String> getAlbums() {
@@ -562,11 +554,9 @@ public class MediaManager {
         }
 
         // Copy bytes to new file
-        FileInputStream in = null;
-        FileOutputStream out = null;
         try {
-            in = new FileInputStream(source);
-            out = new FileOutputStream(destination);
+            FileInputStream in = new FileInputStream(source);
+            FileOutputStream out = new FileOutputStream(destination);
 
             FileChannel inChannel = in.getChannel(),
                     outChannel = out.getChannel();

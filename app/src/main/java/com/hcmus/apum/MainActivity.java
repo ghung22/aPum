@@ -2,7 +2,6 @@ package com.hcmus.apum;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import com.hcmus.apum.fragment.OverviewFragment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -26,7 +24,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     // Static objects
     public static MediaManager mediaManager = new MediaManager();
-    public static DatabaseFavorites db_fav;
     public static Boolean debugEnabled = true;
 
     // Request codes
@@ -65,25 +62,13 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
         // Init data
         mediaManager.updateLocations(this);
-        mediaManager.updateFavoriteLocations(this);
+        mediaManager.updateFavorite(this);
 
-        //Database
-        db_fav = new DatabaseFavorites(this);
-        try {
-            db_fav.createDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-        try {
-            db_fav.openDataBase();
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
         // Init fragments
         overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
         albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
         faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
-        favorite = FavoriteFragment.newInstance(mediaManager.sort(db_fav.getAllFavorite(), "date", false));
+        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFavorite(), "date", false));
 
         overviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
         albumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
@@ -113,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init updater
         updater = new AsyncUpdater();
         updater.execute();
-        db_fav.close();
     }
 
     @Override
@@ -255,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     }
                     Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
-                    mediaManager.updateFavoriteLocations(MainActivity.this);
+                    mediaManager.updateFavorite(MainActivity.this);
                     newOverviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
                     newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
                     newFavoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);

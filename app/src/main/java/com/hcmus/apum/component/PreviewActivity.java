@@ -34,8 +34,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hcmus.apum.DatabaseFavorites;
-import com.hcmus.apum.MainActivity;
 import com.hcmus.apum.PathUtils;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.PreviewAdapter;
@@ -64,9 +62,6 @@ public class PreviewActivity extends AppCompatActivity {
     int pos;
     double latitude, longitude;
     boolean fullScreen = false, viewPagerMoved;
-
-    //DB
-    private final DatabaseFavorites db_fav = MainActivity.db_fav;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -336,7 +331,7 @@ public class PreviewActivity extends AppCompatActivity {
         Menu menu = bottomToolbar.getMenu();
         MenuItem fav = menu.findItem(R.id.action_favorite);
         if (title.equals(getResources().getString(R.string.fragment_favorite))) {
-            mediaManager.addFavorites(mediaList, pos, db_fav);
+            mediaManager.toggleFavorite(mediaList, pos);
             if(mediaManager.isFavorite(mediaList.get(pos))) {
                 fav.setIcon(R.drawable.ic_fav);
                 Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();

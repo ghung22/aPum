@@ -54,13 +54,6 @@
     <string name="action_sort_ascending">Ascending</string>
     <string name="action_sort_descending">Descending</string>
 
-    <!--  SQL format string  -->
-    <string name="sql_create_table">create table %s (ID integer primary key
-        autoincrement,%s TEXT)
-    </string>
-    <string name="sql_upgrade_table">drop table if exists %s</string>
-    <string name="sql_select_column">select * from %s where %s=%s</string>
-
     <!--  Placeholder text  -->
     <string name="placeholder_album_name">Null album</string>
     <string name="placeholder_album_count">13</string>
