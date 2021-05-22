@@ -199,7 +199,7 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
                 break;
             case R.id.action_reload:
                 mediaManager.updateLocations(getContext());
-                mediaList = mediaManager.sort(mediaManager.getImages(), "date", false);
+                mediaList = mediaManager.sort(mediaManager.getMedia(), "date", false);
                 adapter.addAll(mediaList);
                 Toast.makeText(getContext(), getString(R.string.info_overview_reload), Toast.LENGTH_SHORT).show();
                 break;

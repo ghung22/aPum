@@ -4,29 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Parcel;
 import android.util.Log;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class Database extends SQLiteOpenHelper {
-    // Context and debugging
-    private final Context context;
     private static final String TAG = "DATABASE";
-
-    // DB Info
-    private static String DB_PATH;
-    private static String DB_NAME;
-    private static final int DB_VERSION = 1;
 
     // Data
     public static final String
@@ -35,10 +19,8 @@ public class Database extends SQLiteOpenHelper {
             TABLE_FACES_RECT = "FacesRect";
 
     public Database(Context context) {
-        super(context, context.getString(R.string.app_name), null, DB_VERSION);
-        this.context = context;
-        DB_NAME = context.getString(R.string.app_name);
-        DB_PATH = context.getDatabasePath(DB_NAME).getPath();
+        super(context, context.getString(R.string.app_name), null, 1);
+        // Context and debugging
     }
 
     @Override
@@ -47,7 +29,6 @@ public class Database extends SQLiteOpenHelper {
                 "create table " + TABLE_FAVORITE + " (" +
                 "   string text not null," +
                 "   _timeInserted integer not null," +
-                "   _isDeleted boolean," +
                 "   primary key (string)" +
                 ")"
         );
@@ -55,7 +36,6 @@ public class Database extends SQLiteOpenHelper {
                 "create table "+ TABLE_FACES +" (" +
                 "   string text not null," +
                 "   _timeInserted integer not null," +
-                "   _isDeleted boolean," +
                 "   primary key (string)" +
                 ")"
         );
@@ -64,153 +44,164 @@ public class Database extends SQLiteOpenHelper {
                 "   string text not null," +
                 "   rect text not null," +
                 "   _timeInserted integer not null," +
-                "   _isDeleted boolean," +
                 "   primary key (string)," +
                 "   foreign key (string) references " + TABLE_FACES + "(string)" +
                 ")"
         );
+    }
 
-        try {
-            SQLiteDatabase.openOrCreateDatabase(DB_PATH + DB_NAME, null);
-            if (!isEmpty()) {
-                this.getReadableDatabase();
-                this.close();
-                copyDatabase();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error creating database: ", e.getCause());
-        }
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        for (String tableName : Arrays.asList(TABLE_FAVORITE, TABLE_FACES, TABLE_FACES_RECT))
-        sqLiteDatabase.execSQL("drop table if exists " + tableName);
+        for (String tableName : Arrays.asList(TABLE_FAVORITE, TABLE_FACES, TABLE_FACES_RECT)) {
+            sqLiteDatabase.execSQL("drop table if exists " + tableName);
+        }
         onCreate(sqLiteDatabase);
     }
 
-    private boolean isEmpty() {
+    public boolean insert(HashMap<String, String> items, String table) {
         try {
-            String myPath = DB_PATH + DB_NAME;
-            SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-        } catch (SQLiteException e) {
+            // Get data in hashmap
+            if (items == null) {
+                throw new Throwable("Hashmap is null");
+            } else if (!items.containsKey("string")) {
+                throw new Throwable("Missing key");
+            } else {
+                String temp = items.get("string");
+                if (temp == null || temp.equals("null")) {
+                    throw new Throwable("File is null");
+                }
+            }
+            ContentValues values = new ContentValues();
+            for (Map.Entry<String, String> entry: items.entrySet()){
+                values.put(entry.getKey(), entry.getValue());
+            }
+            values.put("_timeInserted", new Date().toInstant().getEpochSecond());
+
+            // Insert or update depending on data
+            SQLiteDatabase db = getWritableDatabase();
+            db.beginTransaction();
+            int result = db.update(table, values, "string = ?", new String[]{items.get("string")});
+            if (result == 1) {
+                Log.i(TAG, String.format("update '%s' in '%s'", items.get("string"), table));
+            } else {
+                db.insertOrThrow(table, null, values);
+                Log.i(TAG, String.format("insert '%s' into '%s'", items.get("string"), table));
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
             return true;
+        } catch (NullPointerException e) {
+            Log.e(TAG, String.format("update in '%s' failed: Hashmap is null", table));
+            return false;
+        } catch (Throwable e) {
+            Log.e(TAG, String.format("update in '%s' failed with message: %s", table, e.getMessage()));
+            return false;
         }
-        return false;
     }
 
-    private void copyDatabase() throws IOException {
-        String outPath = DB_PATH + DB_NAME;
-        FileInputStream in = (FileInputStream) context.getAssets().open(DB_NAME);
-        FileOutputStream out = new FileOutputStream(outPath);
+    public boolean delete(String stringItem, String table) {
+        try {
+            // Get data in hashmap
+            if (stringItem.equals("null")) {
+                throw new Throwable("File is null");
+            }
 
-        FileChannel inChannel = in.getChannel(),
-                outChannel = out.getChannel();
-        inChannel.transferTo(0, inChannel.size(), outChannel);
-        in.close();
-        out.flush();
-        out.close();
-    }
-
-    public void insert(HashMap<String, String> items, String table) {
-        Parcel parcel = Parcel.obtain();
-        parcel.writeMap(items);
-        parcel.setDataPosition(0);
-        ContentValues values = ContentValues.CREATOR.createFromParcel(parcel);
-        values.put("_timeInserted", new Date().toInstant().getEpochSecond());
-        values.put("_isDeleted", false);
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        // Insert or update depending on data
-        int result = (int) db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-        if (result != -1) {
-            Log.i(TAG, String.format("insert '%s' into '%s'", items.get("string"), table));
-        } else {
-            db.update(table, values, "string", new String[]{items.get("string")});
-            Log.i(TAG, String.format("update '%s' in '%s'", items.get("string"), table));
+            // Delete a row
+            SQLiteDatabase db = getWritableDatabase();
+            db.beginTransaction();
+            int result = db.delete(table, "string = ?", new String[]{stringItem});
+            if (result > 0) {
+                Log.i(TAG, String.format("delete '%s' from '%s'", stringItem, table));
+            } else {
+                Log.w(TAG, String.format("delete '%s' from '%s' failed.", stringItem, table));
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
+            return true;
+        } catch (Throwable e) {
+            Log.w(TAG, String.format("delete '%s' from '%s' failed with message: %s", stringItem, table, e.getMessage()));
+            return false;
         }
-        db.close();
     }
 
-    public void delete(String stringItem, String table) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("_isDeleted", true);
-        int result = db.update(table, values, "string = ?", new String[]{stringItem});
-        if (result != 0) {
-            Log.i(TAG, String.format("delete '%s' from '%s'", stringItem, table));
-        } else {
-            Log.i(TAG, String.format("delete failed: the string '%s' is not existed in '%s'.", stringItem, table));
-        }
-        db.close();
-    }
-    
     public ArrayList<String> getFavorite() {
-        ArrayList<String> result = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(
-                TABLE_FAVORITE,
-                new String[]{"string", "_timeInserted", "_isDeleted"},
-                null,
-                null,
-                "string",
-                "_isDeleted = 0",
-                "_timeInserted desc"
-        );
-        if (cursor.moveToFirst()){
-            do {
-                String img = "";
-                img = cursor.getString(cursor.getColumnIndex("string"));
-                result.add(img);
-
-            } while (cursor.moveToNext());
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            ArrayList<String> result = new ArrayList<>();
+            Cursor cursor = db.query(
+                    TABLE_FAVORITE,
+                    new String[]{"string", "_timeInserted"},
+                    null,
+                    null,
+                    "string",
+                    null,
+                    "_timeInserted desc"
+            );
+            if (cursor.moveToFirst()) {
+                do {
+                    String img = cursor.getString(cursor.getColumnIndex("string"));
+                    result.add(img);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            Log.i(TAG, String.format("select '%d' rows from '%s'", result.size(), TABLE_FAVORITE));
+            return result;
+        } catch (Exception e) {
+            Log.w(TAG, String.format("select rows from '%s' failed with message: %s", TABLE_FAVORITE, e.getMessage()));
+            return new ArrayList<>();
         }
-        cursor.close();
-        db.close();
-        Log.i(TAG, String.format("select '%d' rows from '%s'", result.size(), TABLE_FAVORITE));
-        return result;
     }
 
     public HashMap<String, ArrayList<String>> getFaces() {
-        HashMap<String, ArrayList<String>> result = new HashMap<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorFaces = db.query(
-                TABLE_FACES,
-                new String[]{"string", "_timeInserted", "_isDeleted"},
-                null,
-                null,
-                "string",
-                "_isDeleted = 0",
-                null
-        );
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            HashMap<String, ArrayList<String>> result = new HashMap<>();
+            Cursor cursorFaces = db.query(
+                    TABLE_FACES,
+                    new String[]{"string", "_timeInserted"},
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
 
-        if (cursorFaces.moveToFirst()) {
-            do {
-                String img = cursorFaces.getString(cursorFaces.getColumnIndex("string"));
-                ArrayList<String> rectList = new ArrayList<>();
-                Cursor cursorRect = db.query(
-                        TABLE_FACES_RECT,
-                        new String[]{"string", "face", "_timeInserted", "_isDeleted"},
-                        null,
-                        null,
-                        "string",
-                        String.format("_isDeleted = 0 and string = '%s'", img),
-                        null
-                );
-                if (cursorRect.moveToFirst()) {
-                    do {
-                        String rect = cursorRect.getString(cursorRect.getColumnIndex("rect"));
-                        rectList.add(rect);
-                    } while (cursorRect.moveToNext());
-                }
-                cursorRect.close();
-                result.put(img, rectList);
-            } while (cursorFaces.moveToNext());
+            if (cursorFaces.moveToFirst()) {
+                do {
+                    String img = cursorFaces.getString(cursorFaces.getColumnIndex("string"));
+                    ArrayList<String> rectList = new ArrayList<>();
+                    Cursor cursorRect = db.query(
+                            TABLE_FACES_RECT,
+                            new String[]{"string", "face", "_timeInserted"},
+                            null,
+                            null,
+                            "string",
+                            String.format("string = '%s'", img),
+                            null
+                    );
+                    if (cursorRect.moveToFirst()) {
+                        do {
+                            String rect = cursorRect.getString(cursorRect.getColumnIndex("rect"));
+                            rectList.add(rect);
+                        } while (cursorRect.moveToNext());
+                    }
+                    cursorRect.close();
+                    result.put(img, rectList);
+                } while (cursorFaces.moveToNext());
+            }
+
+            cursorFaces.close();
+            Log.i(TAG, String.format("select '%d' rows from '%s'", result.size(), TABLE_FACES));
+            return result;
+        } catch (Exception e) {
+            Log.w(TAG, String.format("select rows from '%s' failed with message: %s", TABLE_FACES, e.getMessage()));
+            return new HashMap<>();
         }
-
-        cursorFaces.close();
-        db.close();
-        Log.i(TAG, String.format("select '%d' rows from '%s'", result.size(), TABLE_FAVORITE));
-        return result;
     }
 }

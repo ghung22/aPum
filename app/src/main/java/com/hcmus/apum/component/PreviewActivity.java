@@ -331,13 +331,15 @@ public class PreviewActivity extends AppCompatActivity {
         Menu menu = bottomToolbar.getMenu();
         MenuItem fav = menu.findItem(R.id.action_favorite);
         if (title.equals(getResources().getString(R.string.fragment_favorite))) {
-            mediaManager.toggleFavorite(mediaList, pos);
-            if(mediaManager.isFavorite(mediaList.get(pos))) {
-                fav.setIcon(R.drawable.ic_fav);
-                Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
-            } else {
-                fav.setIcon(R.drawable.ic_fav_outline);
-                Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
+            // Toggle favorite and only update UI if succeeded
+            if (mediaManager.toggleFavorite(mediaList.get(pos))) {
+                if (mediaManager.isFavorite(mediaList.get(pos))) {
+                    fav.setIcon(R.drawable.ic_fav);
+                    Toast.makeText(this, "Added to Favorite", Toast.LENGTH_LONG).show();
+                } else {
+                    fav.setIcon(R.drawable.ic_fav_outline);
+                    Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_LONG).show();
+                }
             }
         } else if (title.equals(getResources().getString(R.string.action_edit))) {
             Toast.makeText(this, mediaList.get(pos), Toast.LENGTH_LONG).show();

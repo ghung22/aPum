@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         mediaManager.updateFavorite(this);
 
         // Init fragments
-        overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getImages(), "date", false));
+        overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getMedia(), "date", false));
         albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
         faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
         favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFavorite(), "date", false));
 
-        overviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
+        overviewData = mediaManager.sort(mediaManager.getMedia(), "date", false);
         albumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
         favoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
         newOverviewData = overviewData;
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
                     mediaManager.updateFavorite(MainActivity.this);
-                    newOverviewData = mediaManager.sort(mediaManager.getImages(), "date", false);
+                    newOverviewData = mediaManager.sort(mediaManager.getMedia(), "date", false);
                     newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
                     newFavoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
                     switch (currentFragment) {

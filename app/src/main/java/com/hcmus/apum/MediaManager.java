@@ -40,8 +40,11 @@ import java.util.*;
 import static com.hcmus.apum.MainActivity.debugEnabled;
 
 public class MediaManager {
+    // Debugging
+    private final String TAG = "MEDIA_MANAGER";
+
     // Data
-    private ArrayList<String> images, albums, faces, favorites;
+    private ArrayList<String> media, albums, faces, favorites;
     private HashMap<String, ArrayList<String>> faceData = new HashMap<>();
 
     // Constant
@@ -82,7 +85,7 @@ public class MediaManager {
             }
         }
 
-        this.images = images;
+        this.media = images;
         this.albums = albums;
         cursor.close();
     }
@@ -106,30 +109,35 @@ public class MediaManager {
             }
         } catch (Exception e) {
             if (debugEnabled) {
-                Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
+                Log.e(TAG, "Update faces failed with message: " + (Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage()));
                 Toast.makeText(context, "(!) Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    public void toggleFavorite(ArrayList<String> thumbs, int pos) {
-        if (!favorites.contains(thumbs.get(pos))) {
+    public boolean toggleFavorite(String media) {
+        if (!favorites.contains(media)) {
             HashMap<String, String> map = new HashMap<>();
-            map.put("String", thumbs.get(pos));
-            database.insert(map, Database.TABLE_FAVORITE);
-            favorites.add(thumbs.get(pos));
+            map.put("string", media);
+            if (database.insert(map, Database.TABLE_FAVORITE)) {
+                favorites.add(media);
+                return true;
+            }
         } else {
-            database.delete(thumbs.get(pos), Database.TABLE_FAVORITE);
-            favorites.remove(thumbs.get(pos));
+            if (database.delete(media, Database.TABLE_FAVORITE)) {
+                favorites.remove(media);
+                return true;
+            }
         }
+        return false;
     }
 
-    public boolean isFavorite(String thumb) {
-        return favorites.contains(thumb);
+    public boolean isFavorite(String media) {
+        return favorites.contains(media);
     }
 
-    public ArrayList<String> getImages() {
-        return images;
+    public ArrayList<String> getMedia() {
+        return media;
     }
     public ArrayList<String> getFavorite() {
         return favorites;
@@ -387,7 +395,7 @@ public class MediaManager {
                 scopedList;
         switch (scope) {
             case "overview":
-                scopedList = images;
+                scopedList = media;
                 break;
             case "albums":
                 scopedList = albums;
@@ -565,7 +573,7 @@ public class MediaManager {
             out.flush();
             out.close();
         } catch (Exception e) {
-            Log.e("COPY", e.getMessage());
+            Log.e(TAG, "Copy failed with message: " + e.getMessage());
             return false;
         }
         return true;
@@ -626,7 +634,7 @@ public class MediaManager {
             super();
             this.context = context;
             this.fragment = fragment;
-            maxProgress = images.size();
+            maxProgress = media.size();
         }
 
         @Override
@@ -666,7 +674,7 @@ public class MediaManager {
             try {
                 publishProgress("Loading images…");
                 int i = 0;
-                for (String path : images) {
+                for (String path : media) {
                     publishProgress(path);
                     ArrayList<String> recs = new ArrayList<>();
 
@@ -700,7 +708,7 @@ public class MediaManager {
                 Thread.sleep(1000 + r.nextInt(2000));
             } catch (Exception e) {
                 if (debugEnabled) {
-                    Log.e("FACES", Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage());
+                    Log.e(TAG, "AsyncFacesUpdater encountered an error: " + (Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage()));
                 }
                 return e.getMessage();
             }
