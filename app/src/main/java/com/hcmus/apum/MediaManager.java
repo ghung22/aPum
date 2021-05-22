@@ -120,7 +120,7 @@ public class MediaManager {
             HashMap<String, String> map = new HashMap<>();
             map.put("string", media);
             if (database.insert(map, Database.TABLE_FAVORITE)) {
-                favorites.add(media);
+                favorites.add(0, media);
                 return true;
             }
         } else {

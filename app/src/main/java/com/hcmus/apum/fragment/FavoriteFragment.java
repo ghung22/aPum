@@ -185,7 +185,7 @@ public class FavoriteFragment extends Fragment implements FragmentCallbacks {
                 break;
             case R.id.action_reload:
                 mediaManager.updateFavorite(getContext());
-                mediaList = mediaManager.sort(mediaManager.getFavorite(), "date", false);
+                mediaList = mediaManager.getFavorite();
                 adapter.addAll(mediaList);
                 Toast.makeText(getContext(), getString(R.string.info_favorite_reload), Toast.LENGTH_SHORT).show();
                 break;

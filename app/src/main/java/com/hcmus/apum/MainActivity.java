@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private Bundle savedInstanceState;
 
     // For threads
-    private String currentFragment = "overview";
-    private ArrayList<String> overviewData, albumsData, favoriteData,
+    private static String currentFragment = "overview";
+    private static ArrayList<String> overviewData, albumsData, favoriteData,
             newOverviewData, newAlbumsData, newFavoriteData;
-    private AsyncUpdater updater;
+    private static AsyncUpdater updater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getMedia(), "date", false));
         albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
         faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
-        favorite = FavoriteFragment.newInstance(mediaManager.sort(mediaManager.getFavorite(), "date", false));
+        favorite = FavoriteFragment.newInstance(mediaManager.getFavorite());
 
         overviewData = mediaManager.sort(mediaManager.getMedia(), "date", false);
         albumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     mediaManager.updateFavorite(MainActivity.this);
                     newOverviewData = mediaManager.sort(mediaManager.getMedia(), "date", false);
                     newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
-                    newFavoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
+                    newFavoriteData = mediaManager.getFaces();
                     switch (currentFragment) {
                         case "overview":
                             if (!newOverviewData.equals(overviewData)) {
