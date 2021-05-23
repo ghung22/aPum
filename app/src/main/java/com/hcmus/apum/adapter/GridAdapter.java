@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-
 import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
@@ -47,11 +46,19 @@ public class GridAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() { return mediaList.size(); }
+    public int getCount() {
+        return mediaList.size();
+    }
+
     @Override
-    public Object getItem(int pos) { return mediaList.get(pos); }
+    public Object getItem(int pos) {
+        return mediaList.get(pos);
+    }
+
     @Override
-    public long getItemId(int pos) { return pos; }
+    public long getItemId(int pos) {
+        return pos;
+    }
 
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {

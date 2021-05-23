@@ -27,26 +27,26 @@ public class Database extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(
                 "create table " + TABLE_FAVORITE + " (" +
-                "   string text not null," +
-                "   _timeInserted integer not null," +
-                "   primary key (string)" +
-                ")"
+                        "   string text not null," +
+                        "   _timeInserted integer not null," +
+                        "   primary key (string)" +
+                        ")"
         );
         sqLiteDatabase.execSQL(
-                "create table "+ TABLE_FACES +" (" +
-                "   string text not null," +
-                "   _timeInserted integer not null," +
-                "   primary key (string)" +
-                ")"
+                "create table " + TABLE_FACES + " (" +
+                        "   string text not null," +
+                        "   _timeInserted integer not null," +
+                        "   primary key (string)" +
+                        ")"
         );
         sqLiteDatabase.execSQL(
-                "create table "+ TABLE_FACES_RECT +" (" +
-                "   string text not null," +
-                "   rect text not null," +
-                "   _timeInserted integer not null," +
-                "   primary key (string)," +
-                "   foreign key (string) references " + TABLE_FACES + "(string)" +
-                ")"
+                "create table " + TABLE_FACES_RECT + " (" +
+                        "   string text not null," +
+                        "   rect text not null," +
+                        "   _timeInserted integer not null," +
+                        "   primary key (string)," +
+                        "   foreign key (string) references " + TABLE_FACES + "(string)" +
+                        ")"
         );
     }
 
@@ -78,7 +78,7 @@ public class Database extends SQLiteOpenHelper {
                 }
             }
             ContentValues values = new ContentValues();
-            for (Map.Entry<String, String> entry: items.entrySet()){
+            for (Map.Entry<String, String> entry : items.entrySet()) {
                 values.put(entry.getKey(), entry.getValue());
             }
             values.put("_timeInserted", new Date().toInstant().getEpochSecond());

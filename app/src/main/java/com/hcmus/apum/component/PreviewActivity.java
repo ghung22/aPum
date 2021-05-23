@@ -109,7 +109,8 @@ public class PreviewActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             // Snap to page based on how much user have scrolled
             @Override
-            public void onPageScrolled(int position, float offset, int offsetPixels) {}
+            public void onPageScrolled(int position, float offset, int offsetPixels) {
+            }
 
             // Update UI according to of current image
             @Override
@@ -118,7 +119,8 @@ public class PreviewActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
         viewPager.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -372,6 +374,7 @@ public class PreviewActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

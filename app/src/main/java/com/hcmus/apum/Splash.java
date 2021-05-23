@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,6 +15,7 @@ public class Splash extends Activity {
     private static final int STORAGE_PERMISSION_CODE = 101;
     private final int SPLASH_DURATION = 1000;
     Intent main;
+
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -36,13 +36,11 @@ public class Splash extends Activity {
         }, SPLASH_DURATION);
     }
 
-    public void checkPermission(String permission, int requestCode)
-    {
+    public void checkPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(Splash.this, permission) == PackageManager.PERMISSION_DENIED) {
             // Requesting the permission
-            ActivityCompat.requestPermissions(Splash.this, new String[] { permission }, requestCode);
-        }
-        else {
+            ActivityCompat.requestPermissions(Splash.this, new String[]{permission}, requestCode);
+        } else {
             // Toast.makeText(Splash.this, "Permission already granted", Toast.LENGTH_SHORT).show();
             startActivity(main);
             finish();
@@ -50,8 +48,7 @@ public class Splash extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 
@@ -60,8 +57,7 @@ public class Splash extends Activity {
                 Toast.makeText(Splash.this, "Storage Permission Granted", Toast.LENGTH_SHORT).show();
                 startActivity(main);
                 finish();
-            }
-            else {
+            } else {
                 Toast.makeText(Splash.this, "Storage Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }

@@ -58,15 +58,15 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavorite(this);
-            // Sort codes
+        // Sort codes
         overviewSort = mediaManager.SORT_BY_DATE + mediaManager.SORT_DESCENDING;
         albumSort = mediaManager.SORT_BY_NAME;
         favoriteSort = mediaManager.SORT_DEFAULT;
-            // Fragments' mediaList
+        // Fragments' mediaList
         overviewData = mediaManager.sort(mediaManager.getMedia(), overviewSort);
         albumsData = mediaManager.sort(mediaManager.getAlbums(), albumSort);
         favoriteData = mediaManager.sort(mediaManager.getFaces(), favoriteSort);
-            // For auto-reloading mediaList
+        // For auto-reloading mediaList
         newOverviewData = overviewData;
         newAlbumsData = albumsData;
         newFavoriteData = favoriteData;
@@ -147,14 +147,15 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 }
                 // Convert bitmap to bytes
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 0 , outputStream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
                 byte[] bmpData = outputStream.toByteArray();
                 // Write bytes
                 FileOutputStream fos = new FileOutputStream(file);
                 fos.write(bmpData);
                 fos.flush();
                 fos.close();
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
             switchFragment(R.id.action_overview);
         } else {
             // When return data exists
@@ -266,7 +267,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                             }
                             break;
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
 

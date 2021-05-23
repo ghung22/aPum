@@ -45,7 +45,7 @@ public class OverviewFragment extends BaseFragment {
         searchScope = "overview";
 
         // Init controls
-            // GUI controls
+        // GUI controls
         AppBarLayout appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
@@ -54,7 +54,7 @@ public class OverviewFragment extends BaseFragment {
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
-            // Actionbar buttons
+        // Actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_overview);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);

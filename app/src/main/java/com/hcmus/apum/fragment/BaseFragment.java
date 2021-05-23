@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -50,7 +51,9 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
     protected String searchScope;
 
     public abstract void updateAdapter(ArrayList<String> mediaList, @Nullable ArrayList<Integer> mediaCountList);
+
     public abstract void inflateOptionMenu(Menu menu, MenuInflater inflater);
+
     protected ArrayList<String> getContent() {
         return new ArrayList<>();
     }
@@ -206,19 +209,25 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
                 regenerate = menu.findItem(R.id.action_regenerate),
                 add = menu.findItem(R.id.action_add),
                 search = menu.findItem(R.id.action_search);
-        if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            for (MenuItem menuItem : Arrays.asList(add, regenerate, search)) {
-                if (menuItem != null) {
-                    menuItem.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-                }
-            }
+
+        // Get filter
+        PorterDuffColorFilter filter = null;
+        if ((collapsingToolbar.getHeight() + verticalOffset)
+                < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
+            filter = new PorterDuffColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else if ((requireContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
                 != Configuration.UI_MODE_NIGHT_YES) {
-            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            filter = new PorterDuffColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+        }
+
+        // Apply filter
+        if (filter != null) {
+            if (toolbar.getOverflowIcon() != null) {
+                toolbar.getOverflowIcon().setColorFilter(filter);
+            }
             for (MenuItem menuItem : Arrays.asList(add, regenerate, search)) {
                 if (menuItem != null) {
-                    menuItem.getIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+                    menuItem.getIcon().setColorFilter(filter);
                 }
             }
         }

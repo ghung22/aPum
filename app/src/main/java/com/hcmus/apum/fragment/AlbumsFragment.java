@@ -35,7 +35,7 @@ public class AlbumsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_albums, container, false);
+        View view = inflater.inflate(R.layout.fragment_albums, container, false);
 
         // Init data
         if (getArguments() != null) {
@@ -47,7 +47,7 @@ public class AlbumsFragment extends BaseFragment {
         searchScope = "albums";
 
         // Init controls
-            // GUI controls
+        // GUI controls
         AppBarLayout appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
@@ -56,7 +56,7 @@ public class AlbumsFragment extends BaseFragment {
         list.setEmptyView(view.findViewById(R.id.no_media));
         list.setAdapter(adapter);
         list.setOnItemClickListener(this::showContent);
-            // Init actionbar buttons
+        // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_albums);
         toolbar.setOnMenuItemClickListener(this::menuActionBool);

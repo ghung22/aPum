@@ -35,6 +35,7 @@ public class FacesFragment extends BaseFragment {
     public GridAdapter getAdapter() {
         return (GridAdapter) adapter;
     }
+
     public Menu getMenu() {
         return toolbar.getMenu();
     }
@@ -64,7 +65,7 @@ public class FacesFragment extends BaseFragment {
         mediaList = new ArrayList<>(faceList.keySet());
 
         // Init controls
-            // GUI controls
+        // GUI controls
         AppBarLayout appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
@@ -72,11 +73,11 @@ public class FacesFragment extends BaseFragment {
         GridView grid = view.findViewById(R.id.grid);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(this::showContent);
-            // Empty view of grid
+        // Empty view of grid
         Button faces_no_faces_btn = view.findViewById(R.id.faces_no_faces_btn);
         faces_no_faces_btn.setOnClickListener(view1 -> regenerate());
         grid.setEmptyView(view.findViewById(R.id.faces_no_faces));
-            // Init actionbar buttons
+        // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_faces);
         toolbar.inflateMenu(R.menu.menu_faces);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);

@@ -3,18 +3,19 @@ package com.hcmus.apum;
 import android.util.Log;
 
 /*
-* SOME URI FORMAT:
-* /tree/primary:Music
-* /tree/OFFC-0209:Test
-* /tree/downloads
-* /tree/raw:/storage/emulated/0/Downloads/Photos
-* /document/43
-* /document/image:254
-* /document/primary:Music/file.png
-* /document/OFFC-0209:Test/file.png
-*/
+ * SOME URI FORMAT:
+ * /tree/primary:Music
+ * /tree/OFFC-0209:Test
+ * /tree/downloads
+ * /tree/raw:/storage/emulated/0/Downloads/Photos
+ * /document/43
+ * /document/image:254
+ * /document/primary:Music/file.png
+ * /document/OFFC-0209:Test/file.png
+ */
 public final class PathUtils {
     private final static String TAG = "PATH_UTILS";
+
     public static String fromUri(String uri) {
         Log.i(TAG, "Received path: " + uri);
         String path = uri.substring(uri.indexOf('/', 1) + 1);

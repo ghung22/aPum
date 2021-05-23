@@ -147,15 +147,19 @@ public class MediaManager {
     public ArrayList<String> getMedia() {
         return media;
     }
+
     public ArrayList<String> getFavorite() {
         return favorites;
     }
+
     public ArrayList<String> getAlbums() {
         return albums;
     }
+
     public ArrayList<String> getFaces() {
         return faces;
     }
+
     public HashMap<String, ArrayList<String>> getFaceData() {
         return faceData;
     }
@@ -497,7 +501,7 @@ public class MediaManager {
         return sorted;
     }
 
-    public  ArrayList<String> sort(ArrayList<String> org, int sortCode) {
+    public ArrayList<String> sort(ArrayList<String> org, int sortCode) {
         return sort(org, sortCode, 0);
     }
 
@@ -511,8 +515,8 @@ public class MediaManager {
                 sort_sort_btn = dialog.findViewById(R.id.sort_sort_btn);
 
         // APPLY DATA
-        final int[] sortMethod = { SORT_BY_NAME },
-                sortOrder = { SORT_ASCENDING };
+        final int[] sortMethod = {SORT_BY_NAME},
+                sortOrder = {SORT_ASCENDING};
         sort_err_row.setVisibility(View.GONE);
 
         // INIT CONTROLS

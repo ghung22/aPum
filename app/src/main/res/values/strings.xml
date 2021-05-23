@@ -59,20 +59,27 @@
     <string name="placeholder_search_result">Null result</string>
     <string name="placeholder_search_location">Null album</string>
     <string name="placeholder_info_err">Error message</string>
-    <string name="placeholder_info_filename">File name.png <i>(20KB)</i></string>
+    <string name="placeholder_info_filename">File name.png
+        <i>(20KB)</i>
+    </string>
     <string name="placeholder_info_fileLocation">/path/to/file</string>
     <string name="placeholder_info_fileSize">(0KB)</string>
     <string name="placeholder_info_imageSize">720x1080</string>
-    <string name="placeholder_info_camera">Taken with <b>Device Name</b> by <b>Artist</b></string>
+    <string name="placeholder_info_camera">Taken with <b>Device Name</b> by
+        <b>Artist</b>
+    </string>
     <string name="placeholder_info_map">Ho Chi Minh City, Vietnam</string>
 
     <!--  Info text  -->
     <string name="info_no_media">No media</string>
     <string name="info_search_hint">Enter anything…</string>
     <string name="info_unknown_location">Unknown location</string>
-    <string name="info_no_faces">No faces available, generate a new face data?</string>
+    <string name="info_no_faces">No faces available, generate a new face data?
+    </string>
     <string name="info_faces_processing">Processing images…</string>
-    <string name="info_faces_processing_completed">Face data processing completed.</string>
+    <string name="info_faces_processing_completed">Face data processing
+        completed.
+    </string>
     <string name="info_overview_sort">Image list sorted.</string>
     <string name="info_album_sort">Album list sorted.</string>
     <string name="info_favorite_sort">Favorite list sorted.</string>

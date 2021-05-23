@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
 
@@ -32,11 +31,19 @@ public class AlbumAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() { return mediaList.size(); }
+    public int getCount() {
+        return mediaList.size();
+    }
+
     @Override
-    public Object getItem(int pos) { return mediaList.get(pos); }
+    public Object getItem(int pos) {
+        return mediaList.get(pos);
+    }
+
     @Override
-    public long getItemId(int pos) { return pos; }
+    public long getItemId(int pos) {
+        return pos;
+    }
 
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
@@ -63,7 +70,7 @@ public class AlbumAdapter extends BaseAdapter {
                 .placeholder(R.drawable.ic_image)
                 .into(visual);
         row.setId(pos);
-        return(row);
+        return (row);
     }
 
     public void addAll(ArrayList<String> mediaList, ArrayList<Integer> mediaCountList) {
