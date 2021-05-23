@@ -49,7 +49,7 @@ public class ContentActivity extends AppCompatActivity {
         host = bundle.getString("host");
         container = bundle.getStringArrayList("container");
         if (caller.equals("albums")) {
-            container = mediaManager.sort(container, "date", false);
+            container = mediaManager.sort(container, mediaManager.SORT_BY_DATE, mediaManager.SORT_DESCENDING);
         } else if (caller.equals("faces")) {
             // Convert Strings into Rect objects
             boundingBoxes = mediaManager.getFaceRect(container);

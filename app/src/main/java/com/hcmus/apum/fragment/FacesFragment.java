@@ -153,7 +153,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
                 if (!results.isEmpty()) {
                     showSearch(query, results);
                 } else {
-                    Toast.makeText(getContext(), getContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), requireContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }
@@ -179,7 +179,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
         String img = mediaList.get(pos);
         ArrayList<String> container = faceList.get(img);
 
-        Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
+        Intent mainContent = new Intent(requireContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "faces");
         bundle.putString("host", img);
@@ -189,7 +189,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
     }
 
     private void showSearch(String query, ArrayList<String> results) {
-        Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
+        Intent mainSearch = new Intent(requireContext(), SearchActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "faces");
         bundle.putString("query", query);
@@ -209,10 +209,10 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
                 searchView.requestFocus();
                 break;
             case R.id.action_sort:
-                mediaManager.sortUI(getContext(), "faces", mediaList);
+                mediaManager.sortUI(requireContext(), "faces", mediaList);
                 break;
             case R.id.action_about:
-                Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                Intent mainAbout = new Intent(requireContext(), AboutActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("caller", "faces");
                 mainAbout.putExtras(bundle);
@@ -220,7 +220,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
             default:
-                Toast.makeText(getContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -237,13 +237,13 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
         Menu menu = toolbar.getMenu();
         MenuItem regenerate = menu.findItem(R.id.action_regenerate), search = menu.findItem(R.id.action_search);
         if (toolbarCollapsed) {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            regenerate.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            regenerate.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            regenerate.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            regenerate.getIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
         this.toolbarCollapsed = toolbarCollapsed;
     }
@@ -258,7 +258,7 @@ public class FacesFragment extends Fragment implements FragmentCallbacks {
     }
 
     private void regenerate() {
-        mediaManager.updateFaces(getContext(), this);
+        mediaManager.updateFaces(requireContext(), this);
     }
 
     @Override

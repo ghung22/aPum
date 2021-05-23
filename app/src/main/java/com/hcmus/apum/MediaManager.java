@@ -9,12 +9,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.location.Geocoder;
 import android.media.ExifInterface;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import androidx.core.content.FileProvider;
@@ -56,6 +56,14 @@ public class MediaManager {
             Arrays.asList("mp4", "mov", "mkv", "wmv", "avi", "flv", "webm")
     );
 
+    // Sort codes
+    public final int
+            SORT_DEFAULT = 0,
+            SORT_BY_NAME = 10,
+            SORT_BY_DATE = 20,
+            SORT_ASCENDING = 0,
+            SORT_DESCENDING = 1;
+
     // Global agent
     private Database database;
     private AsyncFacesUpdater faceUpdater;
@@ -69,19 +77,19 @@ public class MediaManager {
         int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
         while (cursor.moveToNext()) {
-            String imagePath = cursor.getString(column_index_data),
-                    albumPath = "";
+            String imagePath = cursor.getString(column_index_data);
+            StringBuilder albumPath = new StringBuilder();
             String[] folders = imagePath.split("/");
             for (int i = 0; i < folders.length - 1; ++i) {
-                albumPath += folders[i];
+                albumPath.append(folders[i]);
                 if (i < folders.length - 2) {
-                    albumPath += "/";
+                    albumPath.append("/");
                 }
             }
 
             images.add(imagePath);
-            if (!albums.contains(albumPath)) {
-                albums.add(albumPath);
+            if (!albums.contains(albumPath.toString())) {
+                albums.add(albumPath.toString());
             }
         }
 
@@ -183,7 +191,12 @@ public class MediaManager {
             if (!dir.isDirectory()) {
                 continue;
             }
-            albumCounts.add(dir.listFiles(getFileFilter("img")).length);
+            File[] list = dir.listFiles(getFileFilter("img"));
+            if (list != null) {
+                albumCounts.add(list.length);
+            } else {
+                albumCounts.add(-1);
+            }
         }
         return albumCounts;
     }
@@ -222,10 +235,9 @@ public class MediaManager {
                     }
                     return false;
                 };
+                break;
             default:
-                filter = (dir, file) -> {
-                    return true;
-                };
+                filter = (dir, file) -> true;
                 break;
         }
         return filter;
@@ -254,16 +266,17 @@ public class MediaManager {
             e.printStackTrace();
         }
 
-        if (format.equals("epoch")) {
-            return String.valueOf(modTime.toInstant().getEpochSecond());
+        if (modTime != null) {
+            if (format.equals("epoch")) {
+                return String.valueOf(modTime.toInstant().getEpochSecond());
+            }
+            return DateTimeFormatter.ofPattern(format, Locale.ENGLISH)
+                    .withZone(ZoneId.systemDefault())
+                    .format(modTime.toInstant());
+        } else {
+            Log.e(TAG, "getModifiedTime failed");
+            return format;
         }
-        return DateTimeFormatter.ofPattern(format, Locale.ENGLISH)
-                .withZone(ZoneId.systemDefault())
-                .format(modTime.toInstant());
-    }
-
-    public String getModifiedTime(String path) {
-        return getModifiedTime(path, "");
     }
 
     public String getSize(String path) {
@@ -292,44 +305,28 @@ public class MediaManager {
         Geocoder geocoder = new Geocoder(context);
         String latitude = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE),
                 longitude = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-        double _lat = -1, _long = -1;
 
-        // Analise latitude
-        if (latitude != null) {
-            String[] latCoordinate = latitude.split(","),
-                    latDegree = latCoordinate[0].split("/"),
-                    latMinute = latCoordinate[1].split("/"),
-                    latSecond = latCoordinate[2].split("/");
-            _lat = Double.parseDouble(latDegree[0]) / Double.parseDouble(latDegree[1]) +
-                    Double.parseDouble(latMinute[0]) / Double.parseDouble(latMinute[1]) / 60 +
-                    Double.parseDouble(latSecond[0]) / Double.parseDouble(latSecond[1]) / 3600;
-        } else {
-            latitude = "";
+        // Convert lat and long to double
+        for (String l : Arrays.asList(latitude, longitude)) {
+            if (l != null) {
+                String[] coordinate = l.split(","),
+                        degree = coordinate[0].split("/"),
+                        minute = coordinate[1].split("/"),
+                        second = coordinate[2].split("/");
+                double _l = Double.parseDouble(degree[0]) / Double.parseDouble(degree[1]) +
+                        Double.parseDouble(minute[0]) / Double.parseDouble(minute[1]) / 60 +
+                        Double.parseDouble(second[0]) / Double.parseDouble(second[1]) / 3600;
+                geo.add(String.valueOf(_l));
+            } else {
+                geo.add("");
+                geo.add("");
+                geo.add("");
+            }
         }
 
-        // Analise longitude
-        if (longitude != null) {
-            String[] longCoordinate = longitude.split(","),
-                    longDegree = longCoordinate[0].split("/"),
-                    longMinute = longCoordinate[1].split("/"),
-                    longSecond = longCoordinate[2].split("/");
-            _long = Double.parseDouble(longDegree[0]) / Double.parseDouble(longDegree[1]) +
-                    Double.parseDouble(longMinute[0]) / Double.parseDouble(longMinute[1]) / 60 +
-                    Double.parseDouble(longSecond[0]) / Double.parseDouble(longSecond[1]) / 3600;
-        } else {
-            longitude = "";
-        }
-
-        // Parse latitude and longitude
-        if (!latitude.isEmpty()) {
-            geo.add(geocoder.getFromLocation(_lat, _long, 1).get(0).getAddressLine(0));
-            geo.add(String.valueOf(_lat));
-            geo.add(String.valueOf(_long));
-        } else {
-            geo.add("");
-            geo.add("");
-            geo.add("");
-        }
+        // Return found address, lat and long
+        double _lat = Double.parseDouble(geo.get(0)), _long = Double.parseDouble(geo.get(1));
+        geo.add(0, geocoder.getFromLocation(_lat, _long, 1).get(0).getAddressLine(0));
         return geo;
     }
 
@@ -337,14 +334,14 @@ public class MediaManager {
         // TODO: Cover image config file
         File dir = new File(albumPath);
         return getLastModified(
-                dir.listFiles(getFileFilter("img"))
+                Objects.requireNonNull(dir.listFiles(getFileFilter("img")))
         );
     }
 
     public ArrayList<String> getAlbumContent(String albumPath) {
         ArrayList<String> container = new ArrayList<>();
         File dir = new File(albumPath);
-        for (File f : dir.listFiles(getFileFilter("img"))) {
+        for (File f : Objects.requireNonNull(dir.listFiles(getFileFilter("img")))) {
             container.add(f.getAbsolutePath());
         }
         return container;
@@ -460,43 +457,48 @@ public class MediaManager {
         return results;
     }
 
-    public ArrayList<String> sort(ArrayList<String> org, String type, boolean ascending) {
+    public ArrayList<String> sort(ArrayList<String> org, int sortMethod, int sortOrder) {
+        // Init data
         if (org == null) {
             return new ArrayList<>();
         }
         ArrayList<String> sorted = new ArrayList<>();
-        switch (type) {
-            case "name":
-                TreeMap<String, String> names = new TreeMap<>();
-                for (String path : org) {
-                    names.put(path.substring(path.lastIndexOf('/')), path);
-                }
-                for (Map.Entry<String, String> set : names.entrySet()) {
-                    sorted.add(set.getValue());
-                }
-                break;
-            case "date":
-                TreeMap<Long, String> dates = new TreeMap<>();
-                for (String path : org) {
-                    dates.put(Long.parseLong(getModifiedTime(path, "epoch")), path);
-                }
-                for (Map.Entry<Long, String> set : dates.entrySet()) {
-                    sorted.add(set.getValue());
-                }
-                break;
-            default:
-                sorted = org;
-                break;
+        int SORT_CODE = sortMethod + sortOrder;
+
+        // Sort method
+        if (SORT_CODE == SORT_DEFAULT) {
+            return org;
         }
-        if (!ascending) {
+        if (SORT_CODE / 10 == SORT_BY_NAME) {
+            TreeMap<String, String> names = new TreeMap<>();
+            for (String path : org) {
+                names.put(path.substring(path.lastIndexOf('/')), path);
+            }
+            for (Map.Entry<String, String> set : names.entrySet()) {
+                sorted.add(set.getValue());
+            }
+        } else if (SORT_CODE / 10 == SORT_BY_DATE) {
+            TreeMap<Long, String> dates = new TreeMap<>();
+            for (String path : org) {
+                dates.put(Long.parseLong(getModifiedTime(path, "epoch")), path);
+            }
+            for (Map.Entry<Long, String> set : dates.entrySet()) {
+                sorted.add(set.getValue());
+            }
+        } else {
+            sorted = org;
+        }
+
+        // Sort order
+        if (SORT_CODE % 10 == SORT_DESCENDING) {
             Collections.reverse(sorted);
         }
 
         return sorted;
     }
 
-    public ArrayList<String> sort(ArrayList<String> org, String type) {
-        return sort(org, type,true);
+    public  ArrayList<String> sort(ArrayList<String> org, int sortCode) {
+        return sort(org, sortCode, 0);
     }
 
     public void sortUI(Context context, String caller, ArrayList<String> mediaList) {
@@ -504,33 +506,28 @@ public class MediaManager {
         LayoutDialog dialog = new LayoutDialog(context, R.layout.layout_sort_dialog);
         RadioGroup sort_radio_group_method = dialog.findViewById(R.id.sort_radio_group_method),
                 sort_radio_group_order = dialog.findViewById(R.id.sort_radio_group_order);
-        RadioButton sort_radio_by_name = dialog.findViewById(R.id.sort_radio_by_name),
-                sort_radio_by_date = dialog.findViewById(R.id.sort_radio_by_date),
-                sort_radio_ascending = dialog.findViewById(R.id.sort_radio_ascending),
-                sort_radio_descending = dialog.findViewById(R.id.sort_radio_descending);
         LinearLayout sort_err_row = dialog.findViewById(R.id.sort_err_row);
-        TextView sort_err = dialog.findViewById(R.id.sort_err);
         Button sort_cancel_btn = dialog.findViewById(R.id.sort_cancel_btn),
                 sort_sort_btn = dialog.findViewById(R.id.sort_sort_btn);
 
         // APPLY DATA
-        String[] method = { "name" };
-        boolean[] ascending = { true };
+        final int[] sortMethod = { SORT_BY_NAME },
+                sortOrder = { SORT_ASCENDING };
         sort_err_row.setVisibility(View.GONE);
 
         // INIT CONTROLS
         sort_radio_group_method.setOnCheckedChangeListener((radioGroup, radioId) -> {
             if (radioId == R.id.sort_radio_by_name) {
-                method[0] = "name";
+                sortMethod[0] = SORT_BY_NAME;
             } else if (radioId == R.id.sort_radio_by_date) {
-                method[0] = "date";
+                sortMethod[0] = SORT_BY_DATE;
             }
         });
         sort_radio_group_order.setOnCheckedChangeListener(((radioGroup, radioId) -> {
             if (radioId == R.id.sort_radio_ascending) {
-                ascending[0] = true;
+                sortOrder[0] = SORT_ASCENDING;
             } else if (radioId == R.id.sort_radio_descending) {
-                ascending[0] = false;
+                sortOrder[0] = SORT_DESCENDING;
             }
         }));
         sort_cancel_btn.setOnClickListener(view -> dialog.dismiss());
@@ -538,7 +535,8 @@ public class MediaManager {
             Bundle bundle = new Bundle();
             bundle.putString("caller", caller);
             bundle.putString("action", "sort");
-            bundle.putStringArrayList("mediaList", sort(mediaList, method[0], ascending[0]));
+            bundle.putInt("sortCode", sortMethod[0] + sortOrder[0]);
+            bundle.putStringArrayList("mediaList", sort(mediaList, sortMethod[0], sortOrder[0]));
             ((MainActivity) context).fragToMain(caller, bundle);
             dialog.dismiss();
         });
@@ -579,9 +577,16 @@ public class MediaManager {
         return true;
     }
 
+    public void refresh(Context context, String path) {
+        File file = new File(path);
+        MediaScannerConnection.scanFile(context,
+                new String[]{file.toString()},
+                null, null);
+    }
+
     public boolean copy(Context context, String source, String destination) {
         boolean copy = copy(source, destination);
-        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(destination))));
+        refresh(context, destination);
         updateLocations(context);
         return copy;
     }
@@ -591,7 +596,7 @@ public class MediaManager {
         if (!file.delete()) {
             return false;
         } else {
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+            refresh(context, path);
             updateLocations(context);
         }
         return true;
@@ -624,7 +629,6 @@ public class MediaManager {
         private TextView generate_progress, generate_progress_info, generate_err;
         private ProgressBar generate_progress_bar;
         private Button generate_close_btn;
-        private MenuItem regenerate;
 
         // Data
         private final int maxProgress;
@@ -647,7 +651,6 @@ public class MediaManager {
             generate_err = dialog.findViewById(R.id.generate_err);
             generate_progress_bar = dialog.findViewById(R.id.generate_progress_bar);
             generate_close_btn = dialog.findViewById(R.id.generate_close_btn);
-            regenerate = fragment.getMenu().findItem(R.id.action_regenerate);
 
             // APPLY DATA
             generate_progress_bar.setProgress(0);
@@ -694,22 +697,19 @@ public class MediaManager {
                                             faceData.put(path, recs);
                                             publishProgress(path, "done");
                                         }
-                                    })
-                                    .addOnFailureListener(Throwable::getMessage);
+                                    });
                     generate_progress_bar.setProgress(++i);
                     while (!resultTask.isComplete()) {
-                        // Wait till image is processed
+
                     }
                 }
                 // Fake finishing step
-                publishProgress("Finishing up…");
+                publishProgress("Finishing up…", "top");
                 Random r = new Random();
                 r.setSeed(maxProgress);
                 Thread.sleep(1000 + r.nextInt(2000));
-            } catch (Exception e) {
-                if (debugEnabled) {
-                    Log.e(TAG, "AsyncFacesUpdater encountered an error: " + (Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage()));
-                }
+            } catch (Throwable e) {
+                Log.e(TAG, "AsyncFacesUpdater encountered an error: " + (Strings.isEmptyOrWhitespace(e.getMessage()) ? "Unknown error" : e.getMessage()));
                 return e.getMessage();
             }
             return "";
@@ -718,11 +718,14 @@ public class MediaManager {
         @Override
         protected void onProgressUpdate(String... text) {
             if (text.length > 0) {
-                generate_progress_info.setText(text[0]);
-                if (text.length == 2) {
+                if (text.length < 2) {
+                    generate_progress_info.setText(text[0]);
+                } else {
                     if (text[1].equals("done")) {
                         // Add image path with faces into FacesFragment's mediaList
                         fragment.addMediaFace(text[0], faceData.get(text[0]));
+                    } else if (text[1].equals("top")) {
+                        generate_progress.setText(text[0]);
                     }
                 }
             } else {
@@ -734,8 +737,6 @@ public class MediaManager {
         protected void onPostExecute(String result) {
             if (result.isEmpty()) {
                 dialog.dismiss();
-                regenerate.getActionView().getAnimation().cancel();
-                regenerate.getActionView().getAnimation().reset();
                 Toast.makeText(context, R.string.info_faces_processing_completed, Toast.LENGTH_SHORT).show();
             } else {
                 generate_err.setText(result);

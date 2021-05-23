@@ -32,12 +32,8 @@ import static com.hcmus.apum.MainActivity.*;
 
 public class OverviewFragment extends Fragment implements FragmentCallbacks {
 
-    // GUI controls
-    private AppBarLayout appbar;
     private CollapsingToolbarLayout collapsingToolbar;
     private Toolbar toolbar;
-    private NestedScrollView scroll;
-    private GridView grid;
     private GridAdapter adapter;
 
     // Search
@@ -72,15 +68,17 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
         ViewCompat.requestApplyInsets(view);
 
         // Init data
-        mediaList = getArguments().getStringArrayList("mediaList");
+        if (getArguments() != null) {
+            mediaList = getArguments().getStringArrayList("mediaList");
+        }
 
         // Init controls
-        appbar = view.findViewById(R.id.appbar);
+        // GUI controls
+        AppBarLayout appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
-        scroll = view.findViewById(R.id.scroll);
         adapter = new GridAdapter(getActivity(), mediaList);
-        grid = view.findViewById(R.id.grid);
+        GridView grid = view.findViewById(R.id.grid);
         grid.setEmptyView(view.findViewById(R.id.no_media));
         grid.setAdapter(adapter);
         grid.setOnItemClickListener((adapterView, view1, i, l) -> showPreview(i));
@@ -88,7 +86,7 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
         // Init actionbar buttons
         toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_overview);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
 
         return view;
@@ -133,7 +131,7 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
                 if (!results.isEmpty()) {
                     showSearch(query, results);
                 } else {
-                    Toast.makeText(getContext(), getContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), requireContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }
@@ -156,7 +154,7 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
     }
 
     private void showPreview(int pos) {
-        Intent mainPreview = new Intent(this.getContext(), PreviewActivity.class);
+        Intent mainPreview = new Intent(requireContext(), PreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "overview");
         bundle.putStringArrayList("thumbnails", mediaList);
@@ -166,7 +164,7 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
     }
 
     private void showSearch(String query, ArrayList<String> results) {
-        Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
+        Intent mainSearch = new Intent(requireContext(), SearchActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "overview");
         bundle.putString("query", query);
@@ -176,18 +174,14 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
         startActivityForResult(mainSearch, SEARCH_REQUEST_CODE);
     }
 
-    private static String getGalleryPath() {
-        return Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
-    }
-
-    private boolean menuAction(MenuItem menuItem) {
+    private void menuAction(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.action_add:
                 Intent overviewCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 try {
                     startActivityForResult(overviewCamera, CAMERA_REQUEST_CODE);
                 } catch (ActivityNotFoundException e) {
-                    Toast.makeText(OverviewFragment.super.getContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
+                    Toast.makeText(OverviewFragment.super.requireContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.action_search:
@@ -195,16 +189,16 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
                 searchView.requestFocus();
                 break;
             case R.id.action_sort:
-                mediaManager.sortUI(getContext(), "overview", mediaList);
+                mediaManager.sortUI(requireContext(), "overview", mediaList);
                 break;
             case R.id.action_reload:
-                mediaManager.updateLocations(getContext());
-                mediaList = mediaManager.sort(mediaManager.getMedia(), "date", false);
+                mediaManager.updateLocations(requireContext());
+                mediaList = mediaManager.sort(mediaManager.getMedia(), mediaManager.SORT_BY_DATE, mediaManager.SORT_DESCENDING);
                 adapter.addAll(mediaList);
-                Toast.makeText(getContext(), getString(R.string.info_overview_reload), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.info_overview_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_about:
-                Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                Intent mainAbout = new Intent(requireContext(), AboutActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("caller", "overview");
                 mainAbout.putExtras(bundle);
@@ -212,10 +206,9 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
             default:
-                Toast.makeText(getContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
-        return true;
     }
 
     private void menuRecolor(AppBarLayout appBarLayout, int verticalOffset) {
@@ -223,13 +216,13 @@ public class OverviewFragment extends Fragment implements FragmentCallbacks {
         Menu menu = toolbar.getMenu();
         MenuItem add = menu.findItem(R.id.action_add), search = menu.findItem(R.id.action_search);
         if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            add.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            add.getIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
     }
 

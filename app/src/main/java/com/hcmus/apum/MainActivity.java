@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private static String currentFragment = "overview";
     private static ArrayList<String> overviewData, albumsData, favoriteData,
             newOverviewData, newAlbumsData, newFavoriteData;
+    private static int overviewSort, albumSort, favoriteSort;
     private static AsyncUpdater updater;
 
     @Override
@@ -63,16 +64,15 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavorite(this);
-
-        // Init fragments
-        overview = OverviewFragment.newInstance(mediaManager.sort(mediaManager.getMedia(), "date", false));
-        albums = AlbumsFragment.newInstance(mediaManager.sort(mediaManager.getAlbums(), "name"));
-        faces = FacesFragment.newInstance(mediaManager.sort(mediaManager.getFaces(), "date", false));
-        favorite = FavoriteFragment.newInstance(mediaManager.getFavorite());
-
-        overviewData = mediaManager.sort(mediaManager.getMedia(), "date", false);
-        albumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
-        favoriteData = mediaManager.sort(mediaManager.getFaces(), "date", false);
+            // Sort codes
+        overviewSort = mediaManager.SORT_BY_DATE + mediaManager.SORT_DESCENDING;
+        albumSort = mediaManager.SORT_BY_NAME;
+        favoriteSort = mediaManager.SORT_DEFAULT;
+            // Fragments' mediaList
+        overviewData = mediaManager.sort(mediaManager.getMedia(), overviewSort);
+        albumsData = mediaManager.sort(mediaManager.getAlbums(), albumSort);
+        favoriteData = mediaManager.sort(mediaManager.getFaces(), favoriteSort);
+            // For auto-reloading mediaList
         newOverviewData = overviewData;
         newAlbumsData = albumsData;
         newFavoriteData = favoriteData;
@@ -192,22 +192,30 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     @Override
     public void fragToMain(String caller, Bundle bundle) {
-        // Forward bundle to fragments
-        switch (caller) {
-            case "overview":
-                overview.mainToFrag(bundle);
-                break;
-            case "albums":
-                albums.mainToFrag(bundle);
-                break;
-            case "faces":
-                faces.mainToFrag(bundle);
-                break;
-            case "favorite":
-                favorite.mainToFrag(bundle);
-                break;
-            default:
-                break;
+        // Check action sent
+        if (bundle.getString("action") != null) {
+            if (bundle.getString("action").equals("sort")) {
+                // Forward sort bundle to fragments
+                switch (caller) {
+                    case "overview":
+                        overviewSort = bundle.getInt("sortCode");
+                        overview.mainToFrag(bundle);
+                        break;
+                    case "albums":
+                        albumSort = bundle.getInt("sortCode");
+                        albums.mainToFrag(bundle);
+                        break;
+                    case "faces":
+                        faces.mainToFrag(bundle);
+                        break;
+                    case "favorite":
+                        favoriteSort = bundle.getInt("sortCode");
+                        favorite.mainToFrag(bundle);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
@@ -240,9 +248,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
                     mediaManager.updateFavorite(MainActivity.this);
-                    newOverviewData = mediaManager.sort(mediaManager.getMedia(), "date", false);
-                    newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), "name");
-                    newFavoriteData = mediaManager.getFaces();
+                    newOverviewData = mediaManager.sort(mediaManager.getMedia(), overviewSort);
+                    newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), albumSort);
+                    newFavoriteData = mediaManager.sort(mediaManager.getFavorite(), favoriteSort);
                     switch (currentFragment) {
                         case "overview":
                             if (!newOverviewData.equals(overviewData)) {
@@ -265,8 +273,6 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                             }
                             break;
                     }
-//                    wait(UPDATE_INTERVAL);
-//                    Thread.sleep(UPDATE_INTERVAL);
                 } catch (Exception ignored) {}
             }
         }

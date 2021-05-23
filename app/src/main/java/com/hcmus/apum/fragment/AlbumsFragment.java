@@ -131,7 +131,7 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
                 if (!results.isEmpty()) {
                     showSearch(query, results);
                 } else {
-                    Toast.makeText(getContext(), getContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), requireContext().getText(R.string.err_search_not_found), Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }
@@ -148,7 +148,7 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
         ArrayList<String> container = mediaManager.getAlbumContent(albumPath);
         albumPath = albumPath.substring(albumPath.lastIndexOf("/") + 1);
 
-        Intent mainContent = new Intent(this.getContext(), ContentActivity.class);
+        Intent mainContent = new Intent(requireContext(), ContentActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "albums");
         bundle.putString("host", albumPath);
@@ -158,7 +158,7 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
     }
 
     private void showSearch(String query, ArrayList<String> results) {
-        Intent mainSearch = new Intent(this.getContext(), SearchActivity.class);
+        Intent mainSearch = new Intent(requireContext(), SearchActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("caller", "albums");
         bundle.putString("query", query);
@@ -175,17 +175,17 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
                 searchView.requestFocus();
                 break;
             case R.id.action_sort:
-                mediaManager.sortUI(getContext(), "albums", mediaList);
+                mediaManager.sortUI(requireContext(), "albums", mediaList);
                 break;
             case R.id.action_reload:
-                mediaManager.updateLocations(getContext());
-                mediaList = mediaManager.sort(mediaManager.getAlbums(), "name");
+                mediaManager.updateLocations(requireContext());
+                mediaList = mediaManager.sort(mediaManager.getAlbums(), mediaManager.SORT_BY_NAME);
                 mediaCountList = mediaManager.getAlbumCounts(mediaList);
                 adapter.addAll(mediaList, mediaCountList);
-                Toast.makeText(getContext(), getString(R.string.info_albums_reload), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.info_albums_reload), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_about:
-                Intent mainAbout = new Intent(this.getContext(), AboutActivity.class);
+                Intent mainAbout = new Intent(requireContext(), AboutActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("caller", "albums");
                 mainAbout.putExtras(bundle);
@@ -193,7 +193,7 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
                 startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
                 break;
             default:
-                Toast.makeText(getContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
@@ -204,11 +204,11 @@ public class AlbumsFragment extends Fragment implements FragmentCallbacks {
         Menu menu = toolbar.getMenu();
         MenuItem search = menu.findItem(R.id.action_search);
         if ((collapsingToolbar.getHeight() + verticalOffset) < (collapsingToolbar.getScrimVisibleHeightTrigger())) {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-            search.getIcon().setColorFilter(getContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         } else {
-            toolbar.getOverflowIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
-            search.getIcon().setColorFilter(getContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+            search.getIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
         }
     }
 
