@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
@@ -52,7 +53,7 @@ public class AlbumAdapter extends BaseAdapter {
 
         // Set properties of elements
         visualTitle.setText(path.substring(path.lastIndexOf("/") + 1));
-        visualSubtitle.setText(String.format("%d", mediaCountList.get(pos)));
+        visualSubtitle.setText(String.format(Locale.getDefault(), "%d", mediaCountList.get(pos)));
         Picasso picasso = Picasso.get();
         picasso.setLoggingEnabled(debugEnabled);
         picasso.load(cover)
