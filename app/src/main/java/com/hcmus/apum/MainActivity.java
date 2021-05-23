@@ -36,17 +36,11 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             COPY_CHOOSER_REQUEST_CODE = 77,
             MOVE_CHOOSER_REQUEST_CODE = 37;
 
-    // GUI controls
-    private BottomNavigationView navBar;
-
     // Fragments
     private OverviewFragment overview;
     private AlbumsFragment albums;
     private FacesFragment faces;
     private FavoriteFragment favorite;
-
-    // For use/save state values
-    private Bundle savedInstanceState;
 
     // For threads
     private static String currentFragment = "overview";
@@ -54,12 +48,12 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             newOverviewData, newAlbumsData, newFavoriteData;
     private static int overviewSort, albumSort, favoriteSort;
     private static AsyncUpdater updater;
+    private static boolean OVERRIDE_WAIT = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.savedInstanceState = savedInstanceState;
 
         // Init data
         mediaManager.updateLocations(this);
@@ -92,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         ft_main.commit();
 
         // Init controls
-        navBar = findViewById(R.id.navBar);
+        // GUI controls
+        BottomNavigationView navBar = findViewById(R.id.navBar);
         navBar.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
 
         // Init updater
@@ -118,23 +113,18 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
     private boolean switchFragment(int itemId) {
         FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
-        switch (itemId) {
-            case R.id.action_overview:
-                ft_navBar.replace(R.id.frame, overview);
-                currentFragment = "overview";
-                break;
-            case R.id.action_albums:
-                ft_navBar.replace(R.id.frame, albums);
-                currentFragment = "albums";
-                break;
-            case R.id.action_faces:
-                ft_navBar.replace(R.id.frame, faces);
-                currentFragment = "face";
-                break;
-            case R.id.action_favorite:
-                ft_navBar.replace(R.id.frame, favorite);
-                currentFragment = "favorite";
-                break;
+        if (itemId == R.id.action_overview) {
+            ft_navBar.replace(R.id.frame, overview);
+            currentFragment = "overview";
+        } else if (itemId == R.id.action_albums) {
+            ft_navBar.replace(R.id.frame, albums);
+            currentFragment = "albums";
+        } else if (itemId == R.id.action_faces) {
+            ft_navBar.replace(R.id.frame, faces);
+            currentFragment = "face";
+        } else if (itemId == R.id.action_favorite) {
+            ft_navBar.replace(R.id.frame, favorite);
+            currentFragment = "favorite";
         }
         ft_navBar.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft_navBar.addToBackStack(null);
@@ -152,7 +142,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             Bitmap bitmap = (Bitmap) bundle.get("data");
             try {
                 File file = new File("/storage/emulated/0/DCIM/Camera/" + new Date().toInstant().getEpochSecond() + ".png");
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    throw new Throwable("createNewFile returned false");
+                }
                 // Convert bitmap to bytes
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 0 , outputStream);
@@ -162,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 fos.write(bmpData);
                 fos.flush();
                 fos.close();
-            } catch (Exception ignored) {}
+            } catch (Throwable ignored) {}
             switchFragment(R.id.action_overview);
         } else {
             // When return data exists
@@ -199,22 +191,19 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 switch (caller) {
                     case "overview":
                         overviewSort = bundle.getInt("sortCode");
-                        overview.mainToFrag(bundle);
                         break;
                     case "albums":
                         albumSort = bundle.getInt("sortCode");
-                        albums.mainToFrag(bundle);
-                        break;
-                    case "faces":
-                        faces.mainToFrag(bundle);
                         break;
                     case "favorite":
                         favoriteSort = bundle.getInt("sortCode");
-                        favorite.mainToFrag(bundle);
                         break;
                     default:
                         break;
                 }
+                OVERRIDE_WAIT = true;
+            } else if (bundle.getString("action").equals("reload")) {
+                OVERRIDE_WAIT = true;
             }
         }
     }
@@ -243,7 +232,11 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     // Run every 10 secs
                     long now = new Date().toInstant().getEpochSecond();
                     if (now % UPDATE_INTERVAL != 0) {
-                        continue;
+                        if (!OVERRIDE_WAIT) {
+                            continue;
+                        } else {
+                            OVERRIDE_WAIT = false;
+                        }
                     }
                     Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
@@ -302,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     favorite.mainToFrag(bundle);
                     break;
             }
-            bundle.clear();
+            bundle.remove("mediaList");
         }
 
         @Override

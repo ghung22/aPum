@@ -55,7 +55,7 @@
             <Button android:id="@+id/sort_cancel_btn"
                 android:layout_width="0dip" android:layout_height="wrap_content"
                 android:layout_weight=".5" android:layout_marginHorizontal="40dp"
-                android:text="@string/action_cancel" android:backgroundTint="@color/primary"/>
+                android:text="@string/action_close" android:backgroundTint="@color/primary"/>
             <Button android:id="@+id/sort_sort_btn"
                 android:layout_width="0dip" android:layout_height="wrap_content"
                 android:layout_weight=".5" android:layout_marginHorizontal="40dp"

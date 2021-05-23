@@ -23,6 +23,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.AboutActivity;
 import com.hcmus.apum.FragmentCallbacks;
+import com.hcmus.apum.MainActivity;
 import com.hcmus.apum.R;
 import com.hcmus.apum.component.ContentActivity;
 import com.hcmus.apum.component.PreviewActivity;
@@ -161,42 +162,35 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
 
     protected void menuAction(MenuItem menuItem) {
         Bundle bundle;
-        switch (menuItem.getItemId()) {
-            case R.id.action_add:
-                Intent overviewCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try {
-                    startActivityForResult(overviewCamera, CAMERA_REQUEST_CODE);
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(requireContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.action_regenerate:
-                regenerate();
-                break;
-            case R.id.action_search:
-                searchItem.expandActionView();
-                searchView.requestFocus();
-                break;
-            case R.id.action_sort:
-                mediaManager.sortUI(requireContext(), caller, mediaList);
-                break;
-            case R.id.action_reload:
-                bundle = new Bundle();
-                bundle.putString("caller", caller);
-                bundle.putString("action", "reload");
-                mainToFrag(bundle);
-                break;
-            case R.id.action_about:
-                Intent mainAbout = new Intent(requireContext(), AboutActivity.class);
-                bundle = new Bundle();
-                bundle.putString("caller", caller);
-                mainAbout.putExtras(bundle);
-                mainAbout.setFlags(0);
-                startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
-                break;
-            default:
-                Toast.makeText(requireContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
-                break;
+        int itemId = menuItem.getItemId();
+        if (itemId == R.id.action_add) {
+            Intent overviewCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            try {
+                startActivityForResult(overviewCamera, CAMERA_REQUEST_CODE);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(requireContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
+            }
+        } else if (itemId == R.id.action_regenerate) {
+            regenerate();
+        } else if (itemId == R.id.action_search) {
+            searchItem.expandActionView();
+            searchView.requestFocus();
+        } else if (itemId == R.id.action_sort) {
+            mediaManager.sortUI(requireContext(), caller, mediaList);
+        } else if (itemId == R.id.action_reload) {
+            bundle = new Bundle();
+            bundle.putString("caller", caller);
+            bundle.putString("action", "reload");
+            ((MainActivity) requireContext()).fragToMain(caller, bundle);
+        } else if (itemId == R.id.action_about) {
+            Intent mainAbout = new Intent(requireContext(), AboutActivity.class);
+            bundle = new Bundle();
+            bundle.putString("caller", caller);
+            mainAbout.putExtras(bundle);
+            mainAbout.setFlags(0);
+            startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
+        } else {
+            Toast.makeText(requireContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -219,7 +213,8 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
                     menuItem.getIcon().setColorFilter(requireContext().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
                 }
             }
-        } else if (requireContext().getResources().getConfiguration().uiMode != Configuration.UI_MODE_NIGHT_YES) {
+        } else if ((requireContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                != Configuration.UI_MODE_NIGHT_YES) {
             toolbar.getOverflowIcon().setColorFilter(requireContext().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
             for (MenuItem menuItem : Arrays.asList(add, regenerate, search)) {
                 if (menuItem != null) {

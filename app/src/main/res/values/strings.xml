@@ -46,7 +46,6 @@
 
     <!--  Dialog options  -->
     <string name="action_close">Close</string>
-    <string name="action_cancel">Cancel</string>
 
     <!--  Sort options  -->
     <string name="action_sort_by_name">by Name</string>
@@ -74,9 +73,6 @@
     <string name="info_no_faces">No faces available, generate a new face data?</string>
     <string name="info_faces_processing">Processing images…</string>
     <string name="info_faces_processing_completed">Face data processing completed.</string>
-    <string name="info_overview_reload">Image list reloaded.</string>
-    <string name="info_albums_reload">Album list reloaded.</string>
-    <string name="info_favorite_reload">Favorite list reloaded.</string>
     <string name="info_overview_sort">Image list sorted.</string>
     <string name="info_album_sort">Album list sorted.</string>
     <string name="info_favorite_sort">Favorite list sorted.</string>
