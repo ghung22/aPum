@@ -1,4 +1,4 @@
-package com.hcmus.apum;
+package com.hcmus.apum.tool;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import com.hcmus.apum.R;
 
 import java.util.*;
 
-public class Database extends SQLiteOpenHelper {
+public class DatabaseManager extends SQLiteOpenHelper {
     private static final String TAG = "DATABASE";
 
     // Data
@@ -18,7 +19,7 @@ public class Database extends SQLiteOpenHelper {
             TABLE_FACES = "Faces",
             TABLE_FACES_RECT = "FacesRect";
 
-    public Database(Context context) {
+    public DatabaseManager(Context context) {
         super(context, context.getString(R.string.app_name), null, 1);
         // Context and debugging
     }
