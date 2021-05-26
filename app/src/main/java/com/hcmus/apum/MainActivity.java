@@ -5,13 +5,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hcmus.apum.fragment.*;
+import com.hcmus.apum.fragment.AlbumsFragment;
+import com.hcmus.apum.fragment.BaseFragment;
+import com.hcmus.apum.fragment.FacesFragment;
+import com.hcmus.apum.fragment.FavoriteFragment;
+import com.hcmus.apum.fragment.OverviewFragment;
 import com.hcmus.apum.tool.MediaManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
     // <editor-fold desc="INIT OBJECTS">
@@ -37,9 +46,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     private static final ArrayList<BaseFragment> frags =
             new ArrayList<>(Arrays.asList(new BaseFragment[4]));
     private static final ArrayList<ArrayList<String>> fragData =
-            new ArrayList<>(Arrays.asList(new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>()));
+            new ArrayList<>(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
     private static final ArrayList<ArrayList<String>> fragNewData =
-            new ArrayList<>(Arrays.asList(new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>()));
+            new ArrayList<>(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
     private static final ArrayList<Integer> fragSorts =
             new ArrayList<>(Arrays.asList(new Integer[4]));
 

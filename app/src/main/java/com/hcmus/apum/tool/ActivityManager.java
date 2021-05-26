@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -14,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.common.util.Strings;
 import com.hcmus.apum.AboutActivity;
 import com.hcmus.apum.MainActivity;
@@ -26,7 +28,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.hcmus.apum.MainActivity.*;
+import static com.hcmus.apum.MainActivity.ABOUT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.CAMERA_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.fragNames;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class ActivityManager {
     private final AppCompatActivity activity;

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.hcmus.apum.R;
 import com.squareup.picasso.Picasso;
 
@@ -18,8 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
-import static com.hcmus.apum.MainActivity.mediaManager;
 import static com.hcmus.apum.MainActivity.fragNames;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchAdapter extends BaseAdapter {
     private final Context context;

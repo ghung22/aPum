@@ -7,17 +7,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.SearchAdapter;
 import com.hcmus.apum.tool.ActivityManager;
 
 import java.util.ArrayList;
 
-import static com.hcmus.apum.MainActivity.*;
+import static com.hcmus.apum.MainActivity.SEARCH_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.fragNames;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class SearchActivity extends AppCompatActivity {
     private final Context context = SearchActivity.this;

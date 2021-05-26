@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/action_overview"
-        android:title="@string/fragment_overview"
-        android:icon="@drawable/ic_image"/>
-  <item android:id="@+id/action_albums"
-        android:title="@string/fragment_albums"
-        android:icon="@drawable/ic_album"/>
-  <item android:id="@+id/action_faces"
-        android:title="@string/fragment_faces"
-        android:icon="@drawable/ic_face"/>
-  <item android:id="@+id/action_favorite"
-        android:title="@string/fragment_favorite"
-        android:icon="@drawable/ic_fav"/>
+  <item
+    android:id="@+id/action_overview"
+    android:title="@string/fragment_overview"
+    android:icon="@drawable/ic_image" />
+  <item
+    android:id="@+id/action_albums"
+    android:title="@string/fragment_albums"
+    android:icon="@drawable/ic_album" />
+  <item
+    android:id="@+id/action_faces"
+    android:title="@string/fragment_faces"
+    android:icon="@drawable/ic_face" />
+  <item
+    android:id="@+id/action_favorite"
+    android:title="@string/fragment_favorite"
+    android:icon="@drawable/ic_fav" />
 </menu>

@@ -4,17 +4,27 @@ import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.hcmus.apum.FragmentCallbacks;
@@ -31,7 +41,9 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
     // Layout
     protected int layoutId, menuId;
     protected BaseAdapter adapter;
+    protected AppBarLayout appbar;
     protected CollapsingToolbarLayout collapsingToolbar;
+    protected NestedScrollView scroll;
     protected Toolbar toolbar;
 
     // Data
@@ -42,32 +54,36 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
     protected MenuItem searchItem;
     protected SearchView searchView;
     protected String searchScope;
-    
+
     // Activity switching
     protected ActivityManager activityManager;
 
     /**
      * Create an adapter for parsing content into a layout
      * Some implemented adapters: GridAdapter, AlbumAdapter
+     *
      * @return an adapter extends from BaseAdapter
      */
     public abstract BaseAdapter initAdapter();
 
     /**
      * Get the content layout in this fragment, set its empty view, adapter, and any event if available
+     *
      * @param view the inflated view of this fragment
      */
     public abstract void initContentLayout(View view);
 
     /**
      * Get the toolbar in this fragment, inflate a menu, and set it as a SupportActionBar
+     *
      * @param view the inflated view of this fragment
      */
     public abstract void initToolbar(View view);
 
     /**
      * Replace old content with a new one in the initialized adapter to reflect data changes on the UI
-     * @param mediaList the new content
+     *
+     * @param mediaList      the new content
      * @param mediaCountList item counts of each album (only for AlbumsFragment)
      */
     public abstract void updateAdapter(ArrayList<String> mediaList, @Nullable ArrayList<Integer> mediaCountList);
@@ -94,9 +110,10 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
         }
 
         // Init controls
-        AppBarLayout appbar = view.findViewById(R.id.appbar);
+        appbar = view.findViewById(R.id.appbar);
         appbar.addOnOffsetChangedListener(this::menuRecolor);
         collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
+        scroll = view.findViewById(R.id.scroll);
         adapter = initAdapter();
         initContentLayout(view);
         initToolbar(view);
@@ -271,20 +288,19 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
                     updateAdapter(mediaList, null);
                     break;
                 case "scroll":
-                    boolean test = scroll.postDelayed(() -> {
-//                        scroll.fullScroll(View.FOCUS_UP);
-                        scroll.scrollTo(0,0);
+                    scroll.postDelayed(() -> {
+                        View view = getView();
+                        if (view != null) {
+                            GridView grid = view.findViewById(R.id.grid);
+                            ListView list = view.findViewById(R.id.list);
+                            if (grid != null) {
+                                grid.smoothScrollToPosition(0);
+                            } else if (list != null) {
+                                list.smoothScrollToPosition(0);
+                            }
+                        }
                         appbar.setExpanded(true);
-                    }, 1000);
-//                    contentView.setFocusable(false);
-//                    scroll.getParent().requestChildFocus(scroll, scroll);
-//                    scroll.setFocusableInTouchMode(true);
-//                    scroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
-//                    scroll.fling(-1000);
-//                    scroll.fullScroll(ScrollView.FOCUS_UP);
-//                    scroll.smoothScrollTo(0,0);
-//                    contentView.setFocusable(true);
-//                    contentView.scrollTo(0, 0);
+                    }, 100);
                     break;
                 default:
                     break;

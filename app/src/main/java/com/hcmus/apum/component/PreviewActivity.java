@@ -16,13 +16,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.text.HtmlCompat;
 import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
@@ -40,7 +46,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.hcmus.apum.MainActivity.*;
+import static com.hcmus.apum.MainActivity.COPY_CHOOSER_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.MOVE_CHOOSER_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.PREVIEW_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class PreviewActivity extends AppCompatActivity {
 

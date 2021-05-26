@@ -6,17 +6,21 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.GridView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
 import com.hcmus.apum.tool.ActivityManager;
 
 import java.util.ArrayList;
 
-import static com.hcmus.apum.MainActivity.*;
+import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
+import static com.hcmus.apum.MainActivity.fragNames;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class ContentActivity extends AppCompatActivity {
     private final Context context = ContentActivity.this;
