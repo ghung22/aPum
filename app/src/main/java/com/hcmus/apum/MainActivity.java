@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             new ArrayList<>(
                     Arrays.asList(R.id.action_overview, R.id.action_albums, R.id.action_faces, R.id.action_favorite)
             );
-    private static final HashMap<String, BaseFragment> frags = new HashMap<>();
+    private static final ArrayList<BaseFragment> frags = new ArrayList<>();
 
     // For threads
     private static String currentFragment = fragNames.get(0);
@@ -73,10 +73,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         newFavoriteData = favoriteData;
 
         // Init fragments
-        frags.put(fragNames.get(0), OverviewFragment.newInstance(overviewData));
-        frags.put(fragNames.get(1), AlbumsFragment.newInstance(albumsData));
-        frags.put(fragNames.get(2), FacesFragment.newInstance(overviewData));
-        frags.put(fragNames.get(3), FavoriteFragment.newInstance(favoriteData));
+        frags.add(OverviewFragment.newInstance(overviewData));
+        frags.add(AlbumsFragment.newInstance(albumsData));
+        frags.add(FacesFragment.newInstance(overviewData));
+        frags.add(FavoriteFragment.newInstance(favoriteData));
         switchFragment(fragIds.get(0));
 
         // Init controls
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
         // Switch to fragment or scroll to top
         FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
-        ft_navBar.replace(R.id.frame, Objects.requireNonNull(frags.get(fragNames.get(fragId))));
+        ft_navBar.replace(R.id.frame, Objects.requireNonNull(frags.get(fragId)));
         currentFragment = fragNames.get(fragId);
         ft_navBar.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft_navBar.addToBackStack(null);
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                 favoriteData = newFavoriteData;
                 bundle.putStringArrayList("mediaList", favoriteData);
             }
-            Objects.requireNonNull(frags.get(fragNames.get(fragId))).mainToFrag(bundle);
+            Objects.requireNonNull(frags.get(fragId)).mainToFrag(bundle);
             bundle.remove("mediaList");
         }
 
