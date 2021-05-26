@@ -1,4 +1,4 @@
-package com.hcmus.apum;
+package com.hcmus.apum.tool;
 
 import android.util.Log;
 
@@ -15,6 +15,10 @@ import android.util.Log;
  */
 public final class PathUtils {
     private final static String TAG = "PATH_UTILS";
+
+    private PathUtils() {
+        throw new UnsupportedOperationException();
+    }
 
     public static String fromUri(String uri) {
         Log.i(TAG, "Received path: " + uri);
