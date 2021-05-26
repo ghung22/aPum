@@ -1,93 +1,89 @@
 <resources>
-    <string name="app_name">aPum</string>
-    <string name="app_description">A gallery app for your phone.</string>
-    <string name="app_credits">
-        "Made by: \n
-        18127005 - Trần Thu Hiền \n
-        18127044 - Nguyễn Gia Hưng \n
-        18127073 - Phan Quang Đại"
-    </string>
-    <string name="app_receiver">com.hcmus.apum.RECEIVE_BROADCAST</string>
+  <string name="app_name">aPum</string>
+  <string name="app_description">A gallery app for your phone.</string>
+  <string name="app_credits">
+    "Made by: \n
+    18127005 - Trần Thu Hiền \n
+    18127044 - Nguyễn Gia Hưng \n
+    18127073 - Phan Quang Đại"
+  </string>
+  <string name="app_receiver">com.hcmus.apum.RECEIVE_BROADCAST</string>
 
-    <!--  Main top bar  -->
-    <string name="action_add">Add</string>
-    <string name="action_search">Search</string>
+  <!--  Main top bar  -->
+  <string name="action_add">Add</string>
+  <string name="action_search">Search</string>
 
-    <!--  Main bottom bar  -->
-    <string name="fragment_overview">Overview</string>
-    <string name="fragment_albums">Albums</string>
-    <string name="fragment_faces">Faces</string>
-    <string name="fragment_favorite">Favorite</string>
+  <!--  Main bottom bar  -->
+  <string name="fragment_overview">Overview</string>
+  <string name="fragment_albums">Albums</string>
+  <string name="fragment_faces">Faces</string>
+  <string name="fragment_favorite">Favorite</string>
 
-    <!--  Main options  -->
-    <string name="action_select">Select items</string>
-    <string name="action_zoom">Zoom</string>
-    <string name="action_sort">Sort</string>
-    <string name="action_reload">Reload</string>
-    <string name="action_trash">Trash</string>
-    <string name="action_vault">Vault</string>
-    <string name="action_settings">Settings</string>
-    <string name="action_test">Test</string>
-    <string name="action_about">About aPum</string>
+  <!--  Main options  -->
+  <string name="action_select">Select items</string>
+  <string name="action_zoom">Zoom</string>
+  <string name="action_sort">Sort</string>
+  <string name="action_reload">Reload</string>
+  <string name="action_trash">Trash</string>
+  <string name="action_vault">Vault</string>
+  <string name="action_settings">Settings</string>
+  <string name="action_test">Test</string>
+  <string name="action_about">About aPum</string>
 
-    <!--  Faces options  -->
-    <string name="action_generate">Generate</string>
-    <string name="action_ignore">Ignored faces</string>
-    <string name="action_regenerate">Regenerate face data</string>
+  <!--  Faces options  -->
+  <string name="action_generate">Generate</string>
+  <string name="action_ignore">Ignored faces</string>
+  <string name="action_regenerate">Regenerate face data</string>
 
-    <!--  Preview options  -->
-    <string name="action_copy">Copy to…</string>
-    <string name="action_move">Move to…</string>
-    <string name="action_wallpaper">Set as wallpaper</string>
-    <string name="action_info">Information</string>
-    <string name="action_edit">Edit</string>
-    <string name="action_share">Share</string>
-    <string name="action_delete">Delete</string>
+  <!--  Preview options  -->
+  <string name="action_copy">Copy to…</string>
+  <string name="action_move">Move to…</string>
+  <string name="action_wallpaper">Set as wallpaper</string>
+  <string name="action_info">Information</string>
+  <string name="action_edit">Edit</string>
+  <string name="action_share">Share</string>
+  <string name="action_delete">Delete</string>
 
-    <!--  Dialog options  -->
-    <string name="action_close">Close</string>
+  <!--  Dialog options  -->
+  <string name="action_close">Close</string>
 
-    <!--  Sort options  -->
-    <string name="action_sort_by_name">by Name</string>
-    <string name="action_sort_by_date">by Date</string>
-    <string name="action_sort_ascending">Ascending</string>
-    <string name="action_sort_descending">Descending</string>
+  <!--  Sort options  -->
+  <string name="action_sort_by_name">by Name</string>
+  <string name="action_sort_by_date">by Date</string>
+  <string name="action_sort_ascending">Ascending</string>
+  <string name="action_sort_descending">Descending</string>
 
-    <!--  Placeholder text  -->
-    <string name="placeholder_album_name">Null album</string>
-    <string name="placeholder_album_count">13</string>
-    <string name="placeholder_search_result">Null result</string>
-    <string name="placeholder_search_location">Null album</string>
-    <string name="placeholder_info_err">Error message</string>
-    <string name="placeholder_info_filename">File name.png
-        <i>(20KB)</i>
-    </string>
-    <string name="placeholder_info_fileLocation">/path/to/file</string>
-    <string name="placeholder_info_fileSize">(0KB)</string>
-    <string name="placeholder_info_imageSize">720x1080</string>
-    <string name="placeholder_info_camera">Taken with <b>Device Name</b> by
-        <b>Artist</b>
-    </string>
-    <string name="placeholder_info_map">Ho Chi Minh City, Vietnam</string>
+  <!--  Placeholder text  -->
+  <string name="placeholder_album_name">Null album</string>
+  <string name="placeholder_album_count">13</string>
+  <string name="placeholder_search_result">Null result</string>
+  <string name="placeholder_search_location">Null album</string>
+  <string name="placeholder_info_err">Error message</string>
+  <string name="placeholder_info_filename">File name.png
+    <i>(20KB)</i>
+  </string>
+  <string name="placeholder_info_fileLocation">/path/to/file</string>
+  <string name="placeholder_info_fileSize">(0KB)</string>
+  <string name="placeholder_info_imageSize">720x1080</string>
+  <string name="placeholder_info_camera">Taken with <b>Device Name</b> by
+    <b>Artist</b>
+  </string>
+  <string name="placeholder_info_map">Ho Chi Minh City, Vietnam</string>
 
-    <!--  Info text  -->
-    <string name="info_no_media">No media</string>
-    <string name="info_search_hint">Enter anything…</string>
-    <string name="info_unknown_location">Unknown location</string>
-    <string name="info_no_faces">No faces available, generate a new face data?
-    </string>
-    <string name="info_faces_processing">Processing images…</string>
-    <string name="info_faces_processing_completed">Face data processing
-        completed.
-    </string>
-    <string name="info_overview_sort">Image list sorted.</string>
-    <string name="info_album_sort">Album list sorted.</string>
-    <string name="info_favorite_sort">Favorite list sorted.</string>
-    <string name="info_sort_method">Sort method:</string>
-    <string name="info_sort_order">Sort order:</string>
+  <!--  Info text  -->
+  <string name="info_permission_status">Storage permission %s.</string>
+  <string name="info_no_media">No media</string>
+  <string name="info_search_hint">Enter anything…</string>
+  <string name="info_unknown_location">Unknown location</string>
+  <string name="info_no_faces">No faces available, generate a new face data?</string>
+  <string name="info_faces_processing">Processing images…</string>
+  <string name="info_faces_processing_completed">Face data processing completed.</string>
+  <string name="info_reload">Reloaded data in %s.</string>
+  <string name="info_sort">Sorted data in %s.</string>
+  <string name="info_sort_method">Sort method:</string>
+  <string name="info_sort_order">Sort order:</string>
 
-    <!--  Error text  -->
-    <string name="err_generic">(!) A problem occurred.</string>
-    <string name="err_camera">(!) Problem opening the camera.</string>
-    <string name="err_search_not_found">(!) No item found.</string>
+  <!--  Error text  -->
+  <string name="err_generic">(!) A problem occurred.</string>
+  <string name="err_search_not_found">(!) No item found.</string>
 </resources>

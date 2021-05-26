@@ -5,43 +5,43 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:background="@color/black">
-    <androidx.appcompat.widget.Toolbar android:id="@+id/menu_preview"
+  <androidx.appcompat.widget.Toolbar android:id="@+id/menu_preview"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="?attr/actionBarSize"
+                                     android:layout_alignParentTop="true"
+                                     android:background="@color/transparent_black"
+                                     android:elevation="4dp"
+                                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                                     android:popupTheme="?popupTheme"/>
+
+  <androidx.viewpager.widget.ViewPager android:id="@+id/img_preview"
                                        android:layout_width="match_parent"
-                                       android:layout_height="?attr/actionBarSize"
-                                       android:layout_alignParentTop="true"
-                                       android:background="@color/transparent_black"
-                                       android:elevation="4dp"
-                                       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                                       android:popupTheme="?popupTheme"/>
+                                       android:layout_height="match_parent"
+                                       android:layout_gravity="center|fill"/>
 
-    <androidx.viewpager.widget.ViewPager android:id="@+id/img_preview"
-                                         android:layout_width="match_parent"
-                                         android:layout_height="match_parent"
-                                         android:layout_gravity="center|fill"/>
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+  <androidx.coordinatorlayout.widget.CoordinatorLayout
+          android:layout_width="match_parent"
+          android:layout_height="?actionBarSize"
+          android:layout_alignParentBottom="true">
+    <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar_preview"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:layout_alignParentBottom="true">
-        <com.google.android.material.bottomappbar.BottomAppBar
-                android:id="@+id/bottomAppBar_preview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom"
-                android:backgroundTint="@color/transparent_black"
-                app:fabAlignmentMode="center"
-                app:contentInsetLeft="0dp" app:contentInsetRight="0dp"
-                app:contentInsetStart="0dp" app:contentInsetEnd="0dp">
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/bottomBar_preview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    app:elevation="0dp"
-                    app:menu="@menu/menu_bottom_preview"
-                    app:labelVisibilityMode="unlabeled"
-                    app:itemIconTint="@color/white"/>
-        </com.google.android.material.bottomappbar.BottomAppBar>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/transparent_black"
+            app:fabAlignmentMode="center"
+            app:contentInsetLeft="0dp" app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp" app:contentInsetEnd="0dp">
+      <com.google.android.material.bottomnavigation.BottomNavigationView
+              android:id="@+id/bottomBar_preview"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/transparent"
+              app:elevation="0dp"
+              app:menu="@menu/menu_bottom_preview"
+              app:labelVisibilityMode="unlabeled"
+              app:itemIconTint="@color/white"/>
+    </com.google.android.material.bottomappbar.BottomAppBar>
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </RelativeLayout>

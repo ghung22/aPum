@@ -5,20 +5,20 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               tools:context=".component.SearchActivity">
-    <androidx.appcompat.widget.Toolbar android:id="@+id/menu_search"
-                                       android:layout_width="match_parent"
-                                       android:layout_height="?attr/actionBarSize"
-                                       android:elevation="4dp"
-                                       android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                                       android:popupTheme="?popupTheme"/>
+  <androidx.appcompat.widget.Toolbar android:id="@+id/menu_search"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="?attr/actionBarSize"
+                                     android:elevation="4dp"
+                                     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                                     android:popupTheme="?popupTheme"/>
 
-    <ListView android:id="@+id/results"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"/>
-    <TextView android:id="@+id/no_media" android:visibility="gone"
-              android:alpha="0.5"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text="@string/info_no_media"
-              android:textAlignment="center" android:textSize="10pt"/>
+  <ListView android:id="@+id/results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+  <TextView android:id="@+id/no_media" android:visibility="gone"
+            android:alpha="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/info_no_media"
+            android:textAlignment="center" android:textSize="10pt"/>
 </LinearLayout>

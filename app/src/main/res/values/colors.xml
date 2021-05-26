@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF00B294</color>
-    <color name="primary_variant">#FF00B294</color>
-    <color name="secondary">#FF5AA6C7</color>
-    <color name="black">#FF000000</color>
-    <color name="transparent_black">#80000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="red">#FF0000</color>
+  <color name="primary">#FF00B294</color>
+  <color name="primary_variant">#FF00B294</color>
+  <color name="secondary">#FF5AA6C7</color>
+  <color name="black">#FF000000</color>
+  <color name="transparent_black">#80000000</color>
+  <color name="white">#FFFFFFFF</color>
+  <color name="red">#FF0000</color>
 </resources>

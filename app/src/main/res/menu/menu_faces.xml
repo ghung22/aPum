@@ -4,43 +4,43 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item android:id="@+id/action_regenerate"
-          android:icon="@drawable/ic_refresh"
-          android:title="@string/action_regenerate"
+  <item android:id="@+id/action_regenerate"
+        android:icon="@drawable/ic_refresh"
+        android:title="@string/action_regenerate"
+        app:showAsAction="always|collapseActionView"
+        tools:ignore="AppCompatResource"/>
+  <item
+          android:id="@+id/action_search"
+          android:icon="@drawable/ic_search"
+          android:title="@string/action_search"
           app:showAsAction="always|collapseActionView"
-          tools:ignore="AppCompatResource"/>
-    <item
-            android:id="@+id/action_search"
-            android:icon="@drawable/ic_search"
-            android:title="@string/action_search"
-            app:showAsAction="always|collapseActionView"
-            tools:ignore="AppCompatResource"
-            app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+          tools:ignore="AppCompatResource"
+          app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 
-    <!--    <item android:id="@+id/action_select"-->
-    <!--        android:title="@string/action_select"-->
-    <!--        app:showAsAction="never"-->
-    <!--        tools:ignore="AppCompatResource"/>-->
-    <!--    <item android:id="@+id/action_zoom"-->
-    <!--        android:title="@string/action_zoom"-->
-    <!--        app:showAsAction="never"-->
-    <!--        tools:ignore="AppCompatResource"/>-->
-    <item android:id="@+id/action_sort"
-          android:title="@string/action_sort"
-          app:showAsAction="never"
-          tools:ignore="AppCompatResource"/>
-    <!--    <item android:id="@+id/action_ignore"-->
-    <!--        android:title="@string/action_ignore"-->
-    <!--        app:showAsAction="never"-->
-    <!--        tools:ignore="AppCompatResource"/>-->
+  <!--    <item android:id="@+id/action_select"-->
+  <!--        android:title="@string/action_select"-->
+  <!--        app:showAsAction="never"-->
+  <!--        tools:ignore="AppCompatResource"/>-->
+  <!--    <item android:id="@+id/action_zoom"-->
+  <!--        android:title="@string/action_zoom"-->
+  <!--        app:showAsAction="never"-->
+  <!--        tools:ignore="AppCompatResource"/>-->
+  <item android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
+  <!--    <item android:id="@+id/action_ignore"-->
+  <!--        android:title="@string/action_ignore"-->
+  <!--        app:showAsAction="never"-->
+  <!--        tools:ignore="AppCompatResource"/>-->
 
-    <!--    <item android:id="@+id/action_settings"-->
-    <!--        android:title="@string/action_settings"-->
-    <!--        app:showAsAction="never"-->
-    <!--        tools:ignore="AppCompatResource"/>-->
-    <item android:id="@+id/action_about"
-          android:title="@string/action_about"
-          app:showAsAction="never"
-          tools:ignore="AppCompatResource"/>
+  <!--    <item android:id="@+id/action_settings"-->
+  <!--        android:title="@string/action_settings"-->
+  <!--        app:showAsAction="never"-->
+  <!--        tools:ignore="AppCompatResource"/>-->
+  <item android:id="@+id/action_about"
+        android:title="@string/action_about"
+        app:showAsAction="never"
+        tools:ignore="AppCompatResource"/>
 
 </menu>
