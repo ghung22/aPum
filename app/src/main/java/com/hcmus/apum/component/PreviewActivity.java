@@ -5,14 +5,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -34,9 +31,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hcmus.apum.PathUtils;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.PreviewAdapter;
+import com.hcmus.apum.tool.PathUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,7 +73,7 @@ public class PreviewActivity extends AppCompatActivity {
         if (action == null) {
             // Preview opened from aPum
             bundle = mainPreview.getExtras();
-            mediaList = bundle.getStringArrayList("thumbnails");
+            mediaList = bundle.getStringArrayList("mediaList");
             pos = bundle.getInt("position");
 
             // Set values to return
@@ -366,17 +363,7 @@ public class PreviewActivity extends AppCompatActivity {
         return true;
     }
 
-    public void callBroadCast() {
-        MediaScannerConnection.scanFile(this, new String[]{Environment.getExternalStorageDirectory().toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
-            public void onScanCompleted(String path, Uri uri) {
-                Log.e("ExternalStorage", "Scanned " + path + ":");
-                Log.e("ExternalStorage", "-> uri=" + uri);
-            }
-        });
-    }
-
     @Override
-
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 

@@ -1,16 +1,17 @@
 package com.hcmus.apum.fragment;
 
 import android.os.Bundle;
-import android.view.*;
+import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.appbar.AppBarLayout;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.AlbumAdapter;
 
 import java.util.ArrayList;
 
+import static com.hcmus.apum.MainActivity.fragNames;
 import static com.hcmus.apum.MainActivity.mediaManager;
 
 public class AlbumsFragment extends BaseFragment {
@@ -28,42 +29,34 @@ public class AlbumsFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        caller = fragNames.get(1);
+        searchScope = fragNames.get(1);
+        layoutId = R.layout.fragment_albums;
+        menuId = R.menu.menu_albums;
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_albums, container, false);
-
-        // Init data
-        if (getArguments() != null) {
-            mediaList = getArguments().getStringArrayList("mediaList");
-        }
-        // Data
+    public BaseAdapter initAdapter() {
         ArrayList<Integer> mediaCountList = mediaManager.getAlbumCounts(mediaList);
-        caller = "albums";
-        searchScope = "albums";
+        return new AlbumAdapter(requireContext(), mediaList, mediaCountList);
+    }
 
-        // Init controls
-        // GUI controls
-        AppBarLayout appbar = view.findViewById(R.id.appbar);
-        appbar.addOnOffsetChangedListener(this::menuRecolor);
-        collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
-        adapter = new AlbumAdapter(getActivity(), mediaList, mediaCountList);
+    @Override
+    public void initContentLayout(View view) {
         ListView list = view.findViewById(R.id.list);
         list.setEmptyView(view.findViewById(R.id.no_media));
         list.setAdapter(adapter);
         list.setOnItemClickListener(this::showContent);
-        // Init actionbar buttons
+    }
+
+    @Override
+    public void initToolbar(View view) {
         toolbar = view.findViewById(R.id.menu_main);
         toolbar.inflateMenu(R.menu.menu_albums);
         toolbar.setOnMenuItemClickListener(this::menuActionBool);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
-
-        return view;
     }
 
     @Override
@@ -72,11 +65,6 @@ public class AlbumsFragment extends BaseFragment {
             return;
         }
         ((AlbumAdapter) adapter).addAll(mediaList, mediaCountList);
-    }
-
-    @Override
-    public void inflateOptionMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_albums, menu);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.hcmus.apum;
+package com.hcmus.apum.tool;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,6 +25,8 @@ import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
+import com.hcmus.apum.MainActivity;
+import com.hcmus.apum.R;
 import com.hcmus.apum.component.LayoutDialog;
 import com.hcmus.apum.fragment.FacesFragment;
 
@@ -38,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
+import static com.hcmus.apum.MainActivity.fragNames;
 
 public class MediaManager {
     // Debugging
@@ -65,7 +68,7 @@ public class MediaManager {
             SORT_DESCENDING = 1;
 
     // Global agent
-    private Database database;
+    private DatabaseManager databaseManager;
     private AsyncFacesUpdater faceUpdater;
 
     public void updateLocations(Context context) {
@@ -99,10 +102,10 @@ public class MediaManager {
     }
 
     public void updateFavorite(Context context) {
-        if (database == null) {
-            database = new Database(context);
+        if (databaseManager == null) {
+            databaseManager = new DatabaseManager(context);
         }
-        favorites = database.getFavorite();
+        favorites = databaseManager.getFavorite();
     }
 
     public void updateFaces(Context context, FacesFragment fragment) {
@@ -127,12 +130,12 @@ public class MediaManager {
         if (!favorites.contains(media)) {
             HashMap<String, String> map = new HashMap<>();
             map.put("string", media);
-            if (database.insert(map, Database.TABLE_FAVORITE)) {
+            if (databaseManager.insert(map, DatabaseManager.TABLE_FAVORITE)) {
                 favorites.add(0, media);
                 return true;
             }
         } else {
-            if (database.delete(media, Database.TABLE_FAVORITE)) {
+            if (databaseManager.delete(media, DatabaseManager.TABLE_FAVORITE)) {
                 favorites.remove(media);
                 return true;
             }
@@ -394,22 +397,16 @@ public class MediaManager {
     public ArrayList<String> search(String query, String scope) {
         ArrayList<String> results = new ArrayList<>(),
                 scopedList;
-        switch (scope) {
-            case "overview":
-                scopedList = media;
-                break;
-            case "albums":
-                scopedList = albums;
-                break;
-            case "faces":
-                // scopedList = faces;
-                scopedList = faces;
-                break;
-            case "favorite":
-                scopedList = favorites;
-                break;
-            default:
-                return results;
+        if (fragNames.get(0).equals(scope)) {
+            scopedList = media;
+        } else if (fragNames.get(1).equals(scope)) {
+            scopedList = albums;
+        } else if (fragNames.get(2).equals(scope)) {
+            scopedList = faces;
+        } else if (fragNames.get(3).equals(scope)) {
+            scopedList = favorites;
+        } else {
+            return results;
         }
         query = query.toLowerCase();
         for (String i : scopedList) {
@@ -422,7 +419,7 @@ public class MediaManager {
             }
 
             // Search by album names
-            if (scope.equals("overview")) {
+            if (scope.equals(fragNames.get(0))) {
                 String dir = i_lower.substring(0, i.lastIndexOf("/"));
                 if (dir.substring(dir.lastIndexOf("/") + 1).contains(query)) {
                     if (!results.contains(i)) {
@@ -621,6 +618,28 @@ public class MediaManager {
         mediaShare.setType("image/*");
         mediaShare.putExtra(Intent.EXTRA_STREAM, uri);
         context.startActivity(mediaShare);
+    }
+
+    public void saveCaptured(Context context, Bitmap bitmap) {
+        try {
+            String path = "/storage/emulated/0/DCIM/aPum/" + new Date().toInstant().getEpochSecond() + ".png";
+            File file = new File(path);
+            if (!file.createNewFile()) {
+                throw new Throwable("createNewFile returned false");
+            }
+            // Convert bitmap to bytes
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            byte[] bmpData = outputStream.toByteArray();
+            // Write bytes
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bmpData);
+            fos.flush();
+            fos.close();
+            refresh(context, path);
+        } catch (Throwable e) {
+            Log.e(TAG, "saveCaptured failed with message: " + e.getMessage());
+        }
     }
 
     @SuppressLint("StaticFieldLeak")

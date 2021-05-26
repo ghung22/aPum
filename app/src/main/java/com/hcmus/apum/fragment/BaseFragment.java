@@ -1,16 +1,10 @@
 package com.hcmus.apum.fragment;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -19,24 +13,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.hcmus.apum.AboutActivity;
 import com.hcmus.apum.FragmentCallbacks;
 import com.hcmus.apum.MainActivity;
 import com.hcmus.apum.R;
-import com.hcmus.apum.component.ContentActivity;
-import com.hcmus.apum.component.PreviewActivity;
-import com.hcmus.apum.component.SearchActivity;
+import com.hcmus.apum.tool.ActivityManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.hcmus.apum.MainActivity.*;
+import static com.hcmus.apum.MainActivity.mediaManager;
 
 public abstract class BaseFragment extends Fragment implements FragmentCallbacks {
     // Layout
+    protected int layoutId, menuId;
     protected BaseAdapter adapter;
     protected CollapsingToolbarLayout collapsingToolbar;
     protected Toolbar toolbar;
@@ -49,13 +42,66 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
     protected MenuItem searchItem;
     protected SearchView searchView;
     protected String searchScope;
+    
+    // Activity switching
+    protected ActivityManager activityManager;
 
+    /**
+     * Create an adapter for parsing content into a layout
+     * Some implemented adapters: GridAdapter, AlbumAdapter
+     * @return an adapter extends from BaseAdapter
+     */
+    public abstract BaseAdapter initAdapter();
+
+    /**
+     * Get the content layout in this fragment, set its empty view, adapter, and any event if available
+     * @param view the inflated view of this fragment
+     */
+    public abstract void initContentLayout(View view);
+
+    /**
+     * Get the toolbar in this fragment, inflate a menu, and set it as a SupportActionBar
+     * @param view the inflated view of this fragment
+     */
+    public abstract void initToolbar(View view);
+
+    /**
+     * Replace old content with a new one in the initialized adapter to reflect data changes on the UI
+     * @param mediaList the new content
+     * @param mediaCountList item counts of each album (only for AlbumsFragment)
+     */
     public abstract void updateAdapter(ArrayList<String> mediaList, @Nullable ArrayList<Integer> mediaCountList);
-
-    public abstract void inflateOptionMenu(Menu menu, MenuInflater inflater);
 
     protected ArrayList<String> getContent() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        activityManager = new ActivityManager(this, caller);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(layoutId, container, false);
+        ViewCompat.requestApplyInsets(view);
+
+        // Init data
+        if (getArguments() != null) {
+            mediaList = getArguments().getStringArrayList("mediaList");
+        }
+
+        // Init controls
+        AppBarLayout appbar = view.findViewById(R.id.appbar);
+        appbar.addOnOffsetChangedListener(this::menuRecolor);
+        collapsingToolbar = view.findViewById(R.id.collapsingToolbar);
+        adapter = initAdapter();
+        initContentLayout(view);
+        initToolbar(view);
+
+        return view;
     }
 
     @Override
@@ -68,7 +114,7 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflateOptionMenu(menu, inflater);
+        inflater.inflate(menuId, menu);
 
         // Get controls
         searchItem = menu.findItem(R.id.action_search);
@@ -128,51 +174,26 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
         return true;
     }
 
+    @SuppressWarnings("unused")
     protected void showContent(AdapterView<?> parent, View view, int pos, long id) {
         selectedOption = mediaList.get(pos);
         ArrayList<String> container = getContent();
         selectedOption = selectedOption.substring(selectedOption.lastIndexOf("/") + 1);
-
-        Intent mainContent = new Intent(requireContext(), ContentActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("caller", caller);
-        bundle.putString("host", selectedOption);
-        bundle.putStringArrayList("container", container);
-        mainContent.putExtras(bundle);
-        startActivityForResult(mainContent, CONTENT_REQUEST_CODE);
+        activityManager.showContent(selectedOption, container);
     }
 
     protected void showPreview(int pos) {
-        Intent mainPreview = new Intent(requireContext(), PreviewActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("caller", caller);
-        bundle.putStringArrayList("thumbnails", mediaList);
-        bundle.putInt("position", pos);
-        mainPreview.putExtras(bundle);
-        startActivityForResult(mainPreview, PREVIEW_REQUEST_CODE);
+        activityManager.showPreview(mediaList, pos);
     }
 
     protected void showSearch(String query, ArrayList<String> results) {
-        Intent mainSearch = new Intent(requireContext(), SearchActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("caller", caller);
-        bundle.putString("query", query);
-        bundle.putStringArrayList("results", results);
-        bundle.putString("scope", searchScope);
-        mainSearch.putExtras(bundle);
-        startActivityForResult(mainSearch, SEARCH_REQUEST_CODE);
+        activityManager.showSearch(query, searchScope, results);
     }
 
     protected void menuAction(MenuItem menuItem) {
-        Bundle bundle;
         int itemId = menuItem.getItemId();
         if (itemId == R.id.action_add) {
-            Intent overviewCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            try {
-                startActivityForResult(overviewCamera, CAMERA_REQUEST_CODE);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(requireContext(), getString(R.string.err_camera), Toast.LENGTH_LONG).show();
-            }
+            activityManager.showCamera();
         } else if (itemId == R.id.action_regenerate) {
             regenerate();
         } else if (itemId == R.id.action_search) {
@@ -181,24 +202,23 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
         } else if (itemId == R.id.action_sort) {
             mediaManager.sortUI(requireContext(), caller, mediaList);
         } else if (itemId == R.id.action_reload) {
-            bundle = new Bundle();
+            Bundle bundle = new Bundle();
             bundle.putString("caller", caller);
             bundle.putString("action", "reload");
             ((MainActivity) requireContext()).fragToMain(caller, bundle);
         } else if (itemId == R.id.action_about) {
-            Intent mainAbout = new Intent(requireContext(), AboutActivity.class);
-            bundle = new Bundle();
-            bundle.putString("caller", caller);
-            mainAbout.putExtras(bundle);
-            mainAbout.setFlags(0);
-            startActivityForResult(mainAbout, ABOUT_REQUEST_CODE);
+            activityManager.showAbout();
         } else {
             Toast.makeText(requireContext(), menuItem.getTitle(), Toast.LENGTH_SHORT).show();
         }
     }
 
     protected boolean menuActionBool(MenuItem menuItem) {
-        menuAction(menuItem);
+        try {
+            menuAction(menuItem);
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 
@@ -233,6 +253,9 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
         }
     }
 
+    /**
+     * Create a new face data (only for FaceFragment)
+     */
     protected void regenerate() {
         mediaManager.updateFaces(requireContext(), (FacesFragment) this);
     }

@@ -1,6 +1,5 @@
 package com.hcmus.apum.component;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -13,27 +12,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.hcmus.apum.R;
 import com.hcmus.apum.adapter.GridAdapter;
+import com.hcmus.apum.tool.ActivityManager;
 
 import java.util.ArrayList;
 
-import static com.hcmus.apum.MainActivity.CONTENT_REQUEST_CODE;
-import static com.hcmus.apum.MainActivity.mediaManager;
+import static com.hcmus.apum.MainActivity.*;
 
 public class ContentActivity extends AppCompatActivity {
     private final Context context = ContentActivity.this;
 
-    // GUI Controls
-    private Toolbar toolbar;
-    private GridView content;
-    private GridAdapter adapter;
-
-    // Content
-    private String caller;
-    private String host;
     private ArrayList<String> container;
 
     // Caller-dependant data
     private ArrayList<Rect> boundingBoxes = null;
+
+    // Activity switching
+    protected ActivityManager activityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +37,12 @@ public class ContentActivity extends AppCompatActivity {
         // Get values from bundle
         Intent mainContent = getIntent();
         Bundle bundle = mainContent.getExtras();
-        caller = bundle.getString("caller");
-        host = bundle.getString("host");
+        String caller = bundle.getString("caller");
+        String host = bundle.getString("host");
         container = bundle.getStringArrayList("container");
-        if (caller.equals("albums")) {
+        if (caller.equals(fragNames.get(1))) {
             container = mediaManager.sort(container, mediaManager.SORT_BY_DATE, mediaManager.SORT_DESCENDING);
-        } else if (caller.equals("faces")) {
+        } else if (caller.equals(fragNames.get(2))) {
             // Convert Strings into Rect objects
             boundingBoxes = mediaManager.getFaceRect(container);
             // Create a list of image path (host) duplicates
@@ -60,8 +54,12 @@ public class ContentActivity extends AppCompatActivity {
             host = host.substring(host.lastIndexOf("/") + 1);
         }
 
+        // Activity handler
+        activityManager = new ActivityManager(this, "content");
+        activityManager.setResult(bundle.getString("caller"));
+
         // Update controls
-        toolbar = findViewById(R.id.menu_content);
+        Toolbar toolbar = findViewById(R.id.menu_content);
         toolbar.inflateMenu(R.menu.menu_overview);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -72,38 +70,22 @@ public class ContentActivity extends AppCompatActivity {
         }
 
         // Update content
-        adapter = new GridAdapter(context, container, boundingBoxes);
-        content = findViewById(R.id.content);
+        GridAdapter adapter = new GridAdapter(context, container, boundingBoxes);
+        GridView content = findViewById(R.id.content);
         content.setEmptyView(findViewById(R.id.no_media));
         content.setAdapter(adapter);
-        content.setOnItemClickListener((adapterView, view, i, l) -> showPreview(i));
-
-        // Set values to return
-        Intent contentMain = new Intent();
-        Bundle returnBundle = new Bundle();
-        returnBundle.putString("caller", caller);
-        contentMain.putExtras(returnBundle);
-        setResult(Activity.RESULT_OK, contentMain);
+        content.setOnItemClickListener(
+                (adapterView, view, i, l) -> activityManager.showPreview(container, i)
+        );
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
         return true;
-    }
-
-    private void showPreview(int pos) {
-        Intent contentPreview = new Intent(context, PreviewActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putStringArrayList("thumbnails", container);
-        bundle.putInt("position", pos);
-        contentPreview.putExtras(bundle);
-        startActivityForResult(contentPreview, 97);
     }
 
     @Override
