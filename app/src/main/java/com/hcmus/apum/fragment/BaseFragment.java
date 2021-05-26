@@ -270,6 +270,22 @@ public abstract class BaseFragment extends Fragment implements FragmentCallbacks
                     mediaList = bundle.getStringArrayList("mediaList");
                     updateAdapter(mediaList, null);
                     break;
+                case "scroll":
+                    boolean test = scroll.postDelayed(() -> {
+//                        scroll.fullScroll(View.FOCUS_UP);
+                        scroll.scrollTo(0,0);
+                        appbar.setExpanded(true);
+                    }, 1000);
+//                    contentView.setFocusable(false);
+//                    scroll.getParent().requestChildFocus(scroll, scroll);
+//                    scroll.setFocusableInTouchMode(true);
+//                    scroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+//                    scroll.fling(-1000);
+//                    scroll.fullScroll(ScrollView.FOCUS_UP);
+//                    scroll.smoothScrollTo(0,0);
+//                    contentView.setFocusable(true);
+//                    contentView.scrollTo(0, 0);
+                    break;
                 default:
                     break;
             }

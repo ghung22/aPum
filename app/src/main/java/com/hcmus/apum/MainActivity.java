@@ -136,7 +136,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     }
 
     private void scrollToTop(int itemId) {
-        // TODO: Scroll to top or reload based on scroll value
+        Bundle bundle = new Bundle();
+        bundle.putString("action", "scroll");
+        frags.get(fragIds.indexOf(itemId)).mainToFrag(bundle);
     }
 
     private void manualReload() {
