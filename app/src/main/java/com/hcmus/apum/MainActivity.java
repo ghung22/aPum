@@ -1,24 +1,17 @@
 package com.hcmus.apum;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.hcmus.apum.fragment.AlbumsFragment;
-import com.hcmus.apum.fragment.FacesFragment;
-import com.hcmus.apum.fragment.FavoriteFragment;
-import com.hcmus.apum.fragment.OverviewFragment;
+import com.hcmus.apum.fragment.*;
+import com.hcmus.apum.tool.MediaManager;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
 
@@ -37,18 +30,26 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             MOVE_CHOOSER_REQUEST_CODE = 37;
 
     // Fragments
-    private OverviewFragment overview;
-    private AlbumsFragment albums;
-    private FacesFragment faces;
-    private FavoriteFragment favorite;
+    public static final ArrayList<String> fragNames =
+            new ArrayList<>(
+                    Arrays.asList("overview", "albums", "faces", "favorite")
+            );
+    public static final ArrayList<Integer> fragIds =
+            new ArrayList<>(
+                    Arrays.asList(R.id.action_overview, R.id.action_albums, R.id.action_faces, R.id.action_favorite)
+            );
+    private static final HashMap<String, BaseFragment> frags = new HashMap<>();
 
     // For threads
-    private static String currentFragment = "overview";
+    private static String currentFragment = fragNames.get(0);
     private static ArrayList<String> overviewData, albumsData, favoriteData,
             newOverviewData, newAlbumsData, newFavoriteData;
     private static int overviewSort, albumSort, favoriteSort;
     private static AsyncUpdater updater;
     private static boolean OVERRIDE_WAIT = false;
+
+    // Debugging
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,23 +73,17 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         newFavoriteData = favoriteData;
 
         // Init fragments
-        overview = OverviewFragment.newInstance(overviewData);
-        albums = AlbumsFragment.newInstance(albumsData);
-        faces = FacesFragment.newInstance(overviewData);
-        favorite = FavoriteFragment.newInstance(favoriteData);
-
-
-        // Init GUI
-        FragmentTransaction ft_main = getSupportFragmentManager().beginTransaction();
-        ft_main.replace(R.id.frame, overview);
-        ft_main.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft_main.addToBackStack(null);
-        ft_main.commit();
+        frags.put(fragNames.get(0), OverviewFragment.newInstance(overviewData));
+        frags.put(fragNames.get(1), AlbumsFragment.newInstance(albumsData));
+        frags.put(fragNames.get(2), FacesFragment.newInstance(overviewData));
+        frags.put(fragNames.get(3), FavoriteFragment.newInstance(favoriteData));
+        switchFragment(fragIds.get(0));
 
         // Init controls
         // GUI controls
         BottomNavigationView navBar = findViewById(R.id.navBar);
         navBar.setOnNavigationItemSelectedListener(item -> switchFragment(item.getItemId()));
+        navBar.setOnNavigationItemReselectedListener(item -> scrollToTop(item.getItemId()));
 
         // Init updater
         updater = new AsyncUpdater();
@@ -112,99 +107,58 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     }
 
     private boolean switchFragment(int itemId) {
-        FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
-        if (itemId == R.id.action_overview) {
-            ft_navBar.replace(R.id.frame, overview);
-            currentFragment = "overview";
-        } else if (itemId == R.id.action_albums) {
-            ft_navBar.replace(R.id.frame, albums);
-            currentFragment = "albums";
-        } else if (itemId == R.id.action_faces) {
-            ft_navBar.replace(R.id.frame, faces);
-            currentFragment = "face";
-        } else if (itemId == R.id.action_favorite) {
-            ft_navBar.replace(R.id.frame, favorite);
-            currentFragment = "favorite";
+        // Get id to switch fragment to
+        int fragId = fragIds.indexOf(itemId);
+        if (fragId < 0 || fragId > 3) {
+            fragId = 0;
         }
+
+        // Switch to fragment or scroll to top
+        FragmentTransaction ft_navBar = getSupportFragmentManager().beginTransaction();
+        ft_navBar.replace(R.id.frame, Objects.requireNonNull(frags.get(fragNames.get(fragId))));
+        currentFragment = fragNames.get(fragId);
         ft_navBar.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft_navBar.addToBackStack(null);
         ft_navBar.commit();
+
+        // Reload on fragment load
+        OVERRIDE_WAIT = true;
         return true;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void switchFragment(String caller) {
+        switchFragment(fragIds.get(fragNames.indexOf(caller)));
+    }
 
-        // Check for which activity returned to MainActivity
-        if (requestCode == CAMERA_REQUEST_CODE) {
-            Bundle bundle = data.getExtras();
-            Bitmap bitmap = (Bitmap) bundle.get("data");
-            try {
-                File file = new File("/storage/emulated/0/DCIM/Camera/" + new Date().toInstant().getEpochSecond() + ".png");
-                if (!file.createNewFile()) {
-                    throw new Throwable("createNewFile returned false");
-                }
-                // Convert bitmap to bytes
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-                byte[] bmpData = outputStream.toByteArray();
-                // Write bytes
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(bmpData);
-                fos.flush();
-                fos.close();
-            } catch (Throwable ignored) {
-            }
-            switchFragment(R.id.action_overview);
-        } else {
-            // When return data exists
-            if (data != null) {
-                if (data.hasExtra("caller")) {
-                    String caller = data.getStringExtra("caller");
-                    switch (caller != null ? caller : "overview") {
-                        case "albums":
-                            switchFragment(R.id.action_albums);
-                            break;
-                        case "faces":
-                            switchFragment(R.id.action_faces);
-                            break;
-                        case "favorite":
-                            switchFragment(R.id.action_favorite);
-                            break;
-                        default:
-                            switchFragment(R.id.action_overview);
-                            break;
-                    }
-                }
-            } else {
-                switchFragment(R.id.action_overview);
-            }
-        }
+    private void scrollToTop(int itemId) {
+        // TODO: Scroll to top or reload based on scroll value
     }
 
     @Override
     public void fragToMain(String caller, Bundle bundle) {
         // Check action sent
         if (bundle.getString("action") != null) {
-            if (bundle.getString("action").equals("sort")) {
-                // Forward sort bundle to fragments
-                switch (caller) {
-                    case "overview":
+            String action = bundle.getString("action");
+            switch (action) {
+                case "sort":
+                    // Forward sort bundle to fragments
+                    if (fragNames.get(0).equals(caller)) {
                         overviewSort = bundle.getInt("sortCode");
-                        break;
-                    case "albums":
+                    } else if (fragNames.get(1).equals(caller)) {
                         albumSort = bundle.getInt("sortCode");
-                        break;
-                    case "favorite":
+                    } else if (fragNames.get(3).equals(caller)) {
                         favoriteSort = bundle.getInt("sortCode");
-                        break;
-                    default:
-                        break;
-                }
-                OVERRIDE_WAIT = true;
-            } else if (bundle.getString("action").equals("reload")) {
-                OVERRIDE_WAIT = true;
+                    }
+                    OVERRIDE_WAIT = true;
+                    break;
+                case "reload":
+                    OVERRIDE_WAIT = true;
+                    break;
+                case "switch":
+                    switchFragment(bundle.getString("caller"));
+                    break;
+                default:
+                    Log.w(TAG, "fragToMain received unknown action request: " + action);
             }
         }
     }
@@ -219,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
     public class AsyncUpdater extends AsyncTask<String, String, String> {
         private final Bundle bundle = new Bundle();
         private final String TAG = "ASYNC_UPDATER";
-        private final int UPDATE_INTERVAL = 10;
+        private final static int UPDATE_INTERVAL = 10;
 
         @Override
         protected void onPreExecute() {
@@ -227,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         }
 
         @Override
+        @SuppressWarnings("InfiniteLoopStatement")
         protected String doInBackground(String... params) {
             while (true) {
                 try {
@@ -235,37 +190,37 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     if (now % UPDATE_INTERVAL != 0) {
                         if (!OVERRIDE_WAIT) {
                             continue;
-                        } else {
-                            OVERRIDE_WAIT = false;
                         }
                     }
+
                     Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
                     mediaManager.updateFavorite(MainActivity.this);
                     newOverviewData = mediaManager.sort(mediaManager.getMedia(), overviewSort);
                     newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), albumSort);
                     newFavoriteData = mediaManager.sort(mediaManager.getFavorite(), favoriteSort);
-                    switch (currentFragment) {
-                        case "overview":
-                            if (!newOverviewData.equals(overviewData)) {
-                                publishProgress("overview");
-                            }
-                            break;
-                        case "albums":
-                            if (!newAlbumsData.equals(albumsData)) {
-                                publishProgress("albums");
-                            }
-                            break;
-                        case "faces":
-                            if (!newOverviewData.equals(overviewData)) {
-                                publishProgress("faces");
-                            }
-                            break;
-                        case "favorite":
-                            if (!newFavoriteData.equals(favoriteData)) {
-                                publishProgress("favorite");
-                            }
-                            break;
+                    if (fragNames.get(0).equals(currentFragment)) {
+                        if (!newOverviewData.equals(overviewData)) {
+                            publishProgress(fragNames.get(0));
+                        }
+                    } else if (fragNames.get(1).equals(currentFragment)) {
+                        if (!newAlbumsData.equals(albumsData)) {
+                            publishProgress(fragNames.get(1));
+                        }
+                    } else if (fragNames.get(2).equals(currentFragment)) {
+                        if (!newOverviewData.equals(overviewData)) {
+                            publishProgress(fragNames.get(2));
+                        }
+                    } else if (fragNames.get(3).equals(currentFragment)) {
+                        if (!newFavoriteData.equals(favoriteData)) {
+                            publishProgress(fragNames.get(3));
+                        }
+                    }
+
+                    // Notify on manual reload
+                    if (OVERRIDE_WAIT) {
+                        OVERRIDE_WAIT = false;
+                        Toast.makeText(getApplicationContext(), getString(R.string.info_reload), Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception ignored) {
                 }
@@ -275,28 +230,21 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         @Override
         protected void onProgressUpdate(String... text) {
             Log.i(TAG, "onProgressUpdate: Found changes");
-            switch (text[0]) {
-                case "overview":
-                    overviewData = newOverviewData;
-                    bundle.putStringArrayList("mediaList", overviewData);
-                    overview.mainToFrag(bundle);
-                    break;
-                case "albums":
-                    albumsData = newAlbumsData;
-                    bundle.putStringArrayList("mediaList", albumsData);
-                    albums.mainToFrag(bundle);
-                    break;
-                case "faces":
-                    overviewData = newOverviewData;
-                    bundle.putStringArrayList("mediaList", overviewData);
-                    faces.mainToFrag(bundle);
-                    break;
-                case "favorite":
-                    favoriteData = newFavoriteData;
-                    bundle.putStringArrayList("mediaList", favoriteData);
-                    favorite.mainToFrag(bundle);
-                    break;
+            int fragId = fragNames.indexOf(text[0]);
+            if (fragNames.get(0).equals(text[0])) {
+                overviewData = newOverviewData;
+                bundle.putStringArrayList("mediaList", overviewData);
+            } else if (fragNames.get(1).equals(text[0])) {
+                albumsData = newAlbumsData;
+                bundle.putStringArrayList("mediaList", albumsData);
+            } else if (fragNames.get(2).equals(text[0])) {
+                overviewData = newOverviewData;
+                bundle.putStringArrayList("mediaList", overviewData);
+            } else if (fragNames.get(3).equals(text[0])) {
+                favoriteData = newFavoriteData;
+                bundle.putStringArrayList("mediaList", favoriteData);
             }
+            Objects.requireNonNull(frags.get(fragNames.get(fragId))).mainToFrag(bundle);
             bundle.remove("mediaList");
         }
 
