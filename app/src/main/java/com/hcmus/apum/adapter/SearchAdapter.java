@@ -1,5 +1,6 @@
 package com.hcmus.apum.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 
 import static com.hcmus.apum.MainActivity.debugEnabled;
 import static com.hcmus.apum.MainActivity.mediaManager;
+import static com.hcmus.apum.MainActivity.fragNames;
 
 public class SearchAdapter extends BaseAdapter {
     private final Context context;
@@ -46,6 +48,8 @@ public class SearchAdapter extends BaseAdapter {
     }
 
     @Override
+    @SuppressLint({"ViewHolder", "InflateParams"})
+    @SuppressWarnings("Duplicates")
     public View getView(int pos, View view, ViewGroup viewGroup) {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -56,14 +60,11 @@ public class SearchAdapter extends BaseAdapter {
 
         // Get cover image depending on scope
         String path = mediaList.get(pos);
-        File cover = null;
-        switch (scope) {
-            case "overview":
-                cover = new File(path);
-                break;
-            case "albums":
-                cover = mediaManager.getCover(path);
-                break;
+        File cover;
+        if (scope.equals(fragNames.get(1))) {
+            cover = mediaManager.getCover(path);
+        } else {
+            cover = new File(path);
         }
 
         // Set properties of elements

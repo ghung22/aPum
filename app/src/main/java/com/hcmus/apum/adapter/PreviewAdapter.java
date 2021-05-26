@@ -1,5 +1,6 @@
 package com.hcmus.apum.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -50,6 +51,7 @@ public class PreviewAdapter extends PagerAdapter {
 
     @NonNull
     @Override
+    @SuppressLint("InflateParams")
     public Object instantiateItem(@NonNull ViewGroup container, int pos) {
         View view = inflater.inflate(R.layout.layout_visual_viewpager, null);
         ImageView img = view.findViewById(R.id.imgViewPager);

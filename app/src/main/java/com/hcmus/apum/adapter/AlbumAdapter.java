@@ -1,5 +1,6 @@
 package com.hcmus.apum.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -46,6 +47,8 @@ public class AlbumAdapter extends BaseAdapter {
     }
 
     @Override
+    @SuppressLint({"ViewHolder", "InflateParams"})
+    @SuppressWarnings("Duplicates")
     public View getView(int pos, View convertView, ViewGroup parent) {
         // Get elements
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();

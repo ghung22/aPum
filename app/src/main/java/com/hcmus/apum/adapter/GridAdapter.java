@@ -19,8 +19,8 @@ import static com.hcmus.apum.MainActivity.debugEnabled;
 
 public class GridAdapter extends BaseAdapter {
     private final Context context;
-    private ArrayList<String> mediaList;
-    private ArrayList<Rect> boundingBoxes;
+    private final ArrayList<String> mediaList;
+    private final ArrayList<Rect> boundingBoxes;
 
     public GridAdapter(Context context, ArrayList<String> mediaList) {
         this.context = context;
