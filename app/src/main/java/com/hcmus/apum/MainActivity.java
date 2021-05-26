@@ -14,7 +14,7 @@ import com.hcmus.apum.tool.MediaManager;
 import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements MainCallbacks {
-
+    // <editor-fold desc="INIT OBJECTS">
     // Static objects
     public static MediaManager mediaManager = new MediaManager();
     public static Boolean debugEnabled = true;
@@ -29,28 +29,30 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             COPY_CHOOSER_REQUEST_CODE = 77,
             MOVE_CHOOSER_REQUEST_CODE = 37;
 
-    // Fragments
+    // Fragments' data
     public static final ArrayList<String> fragNames =
-            new ArrayList<>(
-                    Arrays.asList("overview", "albums", "faces", "favorite")
-            );
+            new ArrayList<>(Arrays.asList("overview", "albums", "faces", "favorite"));
     public static final ArrayList<Integer> fragIds =
-            new ArrayList<>(
-                    Arrays.asList(R.id.action_overview, R.id.action_albums, R.id.action_faces, R.id.action_favorite)
-            );
-    private static final ArrayList<BaseFragment> frags = new ArrayList<>();
+            new ArrayList<>(Arrays.asList(R.id.action_overview, R.id.action_albums, R.id.action_faces, R.id.action_favorite));
+    private static final ArrayList<BaseFragment> frags =
+            new ArrayList<>(Arrays.asList(new BaseFragment[4]));
+    private static final ArrayList<ArrayList<String>> fragData =
+            new ArrayList<>(Arrays.asList(new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>()));
+    private static final ArrayList<ArrayList<String>> fragNewData =
+            new ArrayList<>(Arrays.asList(new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>()));
+    private static final ArrayList<Integer> fragSorts =
+            new ArrayList<>(Arrays.asList(new Integer[4]));
 
     // For threads
     private static String currentFragment = fragNames.get(0);
-    private static ArrayList<String> overviewData, albumsData, favoriteData,
-            newOverviewData, newAlbumsData, newFavoriteData;
-    private static int overviewSort, albumSort, favoriteSort;
     private static AsyncUpdater updater;
     private static boolean OVERRIDE_WAIT = false;
 
     // Debugging
     private static final String TAG = "MainActivity";
+    // </editor-fold>
 
+    // <editor-fold desc="LIFECYCLE EVENTS">
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,24 +61,25 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // Init data
         mediaManager.updateLocations(this);
         mediaManager.updateFavorite(this);
-        // Sort codes
-        overviewSort = mediaManager.SORT_BY_DATE + mediaManager.SORT_DESCENDING;
-        albumSort = mediaManager.SORT_BY_NAME;
-        favoriteSort = mediaManager.SORT_DEFAULT;
-        // Fragments' mediaList
-        overviewData = mediaManager.sort(mediaManager.getMedia(), overviewSort);
-        albumsData = mediaManager.sort(mediaManager.getAlbums(), albumSort);
-        favoriteData = mediaManager.sort(mediaManager.getFaces(), favoriteSort);
-        // For auto-reloading mediaList
-        newOverviewData = overviewData;
-        newAlbumsData = albumsData;
-        newFavoriteData = favoriteData;
 
-        // Init fragments
-        frags.add(OverviewFragment.newInstance(overviewData));
-        frags.add(AlbumsFragment.newInstance(albumsData));
-        frags.add(FacesFragment.newInstance(overviewData));
-        frags.add(FavoriteFragment.newInstance(favoriteData));
+        // Sort codes
+        fragSorts.set(0, mediaManager.SORT_BY_DATE + mediaManager.SORT_DESCENDING);
+        fragSorts.set(1, mediaManager.SORT_BY_NAME);
+        fragSorts.set(2, mediaManager.SORT_DEFAULT);
+        fragSorts.set(3, mediaManager.SORT_DEFAULT);
+
+        // Fragment data - for reloading mediaList
+        getNewData();
+        fragData.set(0, fragNewData.get(0));
+        fragData.set(1, fragNewData.get(1));
+        fragData.set(2, fragNewData.get(3));
+        fragData.set(3, fragNewData.get(2));
+
+        // Fragments
+        frags.set(0, OverviewFragment.newInstance(fragData.get(0)));
+        frags.set(1, AlbumsFragment.newInstance(fragData.get(1)));
+        frags.set(2, FacesFragment.newInstance(fragData.get(2)));
+        frags.set(3, FavoriteFragment.newInstance(fragData.get(3)));
         switchFragment(fragIds.get(0));
 
         // Init controls
@@ -105,7 +108,9 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             updater.execute();
         }
     }
+    // </editor-fold>
 
+    // <editor-fold desc="PRIVATE METHODS">
     private boolean switchFragment(int itemId) {
         // Get id to switch fragment to
         int fragId = fragIds.indexOf(itemId);
@@ -122,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         ft_navBar.commit();
 
         // Reload on fragment load
-        OVERRIDE_WAIT = true;
+        manualReload();
         return true;
     }
 
@@ -134,6 +139,19 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         // TODO: Scroll to top or reload based on scroll value
     }
 
+    private void manualReload() {
+        OVERRIDE_WAIT = true;
+    }
+
+    private void getNewData() {
+        fragNewData.set(0, mediaManager.sort(mediaManager.getMedia(), fragSorts.get(0)));
+        fragNewData.set(1, mediaManager.sort(mediaManager.getAlbums(), fragSorts.get(1)));
+        fragNewData.set(2, mediaManager.sort(mediaManager.getFaces(), fragSorts.get(2)));
+        fragNewData.set(3, mediaManager.sort(mediaManager.getFavorite(), fragSorts.get(3)));
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="MISC EVENTS">
     @Override
     public void fragToMain(String caller, Bundle bundle) {
         // Check action sent
@@ -141,18 +159,11 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
             String action = bundle.getString("action");
             switch (action) {
                 case "sort":
-                    // Forward sort bundle to fragments
-                    if (fragNames.get(0).equals(caller)) {
-                        overviewSort = bundle.getInt("sortCode");
-                    } else if (fragNames.get(1).equals(caller)) {
-                        albumSort = bundle.getInt("sortCode");
-                    } else if (fragNames.get(3).equals(caller)) {
-                        favoriteSort = bundle.getInt("sortCode");
-                    }
-                    OVERRIDE_WAIT = true;
+                    fragSorts.set(fragNames.indexOf(caller), bundle.getInt("sortCode"));
+                    manualReload();
                     break;
                 case "reload":
-                    OVERRIDE_WAIT = true;
+                    manualReload();
                     break;
                 case "switch":
                     switchFragment(bundle.getString("caller"));
@@ -168,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         super.onBackPressed();
         finish();
     }
+    // </editor-fold>
 
     @SuppressLint("StaticFieldLeak")
     public class AsyncUpdater extends AsyncTask<String, String, String> {
@@ -196,25 +208,10 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
                     Log.i(TAG, "doInBackground: Updating");
                     mediaManager.updateLocations(MainActivity.this);
                     mediaManager.updateFavorite(MainActivity.this);
-                    newOverviewData = mediaManager.sort(mediaManager.getMedia(), overviewSort);
-                    newAlbumsData = mediaManager.sort(mediaManager.getAlbums(), albumSort);
-                    newFavoriteData = mediaManager.sort(mediaManager.getFavorite(), favoriteSort);
-                    if (fragNames.get(0).equals(currentFragment)) {
-                        if (!newOverviewData.equals(overviewData)) {
-                            publishProgress(fragNames.get(0));
-                        }
-                    } else if (fragNames.get(1).equals(currentFragment)) {
-                        if (!newAlbumsData.equals(albumsData)) {
-                            publishProgress(fragNames.get(1));
-                        }
-                    } else if (fragNames.get(2).equals(currentFragment)) {
-                        if (!newOverviewData.equals(overviewData)) {
-                            publishProgress(fragNames.get(2));
-                        }
-                    } else if (fragNames.get(3).equals(currentFragment)) {
-                        if (!newFavoriteData.equals(favoriteData)) {
-                            publishProgress(fragNames.get(3));
-                        }
+                    getNewData();
+                    int fragId = fragNames.indexOf(currentFragment);
+                    if (!fragNewData.get(fragId).equals(fragData.get(fragId))) {
+                        publishProgress(currentFragment);
                     }
 
                     // Notify on manual reload
@@ -231,19 +228,8 @@ public class MainActivity extends AppCompatActivity implements MainCallbacks {
         protected void onProgressUpdate(String... text) {
             Log.i(TAG, "onProgressUpdate: Found changes");
             int fragId = fragNames.indexOf(text[0]);
-            if (fragNames.get(0).equals(text[0])) {
-                overviewData = newOverviewData;
-                bundle.putStringArrayList("mediaList", overviewData);
-            } else if (fragNames.get(1).equals(text[0])) {
-                albumsData = newAlbumsData;
-                bundle.putStringArrayList("mediaList", albumsData);
-            } else if (fragNames.get(2).equals(text[0])) {
-                overviewData = newOverviewData;
-                bundle.putStringArrayList("mediaList", overviewData);
-            } else if (fragNames.get(3).equals(text[0])) {
-                favoriteData = newFavoriteData;
-                bundle.putStringArrayList("mediaList", favoriteData);
-            }
+            fragData.set(fragId, fragNewData.get(fragId));
+            bundle.putStringArrayList("mediaList", fragData.get(fragId));
             Objects.requireNonNull(frags.get(fragId)).mainToFrag(bundle);
             bundle.remove("mediaList");
         }
